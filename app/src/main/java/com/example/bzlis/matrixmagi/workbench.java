@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import java.util.HashSet;
 
@@ -28,11 +29,11 @@ public class workbench extends AppCompatActivity {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
         }
-        FrameLayout frame = new FrameLayout(this);
+        RelativeLayout frame = new RelativeLayout(this);
         frame.requestFocus();
         PixelGridView pr = new PixelGridView(this, mWorkerFragment);
-        pr.setNumCells(numCells);
         frame.addView(pr);
+        pr.setNumCells(numCells);
         if ((mWorkerFragment.getData() != null) && (mWorkerFragment.getData().size() != 0)) {
            HashSet<EditGridLayout> editList = mWorkerFragment.getData();
             for (EditGridLayout edit : editList) {
