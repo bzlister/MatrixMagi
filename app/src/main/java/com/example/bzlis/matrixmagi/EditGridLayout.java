@@ -8,18 +8,15 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
 import java.util.Locale;
-import java.util.Random;
 
 public class EditGridLayout extends RelativeLayout {
 
@@ -32,16 +29,16 @@ public class EditGridLayout extends RelativeLayout {
     private EditText[][] edits;
     private WorkerFragment workerFragment;
     private GridLayout grid;
-    private final float thick = 0.3f;
-    private final int[] colors = new int[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.LTGRAY};
+    private final float thick = 0.5f;
     public boolean removed = false;
+    private OnTouchListener myOnTouchListener;
+    private PixelGridView dad;
 
-
-    public EditGridLayout(Context context, Matrix m, int cellLength, WorkerFragment workerFragment, Point top){
-        this(context, m.getNumRows(), m.getNumCols(), cellLength, workerFragment, top, m);
+    public EditGridLayout(Context context, Matrix m, int cellLength, WorkerFragment workerFragment, Point top, int borderColor, PixelGridView dad){
+        this(context, m.getNumRows(), m.getNumCols(), cellLength, workerFragment, top, m, borderColor, dad);
     }
 
-    public EditGridLayout(Context context, int matRows, int matCols, final int cellLength, WorkerFragment workerFragment, Point top, Matrix m){
+    public EditGridLayout(Context context, int matRows, int matCols, final int cellLength, final WorkerFragment workerFragment, Point top, Matrix m, int borderColor, PixelGridView dad){
         super(context);
         this.cellLength = cellLength;
         this.matRows = matRows;
@@ -56,67 +53,66 @@ public class EditGridLayout extends RelativeLayout {
         this.setY(top.y-cellLength*thick);
         this.grid = new GridLayout(this.getContext());
         this.secret = count;
+        this.dad = dad;
         count++;
         init();
         grid.setTranslationX(cellLength*thick);
         grid.setTranslationY(cellLength*thick);
+        this.setLayoutParams(new LayoutParams(Math.round(cellLength*(matCols+2*thick)), Math.round(cellLength*(matRows + 2*thick))));
         grid.setLayoutParams(new LayoutParams(cellLength*matCols, cellLength*matRows));
-        //this.setLayoutParams(new RelativeLayout.LayoutParams((int)Math.round(cellLength*(0.5+matCols)), (int)Math.round(cellLength*(0.5+matRows))));
-        OnTouchListener myOnTouchListener = new OnTouchListener() {
+        myOnTouchListener = new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent me){
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
-                    EditGridLayout edit = (EditGridLayout)v.getParent();
+                    EditGridLayout edit = (EditGridLayout)v;
                     int len = edit.getCellLength();
-
-
                     int x0 = len*Math.round(me.getRawX()/len);
                     int y0 = len*Math.round(me.getRawY()/len);
                     int x1 = x0 + len*edit.getNumCols();
                     int y1 = y0 + len*edit.getNumRows();
-                    Log.i("pos", x0 + ", " + y0 + ", " + x1 + ", " + y1);
-                    if (!edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret())) {
+                    if (edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), false) < 0) {
                         edit.setX(x0 - len*thick);
                         edit.setY(y0 - len*thick);
+                    }
+                }
+                if (me.getAction() == MotionEvent.ACTION_UP){
+                    EditGridLayout edit = (EditGridLayout)v;
+                    int len = edit.getCellLength();
+                    int x0 = Math.round(edit.getX());
+                    int y0 = Math.round(edit.getY());
+                    int x1 = Math.round(x0 + len*(edit.getNumCols() + 2*edit.getThickness()));
+                    int y1 = Math.round(y0 + len*(edit.getNumRows() + 2*edit.getThickness()));
+                    int secret = 0;
+                    if ((secret = edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), true)) >= 0) {
+                        int a, b;
+                        EditGridLayout other = edit.workerFragment.getData(secret);
+                        if (x0 < other.getX() || (x0 == other.getX() && y0 < other.getY())){
+                            a = edit.getSecret();
+                            b = other.getSecret();
+                        }
+                        else{
+                            a = other.getSecret();
+                            b = edit.getSecret();
+                        }
+                        edit.dad.setButtons(a, b);
                     }
                 }
                 return true;
             }
         };
 
-        int color = colors[new Random().nextInt(colors.length)];
-
-        Button north = new Button(this.getContext());
-        north.setLayoutParams(new LayoutParams((int)Math.round(cellLength*(matCols + 2*thick)), (int)Math.round(cellLength*thick)));
-        north.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)north.getBackground()).setColor(color);
-        north.setOnTouchListener(myOnTouchListener);
-        this.addView(north);
-
-        Button west = new Button(this.getContext());
-        west.setLayoutParams(new LayoutParams((int)Math.round(cellLength*thick), (int)Math.round(cellLength*(matRows + 2*thick))));
-        west.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)west.getBackground()).setColor(color);
-        west.setOnTouchListener(myOnTouchListener);
-        this.addView(west);
-
-        Button east = new Button(this.getContext());
-        east.setLayoutParams(new LayoutParams((int)Math.round(cellLength*thick), (int)Math.round(cellLength*(matRows + 2*thick))));
-        east.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)east.getBackground()).setColor(color);
-        east.setTranslationX(cellLength*(matCols+thick));
-        east.setOnTouchListener(myOnTouchListener);
-        this.addView(east);
-
-        Button south = new Button(this.getContext());
-        south.setLayoutParams(new LayoutParams((int)Math.round(cellLength*(matCols + 2*thick)), (int)Math.round(cellLength*thick)));
-        south.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)south.getBackground()).setColor(color);
-        south.setTranslationY(cellLength*(matRows+thick));
-        south.setOnTouchListener(myOnTouchListener);
-        this.addView(south);
-
+        ImageView border = new ImageView(this.getContext());
+        border.setLayoutParams(new LayoutParams(Math.round(cellLength*(matCols+thick)), Math.round(cellLength*(matRows+thick))));
+        border.setTranslationX(thick*cellLength*0.5f);
+        border.setTranslationY(thick*cellLength*0.5f);
+        border.setBackgroundResource(R.drawable.tags_rounded_corners);
+        ((GradientDrawable)border.getBackground()).setColor(Color.TRANSPARENT);
+        ((GradientDrawable)border.getBackground()).setStroke(Math.round(cellLength*thick*0.5f), borderColor);
+        this.addView(border);
+        this.setOnTouchListener(myOnTouchListener);
         this.addView(grid);
+
+        this.bringChildToFront(grid);
         workerFragment.addData(this);
     }
 
@@ -159,6 +155,7 @@ public class EditGridLayout extends RelativeLayout {
                         fill();
                     }
                 });
+                input.setOnTouchListener(myOnTouchListener);
                 edits[i][j] = input;
                 setPos(i, j);
                 grid.addView(input);
@@ -226,6 +223,9 @@ public class EditGridLayout extends RelativeLayout {
         return this.cellLength;
     }
 
+    public float getThickness(){
+        return this.thick;
+    }
     private WorkerFragment getWorkerFragment(){
         return this.workerFragment;
     }

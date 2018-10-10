@@ -19,6 +19,16 @@ public class WorkerFragment extends android.app.Fragment {
         setRetainInstance(true);
     }
 
+    public EditGridLayout getData(int secret){
+        EditGridLayout retVal = null;
+        Iterator<EditGridLayout> itr = editList.iterator();
+        while (itr.hasNext()){
+            if ((retVal = itr.next()).getSecret() == secret)
+                break;
+        }
+        return retVal;
+    }
+
     public void addData(EditGridLayout edit) {
         if (editList.contains(edit))
             removeData(edit);
@@ -68,17 +78,25 @@ public class WorkerFragment extends android.app.Fragment {
         return editList;
     }
 
-    public boolean isOccupied(int x0, int y0, int x1, int y1, int secret){
-        boolean occupied = false;
+    public int isOccupied(int x0, int y0, int x1, int y1, int secret, boolean actual){
+        int occupied = -1;
         for (EditGridLayout edit : this.editList){
             if (edit.getSecret() != secret) {
-                int x2 = edit.getActualX();
-                int y2 = edit.getActualY();
-                int x3 = edit.getActualX() + edit.getNumCols() * edit.getCellLength();
-                int y3 = edit.getActualY() + edit.getNumRows() * edit.getCellLength();
+                float x2, y2, x3, y3;
+                if (!actual) {
+                    x2 = edit.getActualX();
+                    y2 = edit.getActualY();
+                    x3 = edit.getActualX() + edit.getNumCols() * edit.getCellLength();
+                    y3 = edit.getActualY() + edit.getNumRows() * edit.getCellLength();
+                } else {
+                    x2 = edit.getX();
+                    y2 = edit.getY();
+                    y3 = y2 + edit.getCellLength()*(edit.getNumRows()+2*edit.getThickness());
+                    x3 = x2 + edit.getCellLength()*(edit.getNumCols()+2*edit.getThickness());
+                }
                 if (!((y1 < y2) || (x1 < x2) || (y3 < y0) || (x3 < x0))) {
                     if (!((y1 == y2) || (x1 == x2) || (y0 == y3) || (x0 == x3))) {
-                        occupied = true;
+                        occupied = actual ? edit.getSecret() : 1;
                         break;
                     }
                 }
