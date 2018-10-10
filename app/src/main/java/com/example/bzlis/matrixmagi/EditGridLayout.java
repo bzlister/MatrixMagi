@@ -3,19 +3,21 @@ package com.example.bzlis.matrixmagi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 import java.util.Locale;
 
 public class EditGridLayout extends RelativeLayout {
@@ -26,28 +28,27 @@ public class EditGridLayout extends RelativeLayout {
     private int matRows;
     private int matCols;
     private Matrix matrix;
-    private EditText[][] edits;
+    private MatrixElement[][] edits;
     private WorkerFragment workerFragment;
     private GridLayout grid;
     private final float thick = 0.5f;
     public boolean removed = false;
     private OnTouchListener myOnTouchListener;
+    private int borderColor = Color.rgb(35, 188, 196);
     private PixelGridView dad;
-
+/*
     public EditGridLayout(Context context, Matrix m, int cellLength, WorkerFragment workerFragment, Point top, int borderColor, PixelGridView dad){
         this(context, m.getNumRows(), m.getNumCols(), cellLength, workerFragment, top, m, borderColor, dad);
     }
+    */
 
-    public EditGridLayout(Context context, int matRows, int matCols, final int cellLength, final WorkerFragment workerFragment, Point top, Matrix m, int borderColor, PixelGridView dad){
+    public EditGridLayout(Context context, final int cellLength, final WorkerFragment workerFragment, Point top, Matrix m, PixelGridView dad){
         super(context);
         this.cellLength = cellLength;
-        this.matRows = matRows;
-        this.matCols = matCols;
-        if (m == null)
-            this.matrix = new Matrix(matRows, matCols);
-        else
-            this.matrix = m;
-        this.edits = new EditText[matRows][matCols];
+        this.matrix = m;
+        this.matRows = m.getNumRows();
+        this.matCols = m.getNumCols();
+        this.edits = new MatrixElement[matRows][matCols];
         this.workerFragment = workerFragment;
         this.setX(top.x-cellLength*thick);
         this.setY(top.y-cellLength*thick);
@@ -96,6 +97,11 @@ public class EditGridLayout extends RelativeLayout {
                         }
                         edit.dad.setButtons(a, b);
                     }
+                    else if ((edit.getActualX() >= len*(edit.dad.numColumns-2)) && (edit.getActualY() >= len*(edit.dad.numRows-2))){
+                        ((ViewGroup)edit.dad.getParent()).removeView(edit);
+                        edit.workerFragment.removeData(edit);
+                        edit.dad.invalidate();
+                    }
                 }
                 return true;
             }
@@ -112,7 +118,7 @@ public class EditGridLayout extends RelativeLayout {
         this.setOnTouchListener(myOnTouchListener);
         this.addView(grid);
 
-        this.bringChildToFront(grid);
+       // this.bringChildToFront(grid);
         workerFragment.addData(this);
     }
 
@@ -137,14 +143,29 @@ public class EditGridLayout extends RelativeLayout {
     private void init(){
         for (int i = 0; i < matRows; i++) {
             for (int j = 0; j < matCols; j++) {
-                EditText input = new EditText(this.getContext());
+                MatrixElement input = edits[i][j];
+                if (input == null) {
+                    input = new MatrixElement(this.getContext());
+                    edits[i][j] = input;
+                }
                 if ((i == 0) && (j == 0))
                     input.requestFocus();
-                input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
-                input.setBackground(null);
+                else
+                    edits[(j == 0) ? i - 1 : i][(j == 0) ? matCols-1 : j-1].setNext(input);
                 input.setHint(formatS(i, j));
-                input.setTypeface(Typeface.SERIF, Typeface.ITALIC);
-                input.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_FULLSCREEN);
+                if ((i != matRows-1) || (j != matCols-1)) {
+                    input.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_FULLSCREEN);
+                    input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            if (actionId == EditorInfo.IME_ACTION_NEXT)
+                                ((MatrixElement)v).getNext().requestFocus();
+                            return true;
+                        }
+                    });
+                }
+                else
+                    input.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_FULLSCREEN);
                 input.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -156,7 +177,6 @@ public class EditGridLayout extends RelativeLayout {
                     }
                 });
                 input.setOnTouchListener(myOnTouchListener);
-                edits[i][j] = input;
                 setPos(i, j);
                 grid.addView(input);
             }
@@ -176,9 +196,14 @@ public class EditGridLayout extends RelativeLayout {
         for (int i = 0; i < matRows; i++){
             for (int j = 0; j < matCols; j++){
                 String value = edits[i][j].getText().toString();
-                if (value.equals(""))
+                if (value == null)
                     value = "0";
-                Double num = Double.parseDouble(value);
+                Double num;
+                try{
+                    num = Double.parseDouble(value);
+                } catch (NumberFormatException n){
+                    num = 0.0;
+                }
                 matrix.setElement(num, i, j);
             }
         }

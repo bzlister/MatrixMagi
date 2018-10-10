@@ -37,8 +37,10 @@ public class Matrix {
     }
 
     public Matrix add(Matrix B) throws IllegalArgumentException {
+        if (B instanceof Scalar)
+            return B.add(this);
         if ((this.numCols != B.numCols) || (this.numRows != B.numRows))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("To add, matrices must have the same number of rows and columns!");
         Double[][] retVal = new Double[this.numRows][this.numCols];
         for (int i = 0; i < this.numRows; i++){
             for (int j = 0; j < this.numCols; j++){
@@ -49,8 +51,11 @@ public class Matrix {
     }
 
     public Matrix mult(Matrix B) throws IllegalArgumentException{
+        if (B instanceof Scalar){
+            return B.mult(this);
+        }
         if (this.numCols != B.numRows)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("To multiply, the number of columns in the first matrix must equal the number of rows in the second!");
         Double[][] retVal = new Double[this.numRows][B.numCols];
         for (int i = 0; i < this.numRows; i++){
             for (int j = 0; j < B.numCols; j++){

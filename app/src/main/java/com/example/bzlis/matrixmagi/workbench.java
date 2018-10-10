@@ -30,7 +30,8 @@ public class workbench extends AppCompatActivity {
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
         }
         RelativeLayout frame = new RelativeLayout(this);
-        frame.requestFocus();
+
+       // frame.requestFocus();
         PixelGridView pr = new PixelGridView(this, mWorkerFragment);
         frame.addView(pr);
         pr.setNumCells(numCells);
