@@ -2,6 +2,7 @@ package com.example.bzlis.matrixmagi;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ public class WorkerFragment extends android.app.Fragment {
     // data object we want to retain
     private HashSet<EditGridLayout> editList = new HashSet<EditGridLayout>();
 
+
     // this method is only called once for this fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -18,6 +20,7 @@ public class WorkerFragment extends android.app.Fragment {
         // retain this fragment
         setRetainInstance(true);
     }
+
 
     public EditGridLayout getData(int secret){
         EditGridLayout retVal = null;

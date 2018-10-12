@@ -31,7 +31,6 @@ public class EditGridLayout extends RelativeLayout {
     private WorkerFragment workerFragment;
     private GridLayout grid;
     private final float thick = 0.5f;
-    public boolean removed = false;
     private OnTouchListener myOnTouchListener;
     private int borderColor = Color.rgb(35, 188, 196);
     private ImageView border;
@@ -68,7 +67,7 @@ public class EditGridLayout extends RelativeLayout {
             @Override
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
-                edit.dad.hideButtons();
+                //edit.dad.hideButtons();
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     edit.dad.lews.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
@@ -81,11 +80,13 @@ public class EditGridLayout extends RelativeLayout {
                         edit.setY(me.getRawY() - len*thick);
                     }
                 }
+                /*
                 if (mutated){
                     for (EditGridLayout layout : ((EditGridLayout)v).workerFragment.getData())
                         layout.switchBorderColor(-1);
                     invalidate();
                 }
+                */
                 if (me.getAction() == MotionEvent.ACTION_UP){
                     edit.dad.lews.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
@@ -107,6 +108,8 @@ public class EditGridLayout extends RelativeLayout {
                             a = other.getSecret();
                             b = edit.getSecret();
                         }
+                     //   edit.keyboardLock(false);
+                     //   other.keyboardLock(false);
                         edit.dad.arithButtons(a, b);
                     }
                     else if ((edit.getActualX() >= len*(edit.dad.numColumns-2)) && (edit.getActualY() >= len*(edit.dad.numRows-2))){
@@ -267,14 +270,28 @@ public class EditGridLayout extends RelativeLayout {
         return this.workerFragment;
     }
 
+    protected void setDad(PixelGridView dad){
+        this.dad = dad;
+    }
+/*
+    protected void keyboardLock(boolean shouldLock){
+            for (int i = 0; i < matRows; i++){
+                for (int j = 0; j < matCols; j++){
+                    edits[i][j].setFocusable(shouldLock);
+                }
+            }
+    }
+    */
+/*
     protected void switchBorderColor(int color){
         if (color == -1) {
             ((GradientDrawable) border.getBackground()).setStroke(Math.round(cellLength * thick * 0.5f), borderColor);
-            mutated = false;
+            mutated = false;;
         }
         else {
             ((GradientDrawable) border.getBackground()).setStroke(Math.round(cellLength * thick * 0.65f), color);
             mutated = true;
         }
     }
+    */
 }

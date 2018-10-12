@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,9 +26,9 @@ public class PixelGridView extends View {
     private Paint redPaint = new Paint();
     private WorkerFragment workerFragment;
     private int buttonColor;
-    private final Button[] myButs = new Button[4];
     private int buttonWidth;
     private boolean shouldUpdate = false;
+    private final Button[] myButs = new Button[4];
 
     public TextView lews;
 
@@ -82,22 +83,15 @@ public class PixelGridView extends View {
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
-        buttonWidth = Math.round(getWidth()/5f);
-        String[] text = new String[]{"+","X","scalar","1x1 matrix"};
-        for (int i = 0; i < myButs.length; i++){
-            myButs[i] = new Button(this.getContext());
-            myButs[i].setVisibility(View.GONE);
-            myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
-            ((GradientDrawable)myButs[i].getBackground()).setColor(buttonColor);
-            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, buttonColor);
-            myButs[i].setText(text[i]);
-            myButs[i].setTextColor(Color.rgb(242, 244, 246));
-            myButs[i].setTranslationX((2*(i%2)+1)*buttonWidth);
-            myButs[i].setTranslationY(cellLength*(numRows-2));
-            ((ViewGroup)this.getParent()).addView(myButs[i], buttonWidth, cellLength);
-
-        }
+       // Log.i("srx", (myButs[0] == null) + ", " + (myButs[0].getVisibility()) + ", " + myButs[0].getWidth() + ", " + myButs[0].getHeight()+ ", (" + (myButs[0].getX()) + ","+(myButs[0].getY()) +")");
+        for (EditGridLayout edit : workerFragment.getData())
+            edit.setDad(this);
+        makeButtons();
         makeTrashCan();
+        /*
+        for (EditGridLayout layout : workerFragment.getData())
+            layout.switchBorderColor(-1);
+            */
         invalidate();
     }
 
@@ -119,19 +113,36 @@ public class PixelGridView extends View {
             canvas.drawLine(0, i * cellLength, width, i * cellLength, blackPaint);
     }
 
-    protected void hideButtons(){
-        for (int i = 0; i < 4; i++)
+    protected void makeButtons(){
+        buttonWidth = Math.round(getWidth()/5f);
+        String[] text = new String[]{"+","X","scalar","1x1 matrix"};
+        for (int i = 0; i < 4; i++){
+            myButs[i] = new Button(this.getContext());
             myButs[i].setVisibility(View.GONE);
+            myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
+            ((GradientDrawable)myButs[i].getBackground()).setColor(buttonColor);
+            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, buttonColor);
+            myButs[i].setText(text[i]);
+            myButs[i].setTextColor(Color.rgb(242, 244, 246));
+            myButs[i].setTranslationX((2*(i%2)+1)*buttonWidth);
+            myButs[i].setTranslationY(cellLength*(numRows-2));
+            ((ViewGroup)this.getParent()).removeView(myButs[i]);
+            ((ViewGroup)this.getParent()).addView(myButs[i]);
+            myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
+
+        }
     }
 
     public boolean onTouchEvent(MotionEvent event) {
+        /*
         if (shouldUpdate) {
             for (EditGridLayout layout : workerFragment.getData())
                 layout.switchBorderColor(-1);
             shouldUpdate = false;
             invalidate();
         }
-        hideButtons();
+        */
+//        hideButtons();
         int x = cellLength * Math.round(event.getX() / cellLength);
         int y = cellLength * Math.round(event.getY() / cellLength);
         if (corners[0] == null) {
@@ -164,16 +175,17 @@ public class PixelGridView extends View {
         EditGridLayout layoutA = workerFragment.getData(a);
         Matrix B = layoutB.getEncsMatrix();
         Matrix A = layoutA.getEncsMatrix();
-        vg.removeView(layoutB);
-        vg.removeView(layoutA);
-        workerFragment.removeData(layoutB);
-        workerFragment.removeData(layoutA);
+
         try{
             Matrix C;
             if (op == 0)
                 C = A.add(B);
             else
                 C = A.mult(B);
+            vg.removeView(layoutB);
+            vg.removeView(layoutA);
+            workerFragment.removeData(layoutB);
+            workerFragment.removeData(layoutA);
             //Point p = new Point((int)(cellLength*Math.round(0.5*(getWidth()-cellLength*C.getNumCols())/cellLength)), (int)(cellLength*Math.round(0.25*getHeight()/cellLength)));
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
                // vg.bringChildToFront(result);
@@ -185,9 +197,11 @@ public class PixelGridView extends View {
     }
 
     protected void arithButtons(final int a, final int b){
-        shouldUpdate = true;
-        workerFragment.getData(a).switchBorderColor(Color.MAGENTA);
-        workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
+      //  shouldUpdate = true;
+      //  workerFragment.getData(a).switchBorderColor(Color.CYAN);
+       // workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
+    //    for (EditGridLayout edit : workerFragment.getData())
+         //   edit.keyboardLock(true);
         for (int i = 0; i < 2; i++){
             myButs[i].setVisibility(View.VISIBLE);
             final int opCode = i;
@@ -201,6 +215,7 @@ public class PixelGridView extends View {
             });
         }
         invalidate();
+    //    Log.i("55t", "V"+myButs[0].getVisibility() + ": " + myButs[0].getX() + ", " + myButs[0].getY() +", "+ myButs[0].getWidth() + ", " + myButs[0].getHeight());
     }
 
     private void scalarQuestionaire(final Point top){

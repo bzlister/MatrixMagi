@@ -39,11 +39,6 @@ public class workbench extends AppCompatActivity {
             for (EditGridLayout edit : editList) {
                 try {
                     ((ViewGroup) edit.getParent()).removeView(edit);
-                } catch (NullPointerException e){}
-                try {
-                    //is this still meaningful?
-                    if (edit.removed)
-                        mWorkerFragment.removeData(edit);
                 } catch (NullPointerException e) {}
                 frame.addView(edit);
             }
@@ -51,41 +46,3 @@ public class workbench extends AppCompatActivity {
         setContentView(frame);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-    /*\
-     implements EditNameDialog.OnGetFromUserClickListener
-    HashMap<Integer, Matrix> made = new HashMap();
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-
-       // this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_workbench);
-        PixelGridView pixelGrid = new PixelGridView(this);
-        pixelGrid.setNumCells(300);
-        pixelGrid.fm = getSupportFragmentManager();
-        setContentView(pixelGrid);
-    }
-
-    public void getFromUser(String message) {
-        sendMessage(message);
-    }
-
-    public void sendMessage(String message){
-        String[] data = message.split(",");
-        if (!made.containsKey(data[0]))
-            made.put(Integer.parseInt(data[0]), new Matrix(message));
-        made.put(Integer.parseInt(data[0]), made.get(Integer.parseInt(data[0])).setElement(message));
-    }
-    */
