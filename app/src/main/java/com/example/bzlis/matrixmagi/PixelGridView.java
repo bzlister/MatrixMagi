@@ -165,8 +165,8 @@ public class PixelGridView extends View {
                 C = A.add(B);
             else
                 C = A.mult(B);
-            Point p = new Point((int)(cellLength*Math.round(0.5*(getWidth()-cellLength*C.getNumCols())/cellLength)), (int)(cellLength*Math.round(0.25*getHeight()/cellLength)));
-            makeEditGrid(C, p);
+            //Point p = new Point((int)(cellLength*Math.round(0.5*(getWidth()-cellLength*C.getNumCols())/cellLength)), (int)(cellLength*Math.round(0.25*getHeight()/cellLength)));
+            makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
                // vg.bringChildToFront(result);
         } catch (IllegalArgumentException e){
             Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
