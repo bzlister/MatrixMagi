@@ -34,7 +34,9 @@ public class EditGridLayout extends RelativeLayout {
     public boolean removed = false;
     private OnTouchListener myOnTouchListener;
     private int borderColor = Color.rgb(35, 188, 196);
+    private ImageView border;
     private PixelGridView dad;
+    private static boolean mutated;
 /*
     public EditGridLayout(Context context, Matrix m, int cellLength, WorkerFragment workerFragment, Point top, int borderColor, PixelGridView dad){
         this(context, m.getNumRows(), m.getNumCols(), cellLength, workerFragment, top, m, borderColor, dad);
@@ -65,8 +67,9 @@ public class EditGridLayout extends RelativeLayout {
         myOnTouchListener = new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent me){
+                EditGridLayout edit = (EditGridLayout)v;
+                edit.dad.hideButtons();
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
-                    EditGridLayout edit = (EditGridLayout)v;
                     edit.dad.lews.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
                     int x0 = len*Math.round(me.getRawX()/len);
@@ -78,8 +81,12 @@ public class EditGridLayout extends RelativeLayout {
                         edit.setY(me.getRawY() - len*thick);
                     }
                 }
+                if (mutated){
+                    for (EditGridLayout layout : ((EditGridLayout)v).workerFragment.getData())
+                        layout.switchBorderColor(-1);
+                    invalidate();
+                }
                 if (me.getAction() == MotionEvent.ACTION_UP){
-                    EditGridLayout edit = (EditGridLayout)v;
                     edit.dad.lews.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
                     edit.setX(len*(Math.round((edit.getX()+len*edit.getThickness())/len)-edit.getThickness()));
@@ -112,7 +119,7 @@ public class EditGridLayout extends RelativeLayout {
             }
         };
 
-        ImageView border = new ImageView(this.getContext());
+        border = new ImageView(this.getContext());
         border.setLayoutParams(new LayoutParams(Math.round(cellLength*(matCols+thick)), Math.round(cellLength*(matRows+thick))));
         border.setTranslationX(thick*cellLength*0.5f);
         border.setTranslationY(thick*cellLength*0.5f);
@@ -258,5 +265,16 @@ public class EditGridLayout extends RelativeLayout {
     }
     private WorkerFragment getWorkerFragment(){
         return this.workerFragment;
+    }
+
+    protected void switchBorderColor(int color){
+        if (color == -1) {
+            ((GradientDrawable) border.getBackground()).setStroke(Math.round(cellLength * thick * 0.5f), borderColor);
+            mutated = false;
+        }
+        else {
+            ((GradientDrawable) border.getBackground()).setStroke(Math.round(cellLength * thick * 0.65f), color);
+            mutated = true;
+        }
     }
 }

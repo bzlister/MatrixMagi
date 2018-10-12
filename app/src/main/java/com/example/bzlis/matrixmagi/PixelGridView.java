@@ -27,8 +27,9 @@ public class PixelGridView extends View {
     private int buttonColor;
     private final Button[] myButs = new Button[4];
     private int buttonWidth;
-    public TextView lews;
+    private boolean shouldUpdate = false;
 
+    public TextView lews;
 
 
     public PixelGridView(Context context, WorkerFragment workerFragment){
@@ -38,7 +39,7 @@ public class PixelGridView extends View {
         redPaint.setStrokeWidth(5);
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         this.workerFragment = workerFragment;
-        buttonColor = Color.rgb(209, 153, 82);
+        buttonColor = Color.rgb(255, 153, 0);
     }
 
     public void setNumCells(int numCells){
@@ -82,7 +83,7 @@ public class PixelGridView extends View {
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
         buttonWidth = Math.round(getWidth()/5f);
-        String[] text = new String[]{"+","X","scalar","matrix"};
+        String[] text = new String[]{"+","X","scalar","1x1 matrix"};
         for (int i = 0; i < myButs.length; i++){
             myButs[i] = new Button(this.getContext());
             myButs[i].setVisibility(View.GONE);
@@ -118,11 +119,19 @@ public class PixelGridView extends View {
             canvas.drawLine(0, i * cellLength, width, i * cellLength, blackPaint);
     }
 
-
+    protected void hideButtons(){
+        for (int i = 0; i < 4; i++)
+            myButs[i].setVisibility(View.GONE);
+    }
 
     public boolean onTouchEvent(MotionEvent event) {
-        for (int i = 0; i < 3; i++)
-            myButs[i].setVisibility(View.GONE);
+        if (shouldUpdate) {
+            for (EditGridLayout layout : workerFragment.getData())
+                layout.switchBorderColor(-1);
+            shouldUpdate = false;
+            invalidate();
+        }
+        hideButtons();
         int x = cellLength * Math.round(event.getX() / cellLength);
         int y = cellLength * Math.round(event.getY() / cellLength);
         if (corners[0] == null) {
@@ -176,6 +185,9 @@ public class PixelGridView extends View {
     }
 
     protected void arithButtons(final int a, final int b){
+        shouldUpdate = true;
+        workerFragment.getData(a).switchBorderColor(Color.MAGENTA);
+        workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
         for (int i = 0; i < 2; i++){
             myButs[i].setVisibility(View.VISIBLE);
             final int opCode = i;
@@ -198,12 +210,12 @@ public class PixelGridView extends View {
             myButs[i].setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    myButs[2].setVisibility(View.GONE);
+                    myButs[3].setVisibility(View.GONE);
                     if (opCode == 2)
                         makeEditGrid(new Scalar(), top);
                     else
                         makeEditGrid(new Matrix(1, 1), top);
-                    myButs[2].setVisibility(View.GONE);
-                    myButs[3].setVisibility(View.GONE);
                 }
             });
         }

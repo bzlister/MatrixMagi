@@ -40,12 +40,13 @@ public class Matrix {
         if (B instanceof Scalar)
             return B.add(this);
         if ((this.numCols != B.numCols) || (this.numRows != B.numRows)) {
-            String s = "";
+            String a = "";
+            String b = "";
             if (this.numRows != B.numRows)
-                s+="Rows(A) =/= Rows(B)\n";
+                a="Rows(A) =/= Rows(B)";
             if (this.numCols != B.numCols)
-                s+="Cols(A) =/= Cols(B)";
-            throw new IllegalArgumentException(s);
+                b="Cols(A) =/= Cols(B)";
+            throw new IllegalArgumentException((a.length()>0 && b.length()>0) ? a+"\n"+b : a+b);
         }
         Double[][] retVal = new Double[this.numRows][this.numCols];
         for (int i = 0; i < this.numRows; i++){

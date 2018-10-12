@@ -2,6 +2,9 @@ package com.example.bzlis.matrixmagi;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.Spanned;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
 
@@ -12,7 +15,10 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
 
     public MatrixElement(Context context){
         super(context);
-        this.setKeyListener(DigitsKeyListener.getInstance(".0123456789-"));
+       // this.setKeyListener(DigitsKeyListener.getInstance(".0123456789-"));
+       this.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+       // this.setRawInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
+        this.setKeyListener(DigitsKeyListener.getInstance("0123456789.-"));
         this.setBackground(null);
         this.setTypeface(Typeface.SERIF, Typeface.ITALIC);
         this.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);

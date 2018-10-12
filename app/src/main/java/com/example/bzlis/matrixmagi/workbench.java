@@ -34,7 +34,6 @@ public class workbench extends AppCompatActivity {
         PixelGridView pr = new PixelGridView(this, mWorkerFragment);
         frame.addView(pr);
         pr.setNumCells(numCells);
-      //  pr.makeTrashCan();
         if ((mWorkerFragment.getData() != null) && (mWorkerFragment.getData().size() != 0)) {
            HashSet<EditGridLayout> editList = mWorkerFragment.getData();
             for (EditGridLayout edit : editList) {
