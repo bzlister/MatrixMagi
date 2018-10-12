@@ -11,24 +11,28 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.Random;
 
 public class PixelGridView extends View {
     Point[] corners = new Point[2];
-    private Context context;
     public int numColumns, numRows, numCells;
     private int cellLength;
     private Paint blackPaint = new Paint();
     private Paint redPaint = new Paint();
     private WorkerFragment workerFragment;
     private int buttonColor;
+    private final Button[] myButs = new Button[4];
+    private int buttonWidth;
+    public TextView lews;
+
 
 
     public PixelGridView(Context context, WorkerFragment workerFragment){
         super(context, null);
-        this.context = context;
         redPaint.setStyle(Paint.Style.STROKE);
         redPaint.setColor(Color.RED);
         redPaint.setStrokeWidth(5);
@@ -42,68 +46,26 @@ public class PixelGridView extends View {
         calculateDimensions();
     }
 
-    protected void setButtons(final int a, final int b){
-        ViewGroup vg = (ViewGroup) this.getParent();
-        int buttonWidth = Math.round(getWidth()/5.5f);
-        int spacing = Math.round(getWidth()/22f);
-
-        final Button add = new Button(this.getContext());
-        add.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)add.getBackground()).setColor(buttonColor);
-        ((GradientDrawable)add.getBackground()).setStroke(0, buttonColor);
-        add.setText("+");
-        add.setTextColor(Color.WHITE);
-        add.setTranslationX(buttonWidth);
-        add.setTranslationY(cellLength*(numRows-2));
-
-        final Button mult = new Button(this.getContext());
-        mult.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)mult.getBackground()).setColor(buttonColor);
-        ((GradientDrawable)mult.getBackground()).setStroke(0, buttonColor);
-        mult.setText("X");
-        mult.setTextColor(Color.WHITE);
-        mult.setTranslationX(2*buttonWidth+spacing);
-        mult.setTranslationY(cellLength*(numRows-2));
-
-        final Button back = new Button(this.getContext());
-        back.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)back.getBackground()).setColor(buttonColor);
-        ((GradientDrawable)back.getBackground()).setStroke(0, buttonColor);
-        back.setText("<-");
-        back.setTextColor(Color.WHITE);
-        back.setTranslationX(3*buttonWidth+2*spacing);
-        back.setTranslationY(cellLength*(numRows-2));
-        add.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                arithmetic(0, a, b);
-                add.setVisibility(View.GONE);
-                mult.setVisibility(View.GONE);
-                back.setVisibility(View.GONE);
-            }
-        });
-        mult.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                arithmetic(1, a, b);
-                mult.setVisibility(View.GONE);
-                add.setVisibility(View.GONE);
-                back.setVisibility(View.GONE);
-            }
-        });
-        back.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                add.setVisibility(View.GONE);
-                mult.setVisibility(View.GONE);
-                back.setVisibility(View.GONE);
-            }
-        });
-        vg.addView(add, buttonWidth, cellLength+spacing);
-       // vg.bringChildToFront(add);
-        vg.addView(mult, buttonWidth, cellLength+spacing);
-       // vg.bringChildToFront(mult);
-        vg.addView(back, buttonWidth, cellLength+spacing);
+    protected void makeTrashCan(){
+        /*
+        ImageView viewz = new ImageView(this.getContext());
+        viewz.setLayoutParams(new RelativeLayout.LayoutParams(cellLength*2, cellLength*2));
+        viewz.setTranslationX(cellLength*(numColumns-2));
+        viewz.setTranslationY(cellLength*(numRows-2));
+        viewz.setImageResource(R.mipmap.ic_launcher);
+        ((ViewGroup)this.getParent()).addView(viewz);
+        */
+        lews = new TextView(this.getContext());
+        lews.setText("X");
+        lews.setTextColor(Color.RED);
+        lews.setTextSize(50);
+        lews.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        lews.setTranslationX(cellLength*(numColumns-2));
+        lews.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        lews.setBackground(null);
+        lews.setTextIsSelectable(false);
+        lews.setVisibility(INVISIBLE);
+        ((ViewGroup)this.getParent()).addView(lews, cellLength*2, cellLength*2);
     }
 
     @Override
@@ -119,6 +81,22 @@ public class PixelGridView extends View {
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
+        buttonWidth = Math.round(getWidth()/5f);
+        String[] text = new String[]{"+","X","scalar","matrix"};
+        for (int i = 0; i < myButs.length; i++){
+            myButs[i] = new Button(this.getContext());
+            myButs[i].setVisibility(View.GONE);
+            myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
+            ((GradientDrawable)myButs[i].getBackground()).setColor(buttonColor);
+            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, buttonColor);
+            myButs[i].setText(text[i]);
+            myButs[i].setTextColor(Color.rgb(242, 244, 246));
+            myButs[i].setTranslationX((2*(i%2)+1)*buttonWidth);
+            myButs[i].setTranslationY(cellLength*(numRows-2));
+            ((ViewGroup)this.getParent()).addView(myButs[i], buttonWidth, cellLength);
+
+        }
+        makeTrashCan();
         invalidate();
     }
 
@@ -133,18 +111,18 @@ public class PixelGridView extends View {
         if (corners[0] != null)
             canvas.drawRect(corners[0].x, corners[0].y, corners[1].x, corners[1].y, redPaint);
 
-        for (int i = 1; i < numColumns; i++) {
+        for (int i = 1; i < numColumns; i++)
             canvas.drawLine(i * cellLength, 0, i * cellLength, height, blackPaint);
-        }
 
-        for (int i = 1; i < numRows; i++) {
+        for (int i = 1; i < numRows; i++)
             canvas.drawLine(0, i * cellLength, width, i * cellLength, blackPaint);
-        }
     }
 
 
 
     public boolean onTouchEvent(MotionEvent event) {
+        for (int i = 0; i < 3; i++)
+            myButs[i].setVisibility(View.GONE);
         int x = cellLength * Math.round(event.getX() / cellLength);
         int y = cellLength * Math.round(event.getY() / cellLength);
         if (corners[0] == null) {
@@ -161,7 +139,6 @@ public class PixelGridView extends View {
                     scalarQuestionaire(top);
                 else
                     makeEditGrid(new Matrix(matRows, matCols), top);
-                //vg.bringChildToFront(editGrid);
             }
             corners[0] = null;
             corners[1] = null;
@@ -198,50 +175,40 @@ public class PixelGridView extends View {
         return true;
     }
 
+    protected void arithButtons(final int a, final int b){
+        for (int i = 0; i < 2; i++){
+            myButs[i].setVisibility(View.VISIBLE);
+            final int opCode = i;
+            myButs[i].setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    arithmetic(opCode, a, b);
+                    myButs[0].setVisibility(View.GONE);
+                    myButs[1].setVisibility(View.GONE);
+                }
+            });
+        }
+        invalidate();
+    }
+
     private void scalarQuestionaire(final Point top){
-        ViewGroup vg = (ViewGroup) this.getParent();
-        int buttonWidth = Math.round(getWidth()/5.5f);
-        int spacing = Math.round(getWidth()/22f);
-
-        final Button scalar = new Button(this.getContext());
-        scalar.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)scalar.getBackground()).setColor(buttonColor);
-        ((GradientDrawable)scalar.getBackground()).setStroke(0, buttonColor);
-        scalar.setText("scalar");
-        scalar.setTextColor(Color.WHITE);
-        scalar.setTranslationX(buttonWidth);
-        scalar.setTranslationY(cellLength*(numRows-2));
-
-
-        final Button matrix = new Button(this.getContext());
-        matrix.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)matrix.getBackground()).setColor(buttonColor);
-        ((GradientDrawable)matrix.getBackground()).setStroke(0, buttonColor);
-        matrix.setText("matrix");
-        matrix.setTextColor(Color.WHITE);
-        matrix.setTranslationX(3*buttonWidth+2*spacing);
-        matrix.setTranslationY(cellLength*(numRows-2));
-
-        scalar.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                matrix.setVisibility(View.GONE);
-                scalar.setVisibility(View.GONE);
-                makeEditGrid(new Scalar(), top);
-            }
-        });
-        matrix.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                matrix.setVisibility(View.GONE);
-                scalar.setVisibility(View.GONE);
-                makeEditGrid(new Matrix(1, 1), top);
-            }
-        });
-
-        vg.addView(scalar);
-        vg.addView(matrix);
-/*
+        for (int i = 2; i < 4; i++){
+            myButs[i].setVisibility(View.VISIBLE);
+            final int opCode = i;
+            myButs[i].setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (opCode == 2)
+                        makeEditGrid(new Scalar(), top);
+                    else
+                        makeEditGrid(new Matrix(1, 1), top);
+                    myButs[2].setVisibility(View.GONE);
+                    myButs[3].setVisibility(View.GONE);
+                }
+            });
+        }
+        invalidate();
+      /*
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
             scalar.setText(Html.fromHtml("X<sup>2</sup>", Html.FROM_HTML_MODE_LEGACY));
         else

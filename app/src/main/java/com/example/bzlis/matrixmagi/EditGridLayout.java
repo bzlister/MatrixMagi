@@ -6,7 +6,6 @@ import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -46,6 +45,8 @@ public class EditGridLayout extends RelativeLayout {
         super(context);
         this.cellLength = cellLength;
         this.matrix = m;
+        if (m instanceof Scalar)
+            borderColor = Color.GRAY;
         this.matRows = m.getNumRows();
         this.matCols = m.getNumCols();
         this.edits = new MatrixElement[matRows][matCols];
@@ -66,19 +67,23 @@ public class EditGridLayout extends RelativeLayout {
             public boolean onTouch(View v, MotionEvent me){
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     EditGridLayout edit = (EditGridLayout)v;
+                    edit.dad.lews.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
                     int x0 = len*Math.round(me.getRawX()/len);
                     int y0 = len*Math.round(me.getRawY()/len);
                     int x1 = x0 + len*edit.getNumCols();
                     int y1 = y0 + len*edit.getNumRows();
                     if (edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), false) < 0) {
-                        edit.setX(x0 - len*thick);
-                        edit.setY(y0 - len*thick);
+                        edit.setX(me.getRawX() - len*thick);
+                        edit.setY(me.getRawY() - len*thick);
                     }
                 }
                 if (me.getAction() == MotionEvent.ACTION_UP){
                     EditGridLayout edit = (EditGridLayout)v;
+                    edit.dad.lews.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
+                    edit.setX(len*(Math.round((edit.getX()+len*edit.getThickness())/len)-edit.getThickness()));
+                    edit.setY(len*(Math.round((edit.getY()+len*edit.getThickness())/len)-edit.getThickness()));
                     int x0 = Math.round(edit.getX());
                     int y0 = Math.round(edit.getY());
                     int x1 = Math.round(x0 + len*(edit.getNumCols() + 2*edit.getThickness()));
@@ -95,7 +100,7 @@ public class EditGridLayout extends RelativeLayout {
                             a = other.getSecret();
                             b = edit.getSecret();
                         }
-                        edit.dad.setButtons(a, b);
+                        edit.dad.arithButtons(a, b);
                     }
                     else if ((edit.getActualX() >= len*(edit.dad.numColumns-2)) && (edit.getActualY() >= len*(edit.dad.numRows-2))){
                         ((ViewGroup)edit.dad.getParent()).removeView(edit);

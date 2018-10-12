@@ -31,7 +31,7 @@ public class Matrix {
 
     public Double getElement(int i, int j){
         if (mat[i][j] == null)
-            return 0.0;
+            return (numRows == numCols && i == j) ? 1 : 0.0;
         else
             return mat[i][j];
     }
@@ -39,8 +39,14 @@ public class Matrix {
     public Matrix add(Matrix B) throws IllegalArgumentException {
         if (B instanceof Scalar)
             return B.add(this);
-        if ((this.numCols != B.numCols) || (this.numRows != B.numRows))
-            throw new IllegalArgumentException("To add, matrices must have the same number of rows and columns!");
+        if ((this.numCols != B.numCols) || (this.numRows != B.numRows)) {
+            String s = "";
+            if (this.numRows != B.numRows)
+                s+="Rows(A) =/= Rows(B)\n";
+            if (this.numCols != B.numCols)
+                s+="Cols(A) =/= Cols(B)";
+            throw new IllegalArgumentException(s);
+        }
         Double[][] retVal = new Double[this.numRows][this.numCols];
         for (int i = 0; i < this.numRows; i++){
             for (int j = 0; j < this.numCols; j++){
@@ -55,7 +61,7 @@ public class Matrix {
             return B.mult(this);
         }
         if (this.numCols != B.numRows)
-            throw new IllegalArgumentException("To multiply, the number of columns in the first matrix must equal the number of rows in the second!");
+            throw new IllegalArgumentException("Cols(A) =/= Rows(B)");
         Double[][] retVal = new Double[this.numRows][B.numCols];
         for (int i = 0; i < this.numRows; i++){
             for (int j = 0; j < B.numCols; j++){

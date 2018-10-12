@@ -3,6 +3,7 @@ package com.example.bzlis.matrixmagi;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.method.DigitsKeyListener;
+import android.view.View;
 
 public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
 
@@ -14,6 +15,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         this.setKeyListener(DigitsKeyListener.getInstance(".0123456789-"));
         this.setBackground(null);
         this.setTypeface(Typeface.SERIF, Typeface.ITALIC);
+        this.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
     }
 
     public void setNext(MatrixElement next){
