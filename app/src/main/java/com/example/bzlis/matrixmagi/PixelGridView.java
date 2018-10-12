@@ -28,7 +28,9 @@ public class PixelGridView extends View {
     private int buttonColor;
     private int buttonWidth;
     private boolean shouldUpdate = false;
-    private final Button[] myButs = new Button[4];
+    private Button[] myButs = new Button[4];
+    private static int scalarVis = View.GONE;
+    private static int arithVis = View.GONE;
 
     public TextView lews;
 
@@ -86,7 +88,26 @@ public class PixelGridView extends View {
        // Log.i("srx", (myButs[0] == null) + ", " + (myButs[0].getVisibility()) + ", " + myButs[0].getWidth() + ", " + myButs[0].getHeight()+ ", (" + (myButs[0].getX()) + ","+(myButs[0].getY()) +")");
         for (EditGridLayout edit : workerFragment.getData())
             edit.setDad(this);
-        makeButtons();
+        buttonWidth = Math.round(getWidth()/5f);
+        String[] text = new String[]{"+","X","scalar","1x1 matrix"};
+        for (int i = 0; i < 4; i++){
+            myButs[i] = new Button(this.getContext());
+            if (i < 2)
+                myButs[i].setVisibility(arithVis);
+            else
+                myButs[i].setVisibility(scalarVis);
+            myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
+            ((GradientDrawable)myButs[i].getBackground()).setColor(buttonColor);
+            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, buttonColor);
+            myButs[i].setText(text[i]);
+            myButs[i].setTextColor(Color.rgb(242, 244, 246));
+            myButs[i].setTranslationX((2*(i%2)+1)*buttonWidth);
+            myButs[i].setTranslationY(cellLength*(numRows-2));
+            //((ViewGroup)this.getParent()).removeView(myButs[i]);
+            ((ViewGroup)this.getParent()).addView(myButs[i]);
+            myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
+        }
+        Log.i("eara", ((RelativeLayout)this.getParent()).getChildCount()+"");
         makeTrashCan();
         /*
         for (EditGridLayout layout : workerFragment.getData())
@@ -95,6 +116,9 @@ public class PixelGridView extends View {
         invalidate();
     }
 
+    public void makeToast(){
+        Toast.makeText(this.getContext(), "Stanky old toast", Toast.LENGTH_LONG).show();
+    }
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(0xE4E8EB);
@@ -113,26 +137,6 @@ public class PixelGridView extends View {
             canvas.drawLine(0, i * cellLength, width, i * cellLength, blackPaint);
     }
 
-    protected void makeButtons(){
-        buttonWidth = Math.round(getWidth()/5f);
-        String[] text = new String[]{"+","X","scalar","1x1 matrix"};
-        for (int i = 0; i < 4; i++){
-            myButs[i] = new Button(this.getContext());
-            myButs[i].setVisibility(View.GONE);
-            myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
-            ((GradientDrawable)myButs[i].getBackground()).setColor(buttonColor);
-            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, buttonColor);
-            myButs[i].setText(text[i]);
-            myButs[i].setTextColor(Color.rgb(242, 244, 246));
-            myButs[i].setTranslationX((2*(i%2)+1)*buttonWidth);
-            myButs[i].setTranslationY(cellLength*(numRows-2));
-            ((ViewGroup)this.getParent()).removeView(myButs[i]);
-            ((ViewGroup)this.getParent()).addView(myButs[i]);
-            myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
-
-        }
-    }
-
     public boolean onTouchEvent(MotionEvent event) {
         /*
         if (shouldUpdate) {
@@ -142,7 +146,7 @@ public class PixelGridView extends View {
             invalidate();
         }
         */
-//        hideButtons();
+        hide();
         int x = cellLength * Math.round(event.getX() / cellLength);
         int y = cellLength * Math.round(event.getY() / cellLength);
         if (corners[0] == null) {
@@ -169,7 +173,10 @@ public class PixelGridView extends View {
     }
 
 
+
+
     private boolean arithmetic(int op, int a, int b){
+        Log.i("blam", a+", " + b);
         ViewGroup vg = (ViewGroup) this.getParent();
         EditGridLayout layoutB = workerFragment.getData(b);
         EditGridLayout layoutA = workerFragment.getData(a);
@@ -196,37 +203,52 @@ public class PixelGridView extends View {
         return true;
     }
 
+    protected void reveal(int i){
+        if (i == 0)
+            arithVis = View.VISIBLE;
+        else
+            scalarVis = View.VISIBLE;
+        myButs[2*(i%2)].setVisibility(View.VISIBLE);
+        myButs[2*(i%2)+1].setVisibility(View.VISIBLE);
+    }
+
+    protected void hide(){
+        arithVis = View.GONE;
+        scalarVis = View.GONE;
+        for (int i = 0; i < 4; i++)
+            myButs[i].setVisibility(View.GONE);
+    }
+
     protected void arithButtons(final int a, final int b){
       //  shouldUpdate = true;
       //  workerFragment.getData(a).switchBorderColor(Color.CYAN);
        // workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
     //    for (EditGridLayout edit : workerFragment.getData())
          //   edit.keyboardLock(true);
+        reveal(0);
         for (int i = 0; i < 2; i++){
-            myButs[i].setVisibility(View.VISIBLE);
             final int opCode = i;
             myButs[i].setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    hide();
                     arithmetic(opCode, a, b);
-                    myButs[0].setVisibility(View.GONE);
-                    myButs[1].setVisibility(View.GONE);
                 }
             });
+
         }
         invalidate();
     //    Log.i("55t", "V"+myButs[0].getVisibility() + ": " + myButs[0].getX() + ", " + myButs[0].getY() +", "+ myButs[0].getWidth() + ", " + myButs[0].getHeight());
     }
 
     private void scalarQuestionaire(final Point top){
+        reveal(1);
         for (int i = 2; i < 4; i++){
-            myButs[i].setVisibility(View.VISIBLE);
             final int opCode = i;
             myButs[i].setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    myButs[2].setVisibility(View.GONE);
-                    myButs[3].setVisibility(View.GONE);
+                    hide();
                     if (opCode == 2)
                         makeEditGrid(new Scalar(), top);
                     else

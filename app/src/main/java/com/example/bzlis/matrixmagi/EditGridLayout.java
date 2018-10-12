@@ -67,6 +67,7 @@ public class EditGridLayout extends RelativeLayout {
             @Override
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
+                edit.dad.hide();
                 //edit.dad.hideButtons();
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     edit.dad.lews.setVisibility(VISIBLE);
@@ -222,6 +223,7 @@ public class EditGridLayout extends RelativeLayout {
                 matrix.setElement(num, i, j);
             }
         }
+        dad.hide();
         workerFragment.addData(this);
     }
 
