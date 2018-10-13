@@ -187,7 +187,6 @@ public class EditGridLayout extends RelativeLayout {
                         fill();
                     }
                 });
-                input.setOnTouchListener(myOnTouchListener);
                 setPos(i, j);
                 grid.addView(input);
             }

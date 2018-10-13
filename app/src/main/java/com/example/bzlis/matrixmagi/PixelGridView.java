@@ -35,7 +35,6 @@ public class PixelGridView extends View {
     private Button[] myButs = new Button[4];
     private static int scalarVis = View.GONE;
     private static int arithVis = View.GONE;
-
     public TextView lews;
 
 
@@ -94,9 +93,11 @@ public class PixelGridView extends View {
         if ((numCells < 1) || (getWidth() == 0) || (getHeight() == 0)) {
             return;
         }
+        Log.i("scrnt", getWidth() + ", " + getHeight() + ", " + getResources().getDisplayMetrics());
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
+
         for (EditGridLayout edit : workerFragment.getData())
             edit.setDad(this);
         buttonWidth = Math.round(getWidth()/5f);
@@ -118,10 +119,6 @@ public class PixelGridView extends View {
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
         }
         makeTrashCan();
-        /*
-        for (EditGridLayout layout : workerFragment.getData())
-            layout.switchBorderColor(-1);
-            */
         invalidate();
     }
 
@@ -148,7 +145,7 @@ public class PixelGridView extends View {
             for (EditGridLayout layout : workerFragment.getData())
                 layout.switchBorderColor(-1);
             shouldUpdate = false;
-            invalidate();
+            //invalidate();
         }
         hide();
         EditGridLayout.hideKeyboard(this);
@@ -181,7 +178,6 @@ public class PixelGridView extends View {
 
 
     private boolean arithmetic(int op, int a, int b){
-        Log.i("blam", a+", " + b);
         ViewGroup vg = (ViewGroup) this.getParent();
         EditGridLayout layoutB = workerFragment.getData(b);
         EditGridLayout layoutA = workerFragment.getData(a);
@@ -200,14 +196,12 @@ public class PixelGridView extends View {
             workerFragment.removeData(layoutA);
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
         } catch (IllegalArgumentException e){
-            TextView toastView = new TextView(this.getContext());
             String s = e.getMessage();
             SpannableString text = new SpannableString(s);
             text.setSpan(new ForegroundColorSpan(Color.CYAN), s.indexOf('A'), s.indexOf('A')+1, 0);
             text.setSpan(new ForegroundColorSpan(Color.CYAN), s.lastIndexOf('A'), s.lastIndexOf('A')+1, 0);
             text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B'), s.indexOf('B')+1, 0);
             text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.lastIndexOf('B'), s.lastIndexOf('B')+1, 0);
-            //toastView.setText(text, TextView.BufferType.SPANNABLE);
             Toast.makeText(this.getContext(), text, Toast.LENGTH_SHORT).show();
         }
         invalidate();
@@ -281,5 +275,17 @@ public class PixelGridView extends View {
         vg.addView(result);
         workerFragment.addData(result);
         invalidate();
+    }
+
+    protected int getCellLength(){
+        return this.cellLength;
+    }
+
+    protected int getNumRows(){
+        return this.numRows;
+    }
+
+    protected int getNumColumns(){
+        return this.numColumns;
     }
 }
