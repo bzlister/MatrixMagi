@@ -85,7 +85,6 @@ public class PixelGridView extends View {
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
-       // Log.i("srx", (myButs[0] == null) + ", " + (myButs[0].getVisibility()) + ", " + myButs[0].getWidth() + ", " + myButs[0].getHeight()+ ", (" + (myButs[0].getX()) + ","+(myButs[0].getY()) +")");
         for (EditGridLayout edit : workerFragment.getData())
             edit.setDad(this);
         buttonWidth = Math.round(getWidth()/5f);
@@ -103,11 +102,9 @@ public class PixelGridView extends View {
             myButs[i].setTextColor(Color.rgb(242, 244, 246));
             myButs[i].setTranslationX((2*(i%2)+1)*buttonWidth);
             myButs[i].setTranslationY(cellLength*(numRows-2));
-            //((ViewGroup)this.getParent()).removeView(myButs[i]);
             ((ViewGroup)this.getParent()).addView(myButs[i]);
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
         }
-        Log.i("eara", ((RelativeLayout)this.getParent()).getChildCount()+"");
         makeTrashCan();
         /*
         for (EditGridLayout layout : workerFragment.getData())
@@ -116,9 +113,6 @@ public class PixelGridView extends View {
         invalidate();
     }
 
-    public void makeToast(){
-        Toast.makeText(this.getContext(), "Stanky old toast", Toast.LENGTH_LONG).show();
-    }
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(0xE4E8EB);
@@ -147,6 +141,7 @@ public class PixelGridView extends View {
         }
         */
         hide();
+        EditGridLayout.hideKeyboard(this);
         int x = cellLength * Math.round(event.getX() / cellLength);
         int y = cellLength * Math.round(event.getY() / cellLength);
         if (corners[0] == null) {
@@ -193,9 +188,7 @@ public class PixelGridView extends View {
             vg.removeView(layoutA);
             workerFragment.removeData(layoutB);
             workerFragment.removeData(layoutA);
-            //Point p = new Point((int)(cellLength*Math.round(0.5*(getWidth()-cellLength*C.getNumCols())/cellLength)), (int)(cellLength*Math.round(0.25*getHeight()/cellLength)));
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
-               // vg.bringChildToFront(result);
         } catch (IllegalArgumentException e){
             Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }

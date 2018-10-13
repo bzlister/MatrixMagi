@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -36,11 +37,7 @@ public class EditGridLayout extends RelativeLayout {
     private ImageView border;
     private PixelGridView dad;
     private static boolean mutated;
-/*
-    public EditGridLayout(Context context, Matrix m, int cellLength, WorkerFragment workerFragment, Point top, int borderColor, PixelGridView dad){
-        this(context, m.getNumRows(), m.getNumCols(), cellLength, workerFragment, top, m, borderColor, dad);
-    }
-    */
+
 
     public EditGridLayout(Context context, final int cellLength, final WorkerFragment workerFragment, Point top, Matrix m, PixelGridView dad){
         super(context);
@@ -68,6 +65,7 @@ public class EditGridLayout extends RelativeLayout {
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
                 edit.dad.hide();
+                hideKeyboard(v);
                 //edit.dad.hideButtons();
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     edit.dad.lews.setVisibility(VISIBLE);
@@ -225,6 +223,12 @@ public class EditGridLayout extends RelativeLayout {
         }
         dad.hide();
         workerFragment.addData(this);
+    }
+
+    protected static void hideKeyboard(View v){
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
     }
 
     private void setPos(int row, int column) {

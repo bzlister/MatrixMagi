@@ -11,7 +11,6 @@ public class WorkerFragment extends android.app.Fragment {
 
     // data object we want to retain
     private HashSet<EditGridLayout> editList = new HashSet<EditGridLayout>();
-    public Button[] myButs;
 
     // this method is only called once for this fragment
     @Override
