@@ -26,9 +26,12 @@ public class Scalar extends com.example.bzlis.matrixmagi.Matrix {
     }
 
     public Matrix add(Matrix B){
+        /*
         if (B instanceof Scalar)
             return new Scalar(this.getElement(0,0)+ B.getElement(0,0));
         else
             throw new IllegalArgumentException("Cannot add a scalar and a matrix!");
+            */
+        return null;
     }
 }

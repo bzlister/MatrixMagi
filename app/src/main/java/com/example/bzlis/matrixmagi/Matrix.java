@@ -75,6 +75,10 @@ public class Matrix {
         return new Matrix(retVal);
     }
 
+    public Matrix guassElim(Matrix B) throws IllegalArgumentException, ArithmeticException{
+        return null;
+    }
+
     @Override
     public String toString(){
         String retVal = "\n";

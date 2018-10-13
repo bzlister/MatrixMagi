@@ -67,8 +67,8 @@ public class EditGridLayout extends RelativeLayout {
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     edit.dad.lews.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
-                    int x0 = len*Math.round(me.getRawX()/len);
-                    int y0 = len*Math.round(me.getRawY()/len);
+                    int x0 = len*Math.round((me.getRawX()+len*thick)/len);
+                    int y0 = len*Math.round((me.getRawY()-len*thick)/len);
                     int x1 = x0 + len*edit.getNumCols();
                     int y1 = y0 + len*edit.getNumRows();
                     if (edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), false) < 0) {
@@ -106,7 +106,11 @@ public class EditGridLayout extends RelativeLayout {
                         }
                      //   edit.keyboardLock(false);
                      //   other.keyboardLock(false);
-                        edit.dad.arithButtons(a, b);
+                        if (edit.getEncsMatrix() instanceof Scalar || other.getEncsMatrix() instanceof Scalar){
+                            edit.dad.arithmetic(1, a, b);
+                        }
+                        else
+                            edit.dad.arithButtons(a, b);
                     }
                     else if ((edit.getActualX() >= len*(edit.dad.numColumns-2)) && (edit.getActualY() >= len*(edit.dad.numRows-2))){
                         ((ViewGroup)edit.dad.getParent()).removeView(edit);
@@ -286,4 +290,6 @@ public class EditGridLayout extends RelativeLayout {
             mutated = true;
         }
     }
+
+
 }

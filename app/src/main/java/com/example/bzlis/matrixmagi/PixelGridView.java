@@ -177,7 +177,7 @@ public class PixelGridView extends View {
 
 
 
-    private boolean arithmetic(int op, int a, int b){
+    protected boolean arithmetic(int op, int a, int b){
         ViewGroup vg = (ViewGroup) this.getParent();
         EditGridLayout layoutB = workerFragment.getData(b);
         EditGridLayout layoutA = workerFragment.getData(a);
@@ -224,8 +224,11 @@ public class PixelGridView extends View {
             myButs[i].setVisibility(View.GONE);
     }
 
-    protected void arithButtons(final int a, final int b){
+    protected void scalarMult(final int a, final int b){
 
+    }
+
+    protected void arithButtons(final int a, final int b){
         shouldUpdate = true;
         workerFragment.getData(a).switchBorderColor(Color.CYAN);
         workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
