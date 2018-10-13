@@ -1,11 +1,15 @@
 package com.example.bzlis.matrixmagi;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.StringRes;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,6 +41,14 @@ public class PixelGridView extends View {
 
     public PixelGridView(Context context, WorkerFragment workerFragment){
         super(context, null);
+        /*
+        String resID = getResources().getString(R.string.toasty);
+        Toast toast = Toast.makeText(this.getContext(), resID, Toast.LENGTH_SHORT);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        v.setTextColor(Color.RED);
+        toast.show();
+        */
+
         redPaint.setStyle(Paint.Style.STROKE);
         redPaint.setColor(Color.RED);
         redPaint.setStrokeWidth(5);
@@ -132,14 +144,12 @@ public class PixelGridView extends View {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        /*
         if (shouldUpdate) {
             for (EditGridLayout layout : workerFragment.getData())
                 layout.switchBorderColor(-1);
             shouldUpdate = false;
             invalidate();
         }
-        */
         hide();
         EditGridLayout.hideKeyboard(this);
         int x = cellLength * Math.round(event.getX() / cellLength);
@@ -190,7 +200,15 @@ public class PixelGridView extends View {
             workerFragment.removeData(layoutA);
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
         } catch (IllegalArgumentException e){
-            Toast.makeText(this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            TextView toastView = new TextView(this.getContext());
+            String s = e.getMessage();
+            SpannableString text = new SpannableString(s);
+            text.setSpan(new ForegroundColorSpan(Color.CYAN), s.indexOf('A'), s.indexOf('A')+1, 0);
+            text.setSpan(new ForegroundColorSpan(Color.CYAN), s.lastIndexOf('A'), s.lastIndexOf('A')+1, 0);
+            text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B'), s.indexOf('B')+1, 0);
+            text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.lastIndexOf('B'), s.lastIndexOf('B')+1, 0);
+            //toastView.setText(text, TextView.BufferType.SPANNABLE);
+            Toast.makeText(this.getContext(), text, Toast.LENGTH_SHORT).show();
         }
         invalidate();
         return true;
@@ -213,11 +231,10 @@ public class PixelGridView extends View {
     }
 
     protected void arithButtons(final int a, final int b){
-      //  shouldUpdate = true;
-      //  workerFragment.getData(a).switchBorderColor(Color.CYAN);
-       // workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
-    //    for (EditGridLayout edit : workerFragment.getData())
-         //   edit.keyboardLock(true);
+
+        shouldUpdate = true;
+        workerFragment.getData(a).switchBorderColor(Color.CYAN);
+        workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
         reveal(0);
         for (int i = 0; i < 2; i++){
             final int opCode = i;

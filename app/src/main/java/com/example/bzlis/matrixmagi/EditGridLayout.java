@@ -64,9 +64,6 @@ public class EditGridLayout extends RelativeLayout {
             @Override
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
-                edit.dad.hide();
-                hideKeyboard(v);
-                //edit.dad.hideButtons();
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     edit.dad.lews.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
@@ -75,17 +72,17 @@ public class EditGridLayout extends RelativeLayout {
                     int x1 = x0 + len*edit.getNumCols();
                     int y1 = y0 + len*edit.getNumRows();
                     if (edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), false) < 0) {
-                        edit.setX(me.getRawX() - len*thick);
-                        edit.setY(me.getRawY() - len*thick);
+                        edit.setX(me.getRawX());
+                        edit.setY(me.getRawY() - 2*len*thick);
                     }
                 }
-                /*
                 if (mutated){
                     for (EditGridLayout layout : ((EditGridLayout)v).workerFragment.getData())
                         layout.switchBorderColor(-1);
                     invalidate();
                 }
-                */
+                edit.dad.hide();
+                hideKeyboard(v);
                 if (me.getAction() == MotionEvent.ACTION_UP){
                     edit.dad.lews.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
@@ -279,16 +276,7 @@ public class EditGridLayout extends RelativeLayout {
     protected void setDad(PixelGridView dad){
         this.dad = dad;
     }
-/*
-    protected void keyboardLock(boolean shouldLock){
-            for (int i = 0; i < matRows; i++){
-                for (int j = 0; j < matCols; j++){
-                    edits[i][j].setFocusable(shouldLock);
-                }
-            }
-    }
-    */
-/*
+
     protected void switchBorderColor(int color){
         if (color == -1) {
             ((GradientDrawable) border.getBackground()).setStroke(Math.round(cellLength * thick * 0.5f), borderColor);
@@ -299,5 +287,4 @@ public class EditGridLayout extends RelativeLayout {
             mutated = true;
         }
     }
-    */
 }

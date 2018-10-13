@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 public class workbench extends AppCompatActivity {
 
-    private int numCells = 200;
+    private int numCells = 180;
     private static final String TAG_WORKER_FRAGMENT = "WorkerFragment";
     private WorkerFragment mWorkerFragment;
 
