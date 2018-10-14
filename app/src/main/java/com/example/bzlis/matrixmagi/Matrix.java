@@ -169,7 +169,7 @@ public class Matrix {
                 }
             }
         }
-        inv.error = this.mult(inv).sumSquaredErrors(new Matrix(n,n));
+        //inv.error = this.mult(inv).sumSquaredErrors(new Matrix(n,n));
         return inv;
     }
 
@@ -223,7 +223,7 @@ public class Matrix {
                 x[i][0] = (B_new.getElement(i, 0) - sum) / A_new.getElement(i, i);
             }
             Matrix X = new Matrix(x);
-            X.error = (this.mult(X)).sumSquaredErrors(B);
+           // X.error = (this.mult(X)).sumSquaredErrors(B);
             return X;
         }
 
@@ -258,9 +258,10 @@ public class Matrix {
         return new Matrix(clone);
     }
 
-    protected Double getError(){
+    protected double getError(){
         return this.error;
     }
+
 }
 /*
                 String s = "";
