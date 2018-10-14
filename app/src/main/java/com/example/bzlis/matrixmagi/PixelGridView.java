@@ -31,8 +31,9 @@ public class PixelGridView extends View {
     private WorkerFragment workerFragment;
     private int buttonColor;
     private int buttonWidth;
+    private int spacing;
     private boolean shouldUpdate = false;
-    private Button[] myButs = new Button[4];
+    private Button[] myButs = new Button[6];
     private static int scalarVis = View.GONE;
     private static int arithVis = View.GONE;
     public TextView lews;
@@ -53,7 +54,7 @@ public class PixelGridView extends View {
         redPaint.setStrokeWidth(5);
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         this.workerFragment = workerFragment;
-        buttonColor = Color.rgb(255, 153, 0);
+        buttonColor = Color.rgb(255, 187, 86);
     }
 
     public void setNumCells(int numCells){
@@ -93,7 +94,6 @@ public class PixelGridView extends View {
         if ((numCells < 1) || (getWidth() == 0) || (getHeight() == 0)) {
             return;
         }
-        Log.i("scrnt", getWidth() + ", " + getHeight() + ", " + getResources().getDisplayMetrics());
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
@@ -101,19 +101,23 @@ public class PixelGridView extends View {
         for (EditGridLayout edit : workerFragment.getData())
             edit.setDad(this);
         buttonWidth = Math.round(getWidth()/5f);
-        String[] text = new String[]{"+","X","scalar","1x1 matrix"};
-        for (int i = 0; i < 4; i++){
+        spacing = Math.round(getWidth()/10f);
+        String[] text = new String[]{"A + B","A * B","A * x = B","scalar","","1-1 matrix"};
+        for (int i = 0; i < myButs.length; i++){
             myButs[i] = new Button(this.getContext());
-            if (i < 2)
+            if (i < 3)
                 myButs[i].setVisibility(arithVis);
-            else
+            else if (i != 4)
                 myButs[i].setVisibility(scalarVis);
+            else
+                myButs[i].setVisibility(GONE);
             myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
             ((GradientDrawable)myButs[i].getBackground()).setColor(buttonColor);
             ((GradientDrawable)myButs[i].getBackground()).setStroke(0, buttonColor);
-            myButs[i].setText(text[i]);
-            myButs[i].setTextColor(Color.rgb(242, 244, 246));
-            myButs[i].setTranslationX((2*(i%2)+1)*buttonWidth);
+            myButs[i].setAllCaps(false);
+            myButs[i].setTextColor(Color.GRAY);
+            myButs[i].setText(colorize(text[i]));
+            myButs[i].setTranslationX((i%3)*buttonWidth+((i%3)+1)*spacing);
             myButs[i].setTranslationY(cellLength*(numRows-2));
             ((ViewGroup)this.getParent()).addView(myButs[i]);
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
@@ -169,8 +173,7 @@ public class PixelGridView extends View {
             corners[0] = null;
             corners[1] = null;
         }
-        else
-            invalidate();
+        invalidate();
         return true;
     }
 
@@ -188,24 +191,46 @@ public class PixelGridView extends View {
             Matrix C;
             if (op == 0)
                 C = A.add(B);
-            else
+            else if (op == 1)
                 C = A.mult(B);
+            else
+                C = A.guassElim(B);
             vg.removeView(layoutB);
             vg.removeView(layoutA);
             workerFragment.removeData(layoutB);
             workerFragment.removeData(layoutA);
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
-        } catch (IllegalArgumentException e){
-            String s = e.getMessage();
-            SpannableString text = new SpannableString(s);
-            text.setSpan(new ForegroundColorSpan(Color.CYAN), s.indexOf('A'), s.indexOf('A')+1, 0);
-            text.setSpan(new ForegroundColorSpan(Color.CYAN), s.lastIndexOf('A'), s.lastIndexOf('A')+1, 0);
-            text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B'), s.indexOf('B')+1, 0);
-            text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.lastIndexOf('B'), s.lastIndexOf('B')+1, 0);
-            Toast.makeText(this.getContext(), text, Toast.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(this.getContext(), colorize(e.getMessage()), Toast.LENGTH_SHORT).show();
+        } catch (ArithmeticException f){
+            Toast.makeText(this.getContext(), colorize(f.getMessage()), Toast.LENGTH_SHORT).show();
         }
         invalidate();
         return true;
+    }
+
+    protected SpannableString colorize(String s){
+        SpannableString text = new SpannableString(s);
+        int i = 0;
+        int j = 0;
+        int z = 0;
+        while(s.indexOf('A', i) != -1) {
+            text.setSpan(new ForegroundColorSpan(Color.CYAN), s.indexOf('A', i), s.indexOf('A', i) + 1, 0);
+            i = s.indexOf('A', i) + 1;
+        }
+        while(s.indexOf('B', j) != -1) {
+            text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B', j), s.indexOf('B', j) + 1, 0);
+            j = s.indexOf('B', j) + 1;
+        }
+        /*
+        while(s.indexOf('C', z) != -1){
+            text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('C', z), s.indexOf('C', z) + 1, 0);
+            z = s.indexOf('C', z) + 1;
+        }
+        */
+        if (s.contains(" x "))
+            text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('x'), s.indexOf('x') + 1, 0);
+        return text;
     }
 
     protected void reveal(int i){
@@ -213,19 +238,15 @@ public class PixelGridView extends View {
             arithVis = View.VISIBLE;
         else
             scalarVis = View.VISIBLE;
-        myButs[2*(i%2)].setVisibility(View.VISIBLE);
-        myButs[2*(i%2)+1].setVisibility(View.VISIBLE);
+        for (int q = 3*i; q < 3*i+3; q++)
+            myButs[q].setVisibility(View.VISIBLE);
     }
 
     protected void hide(){
         arithVis = View.GONE;
         scalarVis = View.GONE;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 6; i++)
             myButs[i].setVisibility(View.GONE);
-    }
-
-    protected void scalarMult(final int a, final int b){
-
     }
 
     protected void arithButtons(final int a, final int b){
@@ -233,7 +254,7 @@ public class PixelGridView extends View {
         workerFragment.getData(a).switchBorderColor(Color.CYAN);
         workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
         reveal(0);
-        for (int i = 0; i < 2; i++){
+        for (int i = 0; i < 3; i++){
             final int opCode = i;
             myButs[i].setOnClickListener(new OnClickListener() {
                 @Override
@@ -250,18 +271,20 @@ public class PixelGridView extends View {
 
     private void scalarQuestionaire(final Point top){
         reveal(1);
-        for (int i = 2; i < 4; i++){
-            final int opCode = i;
-            myButs[i].setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    hide();
-                    if (opCode == 2)
-                        makeEditGrid(new Scalar(), top);
-                    else
-                        makeEditGrid(new Matrix(1, 1), top);
-                }
-            });
+        for (int i = 3; i < 6; i++) {
+            if (i != 4) {
+                final int opCode = i;
+                myButs[i].setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        hide();
+                        if (opCode == 3)
+                            makeEditGrid(new Scalar(), top);
+                        else
+                            makeEditGrid(new Matrix(1, 1), top);
+                    }
+                });
+            }
         }
         invalidate();
       /*
