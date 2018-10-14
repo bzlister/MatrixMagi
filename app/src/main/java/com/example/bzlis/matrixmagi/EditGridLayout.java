@@ -99,11 +99,9 @@ public class EditGridLayout extends RelativeLayout {
 
                         if (edit.getEncsMatrix() instanceof Scalar || other.getEncsMatrix() instanceof Scalar){
                             if (!(edit.getEncsMatrix() instanceof  Scalar))
-                                edit.dad.scalarButtons(false, edit.getSecret(), other.getSecret());
+                                edit.dad.scalarButtons(edit.getSecret(), other.getSecret());
                             else if (!(other.getEncsMatrix() instanceof Scalar))
-                                edit.dad.scalarButtons(false, other.getSecret(), edit.getSecret());
-                            //else
-                               // edit.dad.scalarButtons(true, edit.getSecret(), other.getSecret());
+                                edit.dad.scalarButtons(other.getSecret(), edit.getSecret());
                         }
                         else {
                             if (x0 < other.getX() || (x0 == other.getX() && y0 < other.getY())){

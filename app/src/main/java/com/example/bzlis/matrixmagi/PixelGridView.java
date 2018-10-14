@@ -207,11 +207,8 @@ public class PixelGridView extends View {
                 if (op == -1)
                     C = A.mult(B);
                 else {
-                    if (B.getElement(0,0) == (long)(1.0*B.getElement(0,0))) {
+                    if (B.getElement(0,0) == (long)(1.0*B.getElement(0,0)))
                         C = A.power((int) (1.0 * B.getElement(0, 0)));
-                        if (A instanceof Scalar)
-                            C = new Scalar(C.getElement(0,0));
-                    }
                     else
                         throw new IllegalArgumentException("Exponents must be integers");
                 }
@@ -243,10 +240,8 @@ public class PixelGridView extends View {
         }
         if (s.contains("x") && !s.contains("matrix"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('x'), s.indexOf('x') + 1, 0);
-        if (s.contains("n*A") || s.contains("a*n"))
+        if (s.contains("n*A"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), s.indexOf('n'), s.indexOf('n')+1,0);
-        if (s.contains("a*n"))
-            text.setSpan(new ForegroundColorSpan(Color.rgb(148,93,204)), s.indexOf('a'), s.indexOf('a')+1, 0);
         return text;
     }
 
@@ -290,35 +285,19 @@ public class PixelGridView extends View {
         invalidate();
     }
 
-    protected void scalarButtons(boolean both, final int a, final int b){
-        if (!both) {
-            workerFragment.getData(a).switchBorderColor(Color.CYAN);
-            workerFragment.getData(b).switchBorderColor(Color.rgb(93,204,115));
-            Spanned expText;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
-                expText = Html.fromHtml("A<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
-            else
-                expText = Html.fromHtml("A<sup>n</sup>");
-            SpannableString sr = new SpannableString(expText);
-            sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
-            sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
-            myButs[6].setText(colorize("n*A"));
-            myButs[8].setText(sr);
-        }
-        else {
-            workerFragment.getData(a).switchBorderColor(Color.rgb(148,93,204));
-            workerFragment.getData(b).switchBorderColor(Color.rgb(93, 204, 115));
-            Spanned expText;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
-                expText = Html.fromHtml("a<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
-            else
-                expText = Html.fromHtml("a<sup>n</sup>");
-            SpannableString sr = new SpannableString(expText);
-            sr.setSpan(new ForegroundColorSpan(Color.rgb(148, 93, 204)), 0, 1, 0);
-            sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
-            myButs[6].setText(colorize("a*n"));
-            myButs[8].setText(sr);
-        }
+    protected void scalarButtons(final int a, final int b){
+        workerFragment.getData(a).switchBorderColor(Color.CYAN);
+        workerFragment.getData(b).switchBorderColor(Color.rgb(93,204,115));
+        Spanned expText;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
+            expText = Html.fromHtml("A<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
+        else
+            expText = Html.fromHtml("A<sup>n</sup>");
+        SpannableString sr = new SpannableString(expText);
+        sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
+        sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
+        myButs[6].setText(colorize("n*A"));
+        myButs[8].setText(sr);
         reveal(2);
         myButs[6].setOnClickListener(new OnClickListener() {
             @Override
@@ -381,3 +360,51 @@ public class PixelGridView extends View {
         return this.numColumns;
     }
 }
+
+/*
+  protected void scalarButtons(boolean both, final int a, final int b){
+        if (!both) {
+            workerFragment.getData(a).switchBorderColor(Color.CYAN);
+            workerFragment.getData(b).switchBorderColor(Color.rgb(93,204,115));
+            Spanned expText;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
+                expText = Html.fromHtml("A<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
+            else
+                expText = Html.fromHtml("A<sup>n</sup>");
+            SpannableString sr = new SpannableString(expText);
+            sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
+            sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
+            myButs[6].setText(colorize("n*A"));
+            myButs[8].setText(sr);
+        }
+        else {
+            workerFragment.getData(a).switchBorderColor(Color.rgb(148,93,204));
+            workerFragment.getData(b).switchBorderColor(Color.rgb(93, 204, 115));
+            Spanned expText;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
+                expText = Html.fromHtml("a<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
+            else
+                expText = Html.fromHtml("a<sup>n</sup>");
+            SpannableString sr = new SpannableString(expText);
+            sr.setSpan(new ForegroundColorSpan(Color.rgb(148, 93, 204)), 0, 1, 0);
+            sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
+            myButs[6].setText(colorize("a*n"));
+            myButs[8].setText(sr);
+        }
+        reveal(2);
+        myButs[6].setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hide();
+                arithmetic(-1,a, b);
+            }
+        });
+        myButs[8].setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hide();
+                arithmetic(-2,a,b);
+            }
+        });
+    }
+ */
