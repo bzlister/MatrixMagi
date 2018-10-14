@@ -22,6 +22,8 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         this.setBackground(null);
         this.setTypeface(Typeface.SERIF, Typeface.ITALIC);
         this.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+            this.setAutoSizeTextTypeWithDefaults(AUTO_SIZE_TEXT_TYPE_UNIFORM);
     }
 
     public void setNext(MatrixElement next){

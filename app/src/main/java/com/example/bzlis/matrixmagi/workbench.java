@@ -20,7 +20,7 @@ import static android.view.View.VISIBLE;
 
 public class workbench extends AppCompatActivity {
 
-    private int numCells = 180;
+    private int numCells = 160;
     private static final String TAG_WORKER_FRAGMENT = "WorkerFragment";
     private WorkerFragment mWorkerFragment;
 
@@ -37,7 +37,6 @@ public class workbench extends AppCompatActivity {
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
         }
         RelativeLayout frame = new RelativeLayout(this);
-
         PixelGridView pr = new PixelGridView(this, mWorkerFragment);
         frame.addView(pr);
         pr.setNumCells(numCells);

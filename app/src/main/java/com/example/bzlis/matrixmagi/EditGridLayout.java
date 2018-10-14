@@ -96,21 +96,26 @@ public class EditGridLayout extends RelativeLayout {
                     if ((secret = edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), true)) >= 0) {
                         int a, b;
                         EditGridLayout other = edit.workerFragment.getData(secret);
-                        if (x0 < other.getX() || (x0 == other.getX() && y0 < other.getY())){
-                            a = edit.getSecret();
-                            b = other.getSecret();
-                        }
-                        else{
-                            a = other.getSecret();
-                            b = edit.getSecret();
-                        }
-                     //   edit.keyboardLock(false);
-                     //   other.keyboardLock(false);
+
                         if (edit.getEncsMatrix() instanceof Scalar || other.getEncsMatrix() instanceof Scalar){
-                            edit.dad.arithmetic(1, a, b);
+                            if (!(edit.getEncsMatrix() instanceof  Scalar))
+                                edit.dad.scalarButtons(false, edit.getSecret(), other.getSecret());
+                            else if (!(other.getEncsMatrix() instanceof Scalar))
+                                edit.dad.scalarButtons(false, other.getSecret(), edit.getSecret());
+                            //else
+                               // edit.dad.scalarButtons(true, edit.getSecret(), other.getSecret());
                         }
-                        else
+                        else {
+                            if (x0 < other.getX() || (x0 == other.getX() && y0 < other.getY())){
+                                a = edit.getSecret();
+                                b = other.getSecret();
+                            }
+                            else{
+                                a = other.getSecret();
+                                b = edit.getSecret();
+                            }
                             edit.dad.arithButtons(a, b);
+                        }
                     }
                     else if ((edit.getActualX() >= len*(edit.dad.numColumns-2)) && (edit.getActualY() >= len*(edit.dad.numRows-2))){
                         ((ViewGroup)edit.dad.getParent()).removeView(edit);
@@ -167,7 +172,7 @@ public class EditGridLayout extends RelativeLayout {
                     input.requestFocus();
                 else
                     edits[(j == 0) ? i - 1 : i][(j == 0) ? matCols-1 : j-1].setNext(input);
-                input.setHint(formatS(i, j));
+                input.setHint(Matrix.getPrettyString(matrix.getElement(i,j)));
                 if ((i != matRows-1) || (j != matCols-1)) {
                     input.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_FULLSCREEN);
                     input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -197,6 +202,7 @@ public class EditGridLayout extends RelativeLayout {
         }
     }
 
+    /*
     private String formatS(int i, int j){
         String s = "";
         if (matrix.getElement(i, j) == (long)(1.0*matrix.getElement(i, j)))
@@ -205,6 +211,7 @@ public class EditGridLayout extends RelativeLayout {
             s = String.format(Locale.getDefault(), "%g", matrix.getElement(i, j));
         return s;
     }
+    */
 
     private void fill(){
         for (int i = 0; i < matRows; i++){
