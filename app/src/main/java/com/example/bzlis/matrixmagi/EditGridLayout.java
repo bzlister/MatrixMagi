@@ -37,6 +37,8 @@ public class EditGridLayout extends RelativeLayout {
     private ImageView border;
     private PixelGridView dad;
     private static boolean mutated;
+    private float oldX;
+    private float oldY;
 
 
     public EditGridLayout(Context context, final int cellLength, final WorkerFragment workerFragment, Point top, Matrix m, PixelGridView dad){
@@ -51,6 +53,8 @@ public class EditGridLayout extends RelativeLayout {
         this.workerFragment = workerFragment;
         this.setX(top.x-cellLength*thick);
         this.setY(top.y-cellLength*thick);
+        this.oldX = this.getX();
+        this.oldY = this.getY();
         this.grid = new GridLayout(this.getContext());
         this.secret = count;
         this.dad = dad;
@@ -96,7 +100,7 @@ public class EditGridLayout extends RelativeLayout {
                     int y0 = Math.round(edit.getY());
                     int x1 = Math.round(x0 + len*(edit.getNumCols() + 2*edit.getThickness()));
                     int y1 = Math.round(y0 + len*(edit.getNumRows() + 2*edit.getThickness()));
-                    int secret = 0;
+                    int secret;
                     if ((secret = edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), true)) >= 0) {
                         int a, b;
                         EditGridLayout other = edit.workerFragment.getData(secret);
@@ -122,17 +126,26 @@ public class EditGridLayout extends RelativeLayout {
                     else if (edit.getActualY() >= len*(edit.dad.numRows-2)){
                         if (edit.getActualX() <= len*2){
                             Matrix[] QR = edit.getEncsMatrix().QR();
-                            edit.dad.makeEditGrid(QR[0], new Point(edit.getActualX()-len*edit.getNumRows()/2, edit.getActualY()-edit.cellLength*edit.getNumRows()));
-                            edit.dad.makeEditGrid(QR[1], new Point(edit.getActualX()+len*edit.getNumRows()/2, edit.getActualY()-edit.cellLength*edit.getNumRows()));
+                            edit.dad.makeEditGrid(QR[0], new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
+                            edit.dad.makeEditGrid(QR[1], new Point(Math.round(edit.oldX+len*(thick+edit.getNumCols()+1)), Math.round(edit.oldY+len*thick)));
+                            ((ViewGroup) edit.dad.getParent()).removeView(edit);
+                            edit.workerFragment.removeData(edit);
                         }
-                        else if (len*2 < edit.getActualX() && edit.getActualX() <= len*(edit.dad.numColumns-2))
-                            edit.dad.makeEditGrid(edit.getEncsMatrix().eigen(), new Point(edit.getActualX(), edit.getActualY()-edit.cellLength*edit.getNumRows()));
+                        else if (len*2 < edit.getActualX() && edit.getActualX() <= len*(edit.dad.numColumns-2)) {
+                            edit.setX(edit.oldX);
+                            edit.setY(edit.oldY);
+                            edit.dad.makeEditGrid(edit.getEncsMatrix().eigen(), new Point(Math.round(edit.oldX+len*(thick+edit.getNumCols()+1)), Math.round(edit.oldY+len*thick)));
+                        }
                         else {
                             ((ViewGroup) edit.dad.getParent()).removeView(edit);
                             edit.workerFragment.removeData(edit);
                             edit.dad.invalidate();
                         }
 
+                    }
+                    else{
+                        edit.oldX = edit.getX();
+                        edit.oldY = edit.getY();
                     }
                 }
                 return true;
