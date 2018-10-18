@@ -1,5 +1,6 @@
 package com.example.bzlis.matrixmagi;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class Matrix {
@@ -234,6 +235,86 @@ public class Matrix {
         this.mat[r2] = temp;
     }
 
+    private Matrix scalarMult(double d){
+        Matrix prod = this.duplicate();
+        for (int i =  0; i < this.getNumRows(); i++){
+            for (int j = 0; j < this.getNumCols(); j++)
+                prod.setElement(prod.getElement(i,j)*d, i, j);
+        }
+        return prod;
+    }
+
+    public Matrix getCol(int j){
+        Double[][] col = new Double[this.getNumRows()][1];
+        for (int i = 0; i < this.getNumRows(); i++)
+            col[i][0] = this.getElement(i, j);
+        return new Matrix(col);
+    }
+
+    public double mag(){
+        if (this.getNumRows() != 1 && this.getNumCols() != 1)
+            throw new IllegalArgumentException("Matrix must be 1-n or n-1");
+        double sum = 0;
+        if (this.getNumRows() == 1){
+            for (int j = 0; j < this.getNumCols(); j++)
+                sum+=Math.pow(this.getElement(0,j),2);
+        }
+        else if (this.getNumCols() == 1){
+            for (int i = 0; i < this.getNumRows(); i++)
+                sum+=Math.pow(this.getElement(i,0),2);
+        }
+        return Math.sqrt(sum);
+    }
+
+    public Matrix eigen(){
+        Matrix cp = this.duplicate();
+        for (int i = 0; i < 100; i++){
+            Matrix[] QR = cp.QR();
+            cp = QR[1].mult(QR[0]);
+        }
+        for (int u = 0; u < cp.getNumRows(); u++){
+            for (int w = 0; w < cp.getNumCols(); w++) {
+                if (u != w)
+                    cp.setElement(0.0, u, w);
+            }
+        }
+        return cp;
+    }
+
+    public Matrix[] QR(){
+        ArrayList<Matrix> U = new ArrayList();
+        ArrayList<Matrix> E = new ArrayList();
+        ArrayList<Matrix> A = new ArrayList();
+        for (int j = 0; j < this.getNumCols(); j++){
+            Matrix a = this.getCol(j);
+            Matrix u = a.duplicate();
+            for (int k = 0; k < j; k++)
+                u = u.add(proj(U.get(k), a).scalarMult(-1));
+            U.add(u);
+            E.add(u.scalarMult(1/u.mag()));
+            int z = 0;
+            do {
+                a = a.add(E.get(z).scalarMult(innerProd(E.get(z), a)));
+                z++;
+            } while (z < j);
+            A.add(a);
+        }
+        Matrix Q = new Matrix(this.getNumRows(), this.getNumCols());
+        for (int j = 0; j < this.getNumCols(); j++){
+            for (int i = 0; i < this.getNumRows(); i++)
+                Q.setElement(E.get(j).getElement(i, 0), i, j);
+        }
+        return new Matrix[]{Q, Q.transpose().mult(this)};
+    }
+
+    public Matrix proj(Matrix u, Matrix a){
+        return u.scalarMult(innerProd(u,a)/innerProd(u,u));
+    }
+
+    public double innerProd(Matrix v, Matrix w){
+        return v.transpose().mult(w).getElement(0,0);
+    }
+
 
     @Override
     public String toString(){
@@ -263,35 +344,3 @@ public class Matrix {
     }
 
 }
-/*
-                String s = "";
-                if (this.getNumCols() != this.getNumRows())
-                    s = "Rows(A) =/= Cols(A)\n";
-                if (B.getNumCols() > 1)
-                    s += "Cols(B) > 1\n";
-                if (B.getNumRows() != this.getNumRows())
-                    s += "Rows(A) != Rows(B)\n";
- */
-
-/*
-     double EPSILON = 1e-10;
-        for (int z = 0; z < n; z++){
-            if (Math.abs(this.getElement(z,z)) <= EPSILON)
-                throw new IllegalArgumentException("A is singular or nearly singular");
-            for (int i  = z+1 ; i < n; i++){
-                double alpha = this.getElement(i,z)/this.getElement(z,z);
-                I.setElement(I.getElement(i,z)-alpha*I.getElement(z,z),i,z);
-                for (int j = z; j < n; j++)
-                    this.setElement(this.getElement(i,j) - alpha*this.getElement(z,j),i,j);
-            }
-        }
-        Double[][] inv = new Double[n][n];
-        for (int q = 0; q < n; q++) {
-            for (int i = n - 1; i >= 0; i--) {
-                double sum = 0.0;
-                for (int j = i + 1; j < n; j++)
-                    sum += (inv[j][q] != null) ? this.getElement(i, j) * inv[j][q] : 0;
-                inv[i][q] = (I.getElement(i, q) - sum) / this.getElement(i, i);
-            }
-        }
- */

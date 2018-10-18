@@ -39,6 +39,8 @@ public class PixelGridView extends View {
     private static int arithVis = View.GONE;
     private static int specialVis = View.GONE;
     public TextView lews;
+    public TextView eigen;
+    public TextView QR;
 
 
     public PixelGridView(Context context, WorkerFragment workerFragment){
@@ -84,6 +86,33 @@ public class PixelGridView extends View {
         lews.setTextIsSelectable(false);
         lews.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(lews, cellLength*2, cellLength*2);
+
+        eigen = new TextView(this.getContext());
+        eigen.setText("eigenvalues");
+        eigen.setBackgroundResource(R.drawable.tags_rounded_corners);
+        ((GradientDrawable)eigen.getBackground()).setColor(Color.LTGRAY);
+        ((GradientDrawable)eigen.getBackground()).setStroke(5, Color.DKGRAY);
+        eigen.setTextSize(20);
+        eigen.setTextColor(Color.rgb(35, 188, 196));
+        eigen.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        eigen.setTranslationX(cellLength*2);
+        eigen.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        eigen.setTextIsSelectable(false);
+        eigen.setVisibility(INVISIBLE);
+        ((ViewGroup)this.getParent()).addView(eigen, cellLength*(numColumns-4), cellLength*2);
+
+        QR = new TextView(this.getContext());
+        QR.setText("QR");
+        QR.setBackgroundResource(R.drawable.tags_rounded_corners);
+        ((GradientDrawable)QR.getBackground()).setColor(Color.LTGRAY);
+        ((GradientDrawable)QR.getBackground()).setStroke(5, Color.DKGRAY);
+        QR.setTextSize(30);
+        QR.setTextColor(Color.rgb(35, 188, 196));
+        QR.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        QR.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        QR.setTextIsSelectable(false);
+        QR.setVisibility(INVISIBLE);
+        ((ViewGroup)this.getParent()).addView(QR, cellLength*2, cellLength*2);
     }
 
     @Override
@@ -343,7 +372,7 @@ public class PixelGridView extends View {
             */
     }
 
-    private void makeEditGrid(Matrix m, Point top){
+    protected void makeEditGrid(Matrix m, Point top){
         ViewGroup vg = (ViewGroup) this.getParent();
         EditGridLayout result = new EditGridLayout(this.getContext(), cellLength, workerFragment, top, m, this);
         vg.addView(result);

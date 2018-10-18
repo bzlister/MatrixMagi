@@ -133,4 +133,38 @@ public class ExampleUnitTest {
             assert(error <= 1e-10);
         }
     }
+
+    @Test
+    public void test_QR(){
+        Matrix A = new Matrix(3, 3);
+        A.setElement(12.0, 0, 0);
+        A.setElement(-51.0, 0, 1);
+        A.setElement(4.0, 0, 2);
+        A.setElement(6.0, 1, 0);
+        A.setElement(167.0, 1, 1);
+        A.setElement(-68.0, 1, 2);
+        A.setElement(-4.0, 2, 0);
+        A.setElement(24.0, 2, 1);
+        A.setElement(-41.0, 2, 2);
+        Matrix[] QR = A.QR();
+        System.out.println(QR[0]);
+        System.out.println(QR[1]);
+        assert(true);
+    }
+
+    @Test
+    public void testEigen(){
+        Matrix A = new Matrix(3, 3);
+        A.setElement(12.0, 0, 0);
+        A.setElement(-51.0, 0, 1);
+        A.setElement(4.0, 0, 2);
+        A.setElement(6.0, 1, 0);
+        A.setElement(167.0, 1, 1);
+        A.setElement(-68.0, 1, 2);
+        A.setElement(-4.0, 2, 0);
+        A.setElement(24.0, 2, 1);
+        A.setElement(-41.0, 2, 2);
+        System.out.println(A.eigen());
+        assert(true);
+    }
 }

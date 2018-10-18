@@ -66,6 +66,8 @@ public class EditGridLayout extends RelativeLayout {
                 EditGridLayout edit = (EditGridLayout)v;
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     edit.dad.lews.setVisibility(VISIBLE);
+                    edit.dad.eigen.setVisibility(VISIBLE);
+                    edit.dad.QR.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
                     int x0 = len*Math.round((me.getRawX()+len*thick)/len);
                     int y0 = len*Math.round((me.getRawY()-len*thick)/len);
@@ -85,6 +87,8 @@ public class EditGridLayout extends RelativeLayout {
                 hideKeyboard(v);
                 if (me.getAction() == MotionEvent.ACTION_UP){
                     edit.dad.lews.setVisibility(INVISIBLE);
+                    edit.dad.eigen.setVisibility(INVISIBLE);
+                    edit.dad.QR.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
                     edit.setX(len*(Math.round((edit.getX()+len*edit.getThickness())/len)-edit.getThickness()));
                     edit.setY(len*(Math.round((edit.getY()+len*edit.getThickness())/len)-edit.getThickness()));
@@ -115,10 +119,20 @@ public class EditGridLayout extends RelativeLayout {
                             edit.dad.arithButtons(a, b);
                         }
                     }
-                    else if ((edit.getActualX() >= len*(edit.dad.numColumns-2)) && (edit.getActualY() >= len*(edit.dad.numRows-2))){
-                        ((ViewGroup)edit.dad.getParent()).removeView(edit);
-                        edit.workerFragment.removeData(edit);
-                        edit.dad.invalidate();
+                    else if (edit.getActualY() >= len*(edit.dad.numRows-2)){
+                        if (edit.getActualX() <= len*2){
+                            Matrix[] QR = edit.getEncsMatrix().QR();
+                            edit.dad.makeEditGrid(QR[0], new Point(edit.getActualX()-len*edit.getNumRows()/2, edit.getActualY()-edit.cellLength*edit.getNumRows()));
+                            edit.dad.makeEditGrid(QR[1], new Point(edit.getActualX()+len*edit.getNumRows()/2, edit.getActualY()-edit.cellLength*edit.getNumRows()));
+                        }
+                        else if (len*2 < edit.getActualX() && edit.getActualX() <= len*(edit.dad.numColumns-2))
+                            edit.dad.makeEditGrid(edit.getEncsMatrix().eigen(), new Point(edit.getActualX(), edit.getActualY()-edit.cellLength*edit.getNumRows()));
+                        else {
+                            ((ViewGroup) edit.dad.getParent()).removeView(edit);
+                            edit.workerFragment.removeData(edit);
+                            edit.dad.invalidate();
+                        }
+
                     }
                 }
                 return true;
