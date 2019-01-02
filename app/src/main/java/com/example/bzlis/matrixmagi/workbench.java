@@ -37,7 +37,8 @@ public class workbench extends AppCompatActivity {
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
         }
         RelativeLayout frame = new RelativeLayout(this);
-        PixelGridView pr = new PixelGridView(this, mWorkerFragment);
+        PixelGridView pr = new PixelGridView(this);
+        DataBag.getInstance().setCurrView(pr);
         frame.addView(pr);
         pr.setNumCells(numCells);
         ImageView tuts = new ImageView(this);
@@ -55,7 +56,7 @@ public class workbench extends AppCompatActivity {
         });
         frame.addView(tuts);
      //   frame.bringChildToFront(tuts);
-
+/*
         if ((mWorkerFragment.getData() != null) && (mWorkerFragment.getData().size() != 0)) {
            HashSet<EditGridLayout> editList = mWorkerFragment.getData();
             for (EditGridLayout edit : editList) {
@@ -65,6 +66,7 @@ public class workbench extends AppCompatActivity {
                 frame.addView(edit);
             }
         }
+*/
         setContentView(frame);
     }
 }

@@ -40,6 +40,42 @@ public class ExampleUnitTest {
     }
 
     @Test
+    public void test_det(){
+        for (int z = 0; z < 100; z++) {
+            System.out.println();
+            int n = new Random().nextInt(10);
+            if (n == 0)
+                n += 1;
+            double[] plier = new double[]{-1,1};
+            Matrix A = new Matrix(2, 2);
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 2; j++) {
+                    A.setElement((plier[new Random().nextInt(1)]*(new Random().nextInt(100)+1.0)/(new Random().nextInt(100)+1)), i, j);
+                }
+            }
+            double error = 0;
+            try {
+                Matrix inv = A.inverse();
+                Double temp1 = A.getElement(0, 0);
+                A.setElement(A.getElement(1, 1), 0, 0);
+                A.setElement(temp1, 1, 1);
+                A.setElement(-A.getElement(0, 1),  0, 1);
+                A.setElement(-A.getElement(1, 0), 1, 0);
+                A = A.scalarMult(1/A.det());
+                for (int x = 0; x < 2; x++){
+                    for (int y = 0; y < 2; y++){
+                        error += Math.pow(A.getElement(x, y) - inv.getElement(x, y), 2);
+                    }
+                }
+            } catch (IllegalArgumentException f) {
+                System.out.println(f.getMessage());
+                error = 1;
+            }
+            assert(error <= 1e-10);
+        }
+    }
+
+    @Test
     public void test_gaussian(){
         for (int z = 0; z < 100; z++) {
             System.out.println();

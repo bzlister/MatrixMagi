@@ -25,11 +25,10 @@ import java.util.Random;
 
 public class PixelGridView extends View {
     Point[] corners = new Point[2];
-    public int numColumns, numRows, numCells;
+    protected int numColumns, numRows, numCells;
     private int cellLength;
     private Paint blackPaint = new Paint();
     private Paint redPaint = new Paint();
-    private WorkerFragment workerFragment;
     private int buttonColor;
     private int buttonWidth;
     private int spacing;
@@ -38,12 +37,13 @@ public class PixelGridView extends View {
     private static int scalarVis = View.GONE;
     private static int arithVis = View.GONE;
     private static int specialVis = View.GONE;
-    public TextView lews;
-    public TextView eigen;
-    public TextView QR;
+    protected TextView lews;
+    protected TextView eigen;
+    protected TextView inv;
+    protected TextView det;
 
 
-    public PixelGridView(Context context, WorkerFragment workerFragment){
+    public PixelGridView(Context context){
         super(context, null);
         /*
         String resID = getResources().getString(R.string.toasty);
@@ -57,7 +57,6 @@ public class PixelGridView extends View {
         redPaint.setColor(Color.RED);
         redPaint.setStrokeWidth(5);
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        this.workerFragment = workerFragment;
         buttonColor = Color.rgb(255, 193, 102);
     }
 
@@ -95,24 +94,38 @@ public class PixelGridView extends View {
         eigen.setTextSize(20);
         eigen.setTextColor(Color.rgb(35, 188, 196));
         eigen.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        eigen.setTranslationX(cellLength*2);
+        eigen.setTranslationX(cellLength*4);
         eigen.setTranslationY(Math.round(cellLength*(numRows-2.2)));
         eigen.setTextIsSelectable(false);
         eigen.setVisibility(INVISIBLE);
-        ((ViewGroup)this.getParent()).addView(eigen, cellLength*(numColumns-4), cellLength*2);
+        ((ViewGroup)this.getParent()).addView(eigen, cellLength*2, cellLength*2);
 
-        QR = new TextView(this.getContext());
-        QR.setText("QR");
-        QR.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)QR.getBackground()).setColor(Color.LTGRAY);
-        ((GradientDrawable)QR.getBackground()).setStroke(5, Color.DKGRAY);
-        QR.setTextSize(30);
-        QR.setTextColor(Color.rgb(35, 188, 196));
-        QR.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        QR.setTranslationY(Math.round(cellLength*(numRows-2.2)));
-        QR.setTextIsSelectable(false);
-        QR.setVisibility(INVISIBLE);
-        ((ViewGroup)this.getParent()).addView(QR, cellLength*2, cellLength*2);
+        det = new TextView(this.getContext());
+        det.setText("|A|");
+        det.setBackgroundResource(R.drawable.tags_rounded_corners);
+        ((GradientDrawable)det.getBackground()).setColor(Color.LTGRAY);
+        ((GradientDrawable)det.getBackground()).setStroke(5, Color.DKGRAY);
+        det.setTextSize(30);
+        det.setTextColor(Color.rgb(35, 188, 196));
+        det.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        det.setTranslationX(cellLength*2);
+        det.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        det.setTextIsSelectable(false);
+        det.setVisibility(INVISIBLE);
+        ((ViewGroup)this.getParent()).addView(det, cellLength*2, cellLength*2);
+
+        inv = new TextView(this.getContext());
+        inv.setText("A^-1");
+        inv.setBackgroundResource(R.drawable.tags_rounded_corners);
+        ((GradientDrawable)inv.getBackground()).setColor(Color.LTGRAY);
+        ((GradientDrawable)inv.getBackground()).setStroke(5, Color.DKGRAY);
+        inv.setTextSize(30);
+        inv.setTextColor(Color.rgb(35, 188, 196));
+        inv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        inv.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        inv.setTextIsSelectable(false);
+        inv.setVisibility(INVISIBLE);
+        ((ViewGroup)this.getParent()).addView(inv, cellLength*2, cellLength*2);
     }
 
     @Override
@@ -127,10 +140,7 @@ public class PixelGridView extends View {
         }
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
-        numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
-
-        for (EditGridLayout edit : workerFragment.getData())
-            edit.setDad(this);
+        numRows = (int)Math.round(getHeight()/(0.0 + cellLength));;
         buttonWidth = Math.round(getWidth()/5f);
         spacing = Math.round(getWidth()/10f);
         String[] text = new String[]{"A + B","AB","Ax = B","scalar","","1-1 matrix","cA","",""};
@@ -182,7 +192,7 @@ public class PixelGridView extends View {
 
     public boolean onTouchEvent(MotionEvent event) {
         if (shouldUpdate) {
-            for (EditGridLayout layout : workerFragment.getData())
+            for (EditGridLayout layout : DataBag.getInstance().getData())
                 layout.switchBorderColor(-1);
             shouldUpdate = false;
             //invalidate();
@@ -197,7 +207,7 @@ public class PixelGridView extends View {
         } else
             corners[1] = new Point(x, y);
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            if ((corners[0].y - corners[1].y != 0) && (corners[0].x - corners[1].x != 0) && (workerFragment.isOccupied(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y), Math.max(corners[0].x, corners[1].x), Math.max(corners[0].y, corners[1].y), -1, false) < 0)) {
+            if ((corners[0].y - corners[1].y != 0) && (corners[0].x - corners[1].x != 0) && (DataBag.getInstance().isOccupied(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y), Math.max(corners[0].x, corners[1].x), Math.max(corners[0].y, corners[1].y), -1, false) < 0)) {
                 int matCols = Math.round(Math.abs(corners[0].x - corners[1].x) / cellLength);
                 int matRows = Math.round(Math.abs(corners[0].y - corners[1].y) / cellLength);
                 Point top = new Point(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y));
@@ -218,8 +228,8 @@ public class PixelGridView extends View {
 
     protected boolean arithmetic(int op, int a, int b){
         ViewGroup vg = (ViewGroup) this.getParent();
-        EditGridLayout layoutB = workerFragment.getData(b);
-        EditGridLayout layoutA = workerFragment.getData(a);
+        EditGridLayout layoutB = DataBag.getInstance().getData(b);
+        EditGridLayout layoutA = DataBag.getInstance().getData(a);
         Matrix B = layoutB.getEncsMatrix();
         Matrix A = layoutA.getEncsMatrix();
 
@@ -247,8 +257,8 @@ public class PixelGridView extends View {
             }
             vg.removeView(layoutB);
             vg.removeView(layoutA);
-            workerFragment.removeData(layoutB);
-            workerFragment.removeData(layoutA);
+            DataBag.getInstance().removeData(layoutB);
+            DataBag.getInstance().removeData(layoutA);
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
         }catch (IllegalArgumentException e) {
             Toast.makeText(this.getContext(), colorize(e.getMessage()), Toast.LENGTH_SHORT).show();
@@ -300,8 +310,8 @@ public class PixelGridView extends View {
 
     protected void arithButtons(final int a, final int b){
         shouldUpdate = true;
-        workerFragment.getData(a).switchBorderColor(Color.CYAN);
-        workerFragment.getData(b).switchBorderColor(Color.MAGENTA);
+        DataBag.getInstance().getData(a).switchBorderColor(Color.CYAN);
+        DataBag.getInstance().getData(b).switchBorderColor(Color.MAGENTA);
         reveal(0);
         for (int i = 0; i < 3; i++){
             final int opCode = i;
@@ -318,8 +328,8 @@ public class PixelGridView extends View {
     }
 
     protected void scalarButtons(final int a, final int b){
-        workerFragment.getData(a).switchBorderColor(Color.CYAN);
-        workerFragment.getData(b).switchBorderColor(Color.rgb(93,204,115));
+        DataBag.getInstance().getData(a).switchBorderColor(Color.CYAN);
+        DataBag.getInstance().getData(b).switchBorderColor(Color.rgb(93,204,115));
         Spanned expText;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
             expText = Html.fromHtml("A<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
@@ -374,9 +384,9 @@ public class PixelGridView extends View {
 
     protected void makeEditGrid(Matrix m, Point top){
         ViewGroup vg = (ViewGroup) this.getParent();
-        EditGridLayout result = new EditGridLayout(this.getContext(), cellLength, workerFragment, top, m, this);
+        EditGridLayout result = new EditGridLayout(this.getContext(), cellLength, top, m);
         vg.addView(result);
-        workerFragment.addData(result);
+        DataBag.getInstance().addData(result);
         invalidate();
     }
 

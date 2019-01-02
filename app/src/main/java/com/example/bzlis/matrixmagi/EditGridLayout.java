@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -17,6 +18,7 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -29,19 +31,17 @@ public class EditGridLayout extends RelativeLayout {
     private int matCols;
     private Matrix matrix;
     private MatrixElement[][] edits;
-    private WorkerFragment workerFragment;
     private GridLayout grid;
     private final float thick = 0.5f;
     private OnTouchListener myOnTouchListener;
     private int borderColor = Color.rgb(35, 188, 196);
     private ImageView border;
-    private PixelGridView dad;
     private static boolean mutated;
     private float oldX;
     private float oldY;
 
 
-    public EditGridLayout(Context context, final int cellLength, final WorkerFragment workerFragment, Point top, Matrix m, PixelGridView dad){
+    public EditGridLayout(Context context, final int cellLength, Point top, Matrix m){
         super(context);
         this.cellLength = cellLength;
         this.matrix = m;
@@ -50,14 +50,12 @@ public class EditGridLayout extends RelativeLayout {
         this.matRows = m.getNumRows();
         this.matCols = m.getNumCols();
         this.edits = new MatrixElement[matRows][matCols];
-        this.workerFragment = workerFragment;
         this.setX(top.x-cellLength*thick);
         this.setY(top.y-cellLength*thick);
         this.oldX = this.getX();
         this.oldY = this.getY();
         this.grid = new GridLayout(this.getContext());
         this.secret = count;
-        this.dad = dad;
         count++;
         init();
         grid.setTranslationX(cellLength*thick);
@@ -69,30 +67,32 @@ public class EditGridLayout extends RelativeLayout {
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
-                    edit.dad.lews.setVisibility(VISIBLE);
-                    edit.dad.eigen.setVisibility(VISIBLE);
-                    edit.dad.QR.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().inv.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
                     int x0 = len*Math.round((me.getRawX()+len*thick)/len);
                     int y0 = len*Math.round((me.getRawY()-len*thick)/len);
                     int x1 = x0 + len*edit.getNumCols();
                     int y1 = y0 + len*edit.getNumRows();
-                    if (edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), false) < 0) {
+                    if (DataBag.getInstance().isOccupied(x0, y0, x1, y1, edit.getSecret(), false) < 0) {
                         edit.setX(me.getRawX());
                         edit.setY(me.getRawY() - 2*len*thick);
                     }
                 }
                 if (mutated){
-                    for (EditGridLayout layout : ((EditGridLayout)v).workerFragment.getData())
+                    for (EditGridLayout layout : DataBag.getInstance().getData())
                         layout.switchBorderColor(-1);
                     invalidate();
                 }
-                edit.dad.hide();
+                DataBag.getInstance().getCurrView().hide();
                 hideKeyboard(v);
                 if (me.getAction() == MotionEvent.ACTION_UP){
-                    edit.dad.lews.setVisibility(INVISIBLE);
-                    edit.dad.eigen.setVisibility(INVISIBLE);
-                    edit.dad.QR.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().lews.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().det.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().inv.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
                     edit.setX(len*(Math.round((edit.getX()+len*edit.getThickness())/len)-edit.getThickness()));
                     edit.setY(len*(Math.round((edit.getY()+len*edit.getThickness())/len)-edit.getThickness()));
@@ -101,15 +101,15 @@ public class EditGridLayout extends RelativeLayout {
                     int x1 = Math.round(x0 + len*(edit.getNumCols() + 2*edit.getThickness()));
                     int y1 = Math.round(y0 + len*(edit.getNumRows() + 2*edit.getThickness()));
                     int secret;
-                    if ((secret = edit.getWorkerFragment().isOccupied(x0, y0, x1, y1, edit.getSecret(), true)) >= 0) {
+                    if ((secret = DataBag.getInstance().isOccupied(x0, y0, x1, y1, edit.getSecret(), true)) >= 0) {
                         int a, b;
-                        EditGridLayout other = edit.workerFragment.getData(secret);
+                        EditGridLayout other = DataBag.getInstance().getData(secret);
 
                         if (edit.getEncsMatrix() instanceof Scalar || other.getEncsMatrix() instanceof Scalar){
                             if (!(edit.getEncsMatrix() instanceof  Scalar))
-                                edit.dad.scalarButtons(edit.getSecret(), other.getSecret());
+                                DataBag.getInstance().getCurrView().scalarButtons(edit.getSecret(), other.getSecret());
                             else if (!(other.getEncsMatrix() instanceof Scalar))
-                                edit.dad.scalarButtons(other.getSecret(), edit.getSecret());
+                                DataBag.getInstance().getCurrView().scalarButtons(other.getSecret(), edit.getSecret());
                         }
                         else {
                             if (x0 < other.getX() || (x0 == other.getX() && y0 < other.getY())){
@@ -120,28 +120,33 @@ public class EditGridLayout extends RelativeLayout {
                                 a = other.getSecret();
                                 b = edit.getSecret();
                             }
-                            edit.dad.arithButtons(a, b);
+                            DataBag.getInstance().getCurrView().arithButtons(a, b);
                         }
                     }
-                    else if (edit.getActualY() >= len*(edit.dad.numRows-2)){
-                        if (edit.getActualX() <= len*2){
-                            Matrix[] QR = edit.getEncsMatrix().QR();
-                            edit.dad.makeEditGrid(QR[0], new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
-                            edit.dad.makeEditGrid(QR[1], new Point(Math.round(edit.oldX+len*(thick+edit.getNumCols()+1)), Math.round(edit.oldY+len*thick)));
-                            ((ViewGroup) edit.dad.getParent()).removeView(edit);
-                            edit.workerFragment.removeData(edit);
-                        }
-                        else if (len*2 < edit.getActualX() && edit.getActualX() <= len*(edit.dad.numColumns-2)) {
+                    else if (edit.getActualY() >= len*(DataBag.getInstance().getCurrView().numRows-2)){
+                        if (edit.getActualX() < DataBag.getInstance().getCurrView().det.getX()) {
+                            Matrix inv = edit.getEncsMatrix().inverse();
                             edit.setX(edit.oldX);
                             edit.setY(edit.oldY);
-                            edit.dad.makeEditGrid(edit.getEncsMatrix().eigen(), new Point(Math.round(edit.oldX+len*(thick+edit.getNumCols()+1)), Math.round(edit.oldY+len*thick)));
+                            DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
+                        }
+                        else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX()) {
+                            Scalar det = new Scalar(edit.getEncsMatrix().det());
+                            edit.setX(edit.oldX);
+                            edit.setY(edit.oldY);
+                            DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
+                        }
+                        else if (edit.getActualX() < DataBag.getInstance().getCurrView().lews.getX()) {
+                            Matrix eigen = edit.getEncsMatrix().eigen();
+                            edit.setX(edit.oldX);
+                            edit.setY(edit.oldY);
+                            DataBag.getInstance().getCurrView().makeEditGrid(eigen, new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
                         }
                         else {
-                            ((ViewGroup) edit.dad.getParent()).removeView(edit);
-                            edit.workerFragment.removeData(edit);
-                            edit.dad.invalidate();
+                            ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
+                            DataBag.getInstance().removeData(edit);
+                            DataBag.getInstance().getCurrView().invalidate();
                         }
-
                     }
                     else{
                         edit.oldX = edit.getX();
@@ -164,7 +169,7 @@ public class EditGridLayout extends RelativeLayout {
         this.addView(grid);
 
        // this.bringChildToFront(grid);
-        workerFragment.addData(this);
+        DataBag.getInstance().addData(this);
     }
 
     @Override
@@ -239,11 +244,16 @@ public class EditGridLayout extends RelativeLayout {
     */
 
     private void fill(){
+        String s = "";
         for (int i = 0; i < matRows; i++){
             for (int j = 0; j < matCols; j++){
                 String value = edits[i][j].getText().toString();
-                if (value == null)
-                    value = "0";
+                if (value.equals("")) {
+                    value = edits[i][j].getHint().toString();
+                    if (value.equals(""))
+                        value = "0";
+                }
+                s = s + value+",";
                 Double num;
                 try{
                     num = Double.parseDouble(value);
@@ -253,8 +263,8 @@ public class EditGridLayout extends RelativeLayout {
                 matrix.setElement(num, i, j);
             }
         }
-        dad.hide();
-        workerFragment.addData(this);
+        DataBag.getInstance().getCurrView().hide();
+       // DataBag.getInstance().addData(this);
     }
 
     protected static void hideKeyboard(View v){
@@ -303,13 +313,6 @@ public class EditGridLayout extends RelativeLayout {
 
     public float getThickness(){
         return this.thick;
-    }
-    private WorkerFragment getWorkerFragment(){
-        return this.workerFragment;
-    }
-
-    protected void setDad(PixelGridView dad){
-        this.dad = dad;
     }
 
     protected void switchBorderColor(int color){

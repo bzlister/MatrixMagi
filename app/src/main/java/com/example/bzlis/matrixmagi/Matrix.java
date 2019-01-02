@@ -35,7 +35,7 @@ public class Matrix {
 
     public Double getElement(int i, int j){
         if (mat[i][j] == null)
-            return (numRows == numCols && i == j) ? 1 : 0.0;
+            return ((numRows == numCols) && (i == j)) ? 1 : 0.0;
         else
             return mat[i][j];
     }
@@ -191,6 +191,31 @@ public class Matrix {
         return sum;
     }
 
+    protected Double det() throws IllegalArgumentException {
+        if (this.getNumRows() != this.getNumCols())
+            throw new IllegalArgumentException();
+        Double det = 0.0;
+        if (this.getNumRows() == 2)
+            det = this.getElement(0,0)*this.getElement(1,1) - this.getElement(0,1)*this.getElement(1,0);
+        else {
+            int mult = 1;
+            for (int k = 0; k < this.getNumCols(); k++) {
+                Matrix cofactor = new Matrix(this.getNumRows()-1, this.getNumCols()-1);
+                for (int i = 1; i < this.getNumRows(); i++){
+                    int j2 = 0;
+                    for (int j = 0; j < this.getNumCols(); j++){
+                        if (j != k)
+                            cofactor.setElement(this.getElement(i, j), i, j2);
+                            j2++;
+                    }
+                }
+                det+=mult*cofactor.det();
+                mult*=-1;
+            }
+        }
+        return det;
+    }
+
     protected Matrix guassElim(Matrix B) throws IllegalArgumentException {
         double EPSILON = 1e-10;
         int n = B.getNumRows();
@@ -235,7 +260,7 @@ public class Matrix {
         this.mat[r2] = temp;
     }
 
-    private Matrix scalarMult(double d){
+    protected Matrix scalarMult(double d){
         Matrix prod = this.duplicate();
         for (int i =  0; i < this.getNumRows(); i++){
             for (int j = 0; j < this.getNumCols(); j++)
