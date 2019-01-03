@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.NumberFormat;
 import java.util.Locale;
 
 public class EditGridLayout extends RelativeLayout {
@@ -202,7 +203,8 @@ public class EditGridLayout extends RelativeLayout {
                     input.requestFocus();
                 else
                     edits[(j == 0) ? i - 1 : i][(j == 0) ? matCols-1 : j-1].setNext(input);
-                input.setHint(Matrix.getPrettyString(matrix.getElement(i,j)));
+                input.setTrueValue(matrix.getElement(i,j));
+                input.setHint(input.getPrettyString());
                 if ((i != matRows-1) || (j != matCols-1)) {
                     input.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_FULLSCREEN);
                     input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -244,7 +246,6 @@ public class EditGridLayout extends RelativeLayout {
     */
 
     private void fill(){
-        String s = "";
         for (int i = 0; i < matRows; i++){
             for (int j = 0; j < matCols; j++){
                 String value = edits[i][j].getText().toString();
@@ -253,18 +254,18 @@ public class EditGridLayout extends RelativeLayout {
                     if (value.equals(""))
                         value = "0";
                 }
-                s = s + value+",";
-                Double num;
+                Number num;
                 try{
-                    num = Double.parseDouble(value);
-                } catch (NumberFormatException n){
+                    num = NumberFormat.getInstance(Locale.getDefault()).parse(value);
+                } catch (Exception n){
                     num = 0.0;
                 }
-                matrix.setElement(num, i, j);
+                if (!value.equals(edits[i][j].getPrettyString()))
+                    matrix.setElement(num.doubleValue(), i, j);
             }
         }
         DataBag.getInstance().getCurrView().hide();
-       // DataBag.getInstance().addData(this);
+       // DataBag.getInstance().addData(this); what does this do
     }
 
     protected static void hideKeyboard(View v){

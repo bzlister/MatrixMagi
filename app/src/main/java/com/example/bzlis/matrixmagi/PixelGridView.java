@@ -243,7 +243,7 @@ public class PixelGridView extends View {
                 else {
                     C = A.leastSquares(B);
                     if (C.getError() > 1e-10)
-                        Toast.makeText(this.getContext(), "No exact solution. Least-squares approximation error: " + Matrix.getPrettyString(C.getError()), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this.getContext(), "No exact solution. Least-squares approximation error: " + C.getError(), Toast.LENGTH_LONG).show();
                 }
             } else{
                 if (op == -1)

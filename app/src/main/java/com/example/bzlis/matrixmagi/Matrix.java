@@ -1,7 +1,6 @@
 package com.example.bzlis.matrixmagi;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class Matrix {
 
@@ -38,17 +37,6 @@ public class Matrix {
             return ((numRows == numCols) && (i == j)) ? 1 : 0.0;
         else
             return mat[i][j];
-    }
-
-    public static String getPrettyString(Double d){
-        String s = "";
-        if (d == null)
-            d = 0.0;
-        if (d == (long)(1.0*d))
-            s = String.format(Locale.getDefault(), "%d", (int)(1.0*d));
-        else
-            s = String.format(Locale.getDefault(), "%g", d);
-        return s;
     }
 
     public Matrix add(Matrix B) throws IllegalArgumentException {
@@ -347,7 +335,7 @@ public class Matrix {
         for (int i = 0; i < numRows; i++) {
             retVal += "\n";
             for (int j = 0; j < numCols; j++) {
-                retVal += Matrix.getPrettyString(this.getElement(i,j)) + " ";
+                retVal += this.getElement(i,j) + " ";
             }
         }
         return retVal;
