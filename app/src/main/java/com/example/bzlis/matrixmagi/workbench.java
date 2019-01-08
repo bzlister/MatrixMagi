@@ -32,41 +32,31 @@ public class workbench extends AppCompatActivity {
         FragmentManager fm = getFragmentManager();
         mWorkerFragment = (WorkerFragment) fm.findFragmentByTag(TAG_WORKER_FRAGMENT);
         // create the fragment and data the first time
+        RelativeLayout frame = new RelativeLayout(this);
+        PixelGridView pr = new PixelGridView(this);
+        frame.addView(pr);
+        pr.setNumCells(numCells);
+        DataBag.getInstance().setCurrView(pr);
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
+            ImageView tuts = new ImageView(this);
+            tuts.setLayoutParams(pr.getLayoutParams());
+            tuts.setImageResource(R.mipmap.tuts);
+            tuts.setBackgroundColor(Color.WHITE);
+            tuts.setVisibility(VISIBLE);
+            tuts.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    ((RelativeLayout)v.getParent()).removeView(v);
+                    v.setVisibility(View.GONE);
+                    return false;
+                }
+            });
+            frame.addView(tuts);
         }
-        RelativeLayout frame = new RelativeLayout(this);
-        PixelGridView pr = new PixelGridView(this);
-        DataBag.getInstance().setCurrView(pr);
-        frame.addView(pr);
-        pr.setNumCells(numCells);
-        ImageView tuts = new ImageView(this);
-        tuts.setLayoutParams(pr.getLayoutParams());
-        tuts.setImageResource(R.mipmap.tuts);
-        tuts.setBackgroundColor(Color.WHITE);
-        tuts.setVisibility(VISIBLE);
-        tuts.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ((RelativeLayout)v.getParent()).removeView(v);
-                v.setVisibility(View.GONE);
-                return false;
-            }
-        });
-        frame.addView(tuts);
-     //   frame.bringChildToFront(tuts);
-/*
-        if ((mWorkerFragment.getData() != null) && (mWorkerFragment.getData().size() != 0)) {
-           HashSet<EditGridLayout> editList = mWorkerFragment.getData();
-            for (EditGridLayout edit : editList) {
-                try {
-                    ((ViewGroup) edit.getParent()).removeView(edit);
-                } catch (NullPointerException e) {}
-                frame.addView(edit);
-            }
-        }
-*/
+        else
+            DataBag.getInstance().cleanData(frame);
         setContentView(frame);
     }
 }

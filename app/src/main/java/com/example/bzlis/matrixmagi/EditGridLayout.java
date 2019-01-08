@@ -33,7 +33,7 @@ public class EditGridLayout extends RelativeLayout {
     private Matrix matrix;
     private MatrixElement[][] edits;
     private GridLayout grid;
-    private final float thick = 0.5f;
+    protected final float thick = 0.5f;
     private OnTouchListener myOnTouchListener;
     private int borderColor = Color.rgb(35, 188, 196);
     private ImageView border;
@@ -233,17 +233,6 @@ public class EditGridLayout extends RelativeLayout {
             }
         }
     }
-
-    /*
-    private String formatS(int i, int j){
-        String s = "";
-        if (matrix.getElement(i, j) == (long)(1.0*matrix.getElement(i, j)))
-            s = String.format(Locale.getDefault(), "%d", (int)(1.0*matrix.getElement(i, j)));
-        else
-            s = String.format(Locale.getDefault(), "%g", matrix.getElement(i, j));
-        return s;
-    }
-    */
 
     private void fill(){
         for (int i = 0; i < matRows; i++){

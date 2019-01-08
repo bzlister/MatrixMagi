@@ -25,8 +25,7 @@ import java.util.Random;
 
 public class PixelGridView extends View {
     Point[] corners = new Point[2];
-    protected int numColumns, numRows, numCells;
-    private int cellLength;
+    protected int numColumns, numRows, numCells, cellLength;
     private Paint blackPaint = new Paint();
     private Paint redPaint = new Paint();
     private int buttonColor;
@@ -384,10 +383,10 @@ public class PixelGridView extends View {
 
     protected void makeEditGrid(Matrix m, Point top){
         ViewGroup vg = (ViewGroup) this.getParent();
-        EditGridLayout result = new EditGridLayout(this.getContext(), cellLength, top, m);
+        EditGridLayout result = new EditGridLayout(DataBag.getInstance().getCurrView().getContext(), cellLength, top, m);
         vg.addView(result);
         DataBag.getInstance().addData(result);
-        invalidate();
+        DataBag.getInstance().getCurrView().invalidate();
     }
 
     protected int getCellLength(){

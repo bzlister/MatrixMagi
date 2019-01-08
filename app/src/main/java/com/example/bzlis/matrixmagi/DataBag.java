@@ -1,5 +1,8 @@
 package com.example.bzlis.matrixmagi;
 
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -84,5 +87,21 @@ public class DataBag {
 
     public PixelGridView getCurrView(){
         return currView;
+    }
+
+    public void cleanData(RelativeLayout layout){
+        for (EditGridLayout edit : editList){
+            try {
+                ((ViewGroup) edit.getParent()).removeView(edit);
+            } catch (NullPointerException e) {}
+            layout.addView(edit);
+        }
+    }
+
+    public void snapToGrid(){
+        for (EditGridLayout edit : editList) {
+            //edit.setX(currView.cellLength * Math.round(edit.getActualX() / currView.cellLength) - currView.cellLength * edit.thick);
+            //edit.setY(currView.cellLength * Math.round(edit.getActualY() / currView.cellLength) - currView.cellLength * edit.thick);
+        }
     }
 }
