@@ -12,6 +12,8 @@ public class DataBag {
     private static DataBag instance = new DataBag();
     private HashSet<EditGridLayout> editList;
     private PixelGridView currView;
+    private int A;
+    private int B;
 
     private DataBag(){
         editList = new HashSet<>();
@@ -89,6 +91,14 @@ public class DataBag {
         return currView;
     }
 
+    public int getA(){
+        return A;
+    }
+
+    public int getB(){
+        return B;
+    }
+
     public void cleanData(RelativeLayout layout){
         for (EditGridLayout edit : editList){
             try {
@@ -96,6 +106,11 @@ public class DataBag {
             } catch (NullPointerException e) {}
             layout.addView(edit);
         }
+    }
+
+    public void queueOp(int a, int b){
+        this.A = a;
+        this.B = b;
     }
 
     public void snapToGrid(){

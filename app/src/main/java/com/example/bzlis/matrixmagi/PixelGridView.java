@@ -33,9 +33,9 @@ public class PixelGridView extends View {
     private int spacing;
     private boolean shouldUpdate = false;
     private Button[] myButs = new Button[9];
-    private static int scalarVis = View.GONE;
-    private static int arithVis = View.GONE;
-    private static int specialVis = View.GONE;
+    private int scalarVis = View.GONE;
+    private int arithVis = View.GONE;
+    private int specialVis = View.GONE;
     protected TextView lews;
     protected TextView eigen;
     protected TextView inv;
@@ -145,7 +145,7 @@ public class PixelGridView extends View {
         String[] text = new String[]{"A + B","AB","Ax = B","scalar","","1-1 matrix","cA","",""};
 
         for (int i = 0; i < myButs.length; i++){
-            myButs[i] = new Button(this.getContext());
+            myButs[i] = new Button(DataBag.getInstance().getCurrView().getContext());
             if (i < 3)
                 myButs[i].setVisibility(arithVis);
             else if (i == 3 || i == 5)
@@ -166,8 +166,9 @@ public class PixelGridView extends View {
             ((ViewGroup)this.getParent()).addView(myButs[i]);
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
         }
-
         makeTrashCan();
+        if (DataBag.getInstance().getA() != DataBag.getInstance().getB())
+            arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
         invalidate();
     }
 
@@ -242,7 +243,7 @@ public class PixelGridView extends View {
                 else {
                     C = A.leastSquares(B);
                     if (C.getError() > 1e-10)
-                        Toast.makeText(this.getContext(), "No exact solution. Least-squares approximation error: " + C.getError(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "No exact solution. Least-squares approximation error: " + C.getError(), Toast.LENGTH_LONG).show();
                 }
             } else{
                 if (op == -1)
@@ -260,7 +261,7 @@ public class PixelGridView extends View {
             DataBag.getInstance().removeData(layoutA);
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
         }catch (IllegalArgumentException e) {
-            Toast.makeText(this.getContext(), colorize(e.getMessage()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), colorize(e.getMessage()), Toast.LENGTH_SHORT).show();
         }
         invalidate();
         return true;
@@ -309,6 +310,7 @@ public class PixelGridView extends View {
 
     protected void arithButtons(final int a, final int b){
         shouldUpdate = true;
+        DataBag.getInstance().queueOp(a, b);
         DataBag.getInstance().getData(a).switchBorderColor(Color.CYAN);
         DataBag.getInstance().getData(b).switchBorderColor(Color.MAGENTA);
         reveal(0);

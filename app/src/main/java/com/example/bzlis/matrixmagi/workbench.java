@@ -35,8 +35,8 @@ public class workbench extends AppCompatActivity {
         RelativeLayout frame = new RelativeLayout(this);
         PixelGridView pr = new PixelGridView(this);
         frame.addView(pr);
-        pr.setNumCells(numCells);
         DataBag.getInstance().setCurrView(pr);
+        pr.setNumCells(numCells);
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
