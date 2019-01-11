@@ -68,6 +68,7 @@ public class EditGridLayout extends RelativeLayout {
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
+                    Log.i("SecretChannel", DataBag.getInstance().getCurrView().id+"");
                     DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
                     DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
                     DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);

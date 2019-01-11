@@ -57,10 +57,6 @@ public class workbench extends AppCompatActivity {
         }
         else
             DataBag.getInstance().cleanData(frame);
-        String s = "";
-        for (EditGridLayout edit : DataBag.getInstance().getData())
-            s = s + edit.getSecret() + ", ";
-        Log.i("SecretChannel", s);
         setContentView(frame);
     }
 }

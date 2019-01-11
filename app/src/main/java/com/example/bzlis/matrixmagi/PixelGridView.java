@@ -40,10 +40,14 @@ public class PixelGridView extends View {
     protected TextView eigen;
     protected TextView inv;
     protected TextView det;
+    public int id;
+    public static int count;
 
 
     public PixelGridView(Context context){
         super(context, null);
+        id = count;
+        count++;
         redPaint.setStyle(Paint.Style.STROKE);
         redPaint.setColor(Color.RED);
         redPaint.setStrokeWidth(5);
@@ -154,7 +158,7 @@ public class PixelGridView extends View {
        // if (DataBag.getInstance().getA() != DataBag.getInstance().getB())
         if (DataBag.getInstance().getArithOp())
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
-        invalidate();
+        DataBag.getInstance().getCurrView().invalidate();
     }
 
     @Override
