@@ -44,14 +44,6 @@ public class PixelGridView extends View {
 
     public PixelGridView(Context context){
         super(context, null);
-        /*
-        String resID = getResources().getString(R.string.toasty);
-        Toast toast = Toast.makeText(this.getContext(), resID, Toast.LENGTH_SHORT);
-        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-        v.setTextColor(Color.RED);
-        toast.show();
-        */
-
         redPaint.setStyle(Paint.Style.STROKE);
         redPaint.setColor(Color.RED);
         redPaint.setStrokeWidth(5);
@@ -65,14 +57,6 @@ public class PixelGridView extends View {
     }
 
     protected void makeTrashCan(){
-        /*
-        ImageView viewz = new ImageView(this.getContext());
-        viewz.setLayoutParams(new RelativeLayout.LayoutParams(cellLength*2, cellLength*2));
-        viewz.setTranslationX(cellLength*(numColumns-2));
-        viewz.setTranslationY(cellLength*(numRows-2));
-        viewz.setImageResource(R.mipmap.ic_launcher);
-        ((ViewGroup)this.getParent()).addView(viewz);
-        */
         lews = new TextView(this.getContext());
         lews.setText("X");
         lews.setTextColor(Color.RED);
@@ -167,7 +151,8 @@ public class PixelGridView extends View {
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
         }
         makeTrashCan();
-        if (DataBag.getInstance().getA() != DataBag.getInstance().getB())
+       // if (DataBag.getInstance().getA() != DataBag.getInstance().getB())
+        if (DataBag.getInstance().getArithOp())
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
         invalidate();
     }
@@ -311,6 +296,7 @@ public class PixelGridView extends View {
     protected void arithButtons(final int a, final int b){
         shouldUpdate = true;
         DataBag.getInstance().queueOp(a, b);
+        DataBag.getInstance().setArithOp(true);
         DataBag.getInstance().getData(a).switchBorderColor(Color.CYAN);
         DataBag.getInstance().getData(b).switchBorderColor(Color.MAGENTA);
         reveal(0);
@@ -320,6 +306,7 @@ public class PixelGridView extends View {
                 @Override
                 public void onClick(View v) {
                     hide();
+                    DataBag.getInstance().setArithOp(false);
                     arithmetic(opCode, a, b);
                 }
             });
@@ -375,12 +362,6 @@ public class PixelGridView extends View {
             }
         });
         invalidate();
-      /*
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
-            scalar.setText(Html.fromHtml("X<sup>2</sup>", Html.FROM_HTML_MODE_LEGACY));
-        else
-            scalar.setText(Html.fromHtml("X<sup>2</sup>"));
-            */
     }
 
     protected void makeEditGrid(Matrix m, Point top){
@@ -403,51 +384,3 @@ public class PixelGridView extends View {
         return this.numColumns;
     }
 }
-
-/*
-  protected void scalarButtons(boolean both, final int a, final int b){
-        if (!both) {
-            workerFragment.getData(a).switchBorderColor(Color.CYAN);
-            workerFragment.getData(b).switchBorderColor(Color.rgb(93,204,115));
-            Spanned expText;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
-                expText = Html.fromHtml("A<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
-            else
-                expText = Html.fromHtml("A<sup>n</sup>");
-            SpannableString sr = new SpannableString(expText);
-            sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
-            sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
-            myButs[6].setText(colorize("n*A"));
-            myButs[8].setText(sr);
-        }
-        else {
-            workerFragment.getData(a).switchBorderColor(Color.rgb(148,93,204));
-            workerFragment.getData(b).switchBorderColor(Color.rgb(93, 204, 115));
-            Spanned expText;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
-                expText = Html.fromHtml("a<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
-            else
-                expText = Html.fromHtml("a<sup>n</sup>");
-            SpannableString sr = new SpannableString(expText);
-            sr.setSpan(new ForegroundColorSpan(Color.rgb(148, 93, 204)), 0, 1, 0);
-            sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
-            myButs[6].setText(colorize("a*n"));
-            myButs[8].setText(sr);
-        }
-        reveal(2);
-        myButs[6].setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hide();
-                arithmetic(-1,a, b);
-            }
-        });
-        myButs[8].setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hide();
-                arithmetic(-2,a,b);
-            }
-        });
-    }
- */

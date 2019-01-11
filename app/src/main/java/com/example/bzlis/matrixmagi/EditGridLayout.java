@@ -137,7 +137,7 @@ public class EditGridLayout extends RelativeLayout {
                             edit.setY(edit.oldY);
                             DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
                         }
-                        else if (edit.getActualX() < DataBag.getInstance().getCurrView().lews.getX()) {
+                        else if (edit.getActualX() < DataBag.getInstance().getCurrView().inv.getX()+2*len) {
                             Matrix eigen = edit.getEncsMatrix().eigen();
                             edit.setX(edit.oldX);
                             edit.setY(edit.oldY);

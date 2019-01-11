@@ -14,9 +14,11 @@ public class DataBag {
     private PixelGridView currView;
     private int A;
     private int B;
+    private boolean arithOp;
 
     private DataBag(){
         editList = new HashSet<>();
+        arithOp = false;
     }
 
     public static DataBag getInstance(){
@@ -97,6 +99,14 @@ public class DataBag {
 
     public int getB(){
         return B;
+    }
+
+    public boolean getArithOp(){
+        return arithOp;
+    }
+
+    public void setArithOp(boolean arithOp){
+        this.arithOp = arithOp;
     }
 
     public void cleanData(RelativeLayout layout){
