@@ -394,7 +394,6 @@ public class PixelGridView extends View {
     }
 }
 /*
-        eigen.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)eigen.getBackground()).setColor(Color.LTGRAY);
+
         ((GradientDrawable)eigen.getBackground()).setStroke(5, Color.DKGRAY);
  */

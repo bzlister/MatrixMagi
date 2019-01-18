@@ -2,12 +2,22 @@ package com.example.bzlis.matrixmagi;
 
 public class Scalar extends com.example.bzlis.matrixmagi.Matrix {
 
+    private Double complex;
+
     public Scalar(){
         super(1, 1);
     }
 
     public Scalar(Double d){
         super(new Double[][]{new Double[]{d}});
+    }
+
+    public void setComplex(Double d){
+        this.complex = d;
+    }
+
+    public Double getComplex(){
+        return (this.complex == null) ? 0.0 : this.complex;
     }
 
     @Override

@@ -203,4 +203,16 @@ public class ExampleUnitTest {
         System.out.println(A.eigen());
         assert(true);
     }
+
+    @Test
+    public void testComplex(){
+        ComplexForm a = new ComplexForm(3.0, 4.0);
+        ComplexForm b = new ComplexForm(8.0, -2.0);
+        assert(ComplexForm.add(a, b).equals(new ComplexForm(11.0, 2.0)));
+        assert(ComplexForm.mult(a, b).equals(new ComplexForm(32.0, 26.0)));
+        assert(ComplexForm.div(a, b).equals(new ComplexForm(4.0/17, 19.0/34)));
+        ComplexForm c = new ComplexForm(1.0, 1.0);
+        ComplexForm d = new ComplexForm(1.0, -1.0);
+        assert(ComplexForm.mult(c, d).equals(new ComplexForm(2.0, 0.0)));
+    }
 }

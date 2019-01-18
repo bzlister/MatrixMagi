@@ -282,7 +282,7 @@ public class Matrix {
         return Math.sqrt(sum);
     }
 
-    public Matrix eigen(){
+    public ArrayList<Scalar> eigen(){
         Matrix cp = this.duplicate();
         ArrayList<Scalar> lambda = new ArrayList<>();
         for (int i = 0; i < 100; i++){
@@ -294,36 +294,37 @@ public class Matrix {
             if (cp.getElement(t+1, t) > EPSILON)
                 hess = true;
         }
-        String message = "";
         if (hess){
-            Log.i("MatChan", cp.toString());
             for (int z = 0; z < cp.getNumCols()-1; z++){
                 Double Tr = cp.getElement(z, z) + cp.getElement(z+1, z+1);
                 Double det = cp.getElement(z, z)*cp.getElement(z+1, z+1) - cp.getElement(z, z+1)*cp.getElement(z+1, z);
                 Double dscrm = Math.pow(Tr, 2)/4 - det;
-                if (dscrm < 0)
-                    message+=(Tr/2) + "+" + (Math.sqrt(-dscrm)) + "i\n" + (Tr/2) + "-" + (Math.sqrt(-dscrm)) + "i";
+                if (dscrm < 0){
+                    Scalar L1 = new Scalar(Tr/2);
+                    Scalar L2 = new Scalar(Tr/2);
+                    L1.setComplex(Math.sqrt(-dscrm));
+                    L2.setComplex(-Math.sqrt(-dscrm));
+                    lambda.add(L1);
+                    lambda.add(L2);
+                }
                 else{
                     Double L1 = (Tr/2) + Math.sqrt(dscrm);
                     Double L2 = (Tr/2) - Math.sqrt(dscrm);
                     Matrix A1 = this.duplicate().add(new Matrix(3, 3).scalarMult(-L1));
                     Matrix A2 = this.duplicate().add(new Matrix(3, 3).scalarMult(-L2));
-                    Log.i("TaxChan", L1 + ": " + A1.det() + ", " + L2 + ": " + A2.det());
                     if (Math.abs(A1.det()) < Math.abs(A2.det()))
-                        message+=L1+"\n";
+                        lambda.add(new Scalar(L1));
                     else
-                        message+=L2+"\n";
+                        lambda.add(new Scalar(L2));
                 }
             }
         }
-        else{
-            for (int y = 0; y < cp.getNumCols(); y++){
-                message+=cp.getElement(y, y) + "\n";
+        else {
+            for (int y = 0; y < cp.getNumCols(); y++) {
+                lambda.add(new Scalar(cp.getElement(y, y)));
             }
         }
-        if (true)
-            throw new IllegalArgumentException(message);
-        return null;
+        return lambda;
     }
 
     public Matrix[] QR(){

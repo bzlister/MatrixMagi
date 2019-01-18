@@ -1,8 +1,8 @@
 Trash can icon
-Drag icons glow (trash can opens?) when hovering OR AT LEAST flash on action performed
-Eigenvalue presentation
-Complex eigenvalues + complex number support in general
+complex number support in general
 Ads
 App icon
 Eigenvector function
 Custom keyboard
+PixelGridView shrinks when keyboard spawns
+Update prettyprint/hint logic

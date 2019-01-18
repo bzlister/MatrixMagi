@@ -21,6 +21,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
     private MatrixElement next;
     private Context context;
     private Double trueValue;
+    private boolean complex = false;
 
     public MatrixElement(Context context){
         super(context);
@@ -73,8 +74,10 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
             s = String.format(Locale.getDefault(), "%d", (int)(1.0*trueValue));
         else {
             s = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.getDefault())).format(trueValue);
+            /*
             if (s.replace("-","").length() == 1)
                 s = s + "aaaaaaaa";
+                */
         }
         if (s.length() > 5)
             s = new DecimalFormat("0.##E0", DecimalFormatSymbols.getInstance(Locale.getDefault())).format(trueValue);

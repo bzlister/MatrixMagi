@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class EditGridLayout extends RelativeLayout {
@@ -126,21 +127,18 @@ public class EditGridLayout extends RelativeLayout {
                     }
                     else if (edit.getActualY() >= len*(DataBag.getInstance().getCurrView().numRows-2)){
                         try {
+                            int spawnX = Math.round(edit.oldX-len*thick);
+                            int spawnY = Math.round(edit.oldY-len*thick);
                             if (edit.getActualX() < DataBag.getInstance().getCurrView().det.getX()) {
                                 Matrix inv = edit.getEncsMatrix().inverse();
-                                edit.setX(edit.oldX);
-                                edit.setY(edit.oldY);
-                                DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(Math.round(edit.oldX + len * thick), Math.round(edit.oldY + len * thick)));
+                                DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(spawnX, spawnY));
                             } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX()) {
                                 Scalar det = new Scalar(edit.getEncsMatrix().det());
-                                edit.setX(edit.oldX);
-                                edit.setY(edit.oldY);
-                                DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(Math.round(edit.oldX + len * thick), Math.round(edit.oldY + len * thick)));
+                                DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(spawnX, spawnY));
                             } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
-                                Matrix eigen = edit.getEncsMatrix().eigen();
-                                edit.setX(edit.oldX);
-                                edit.setY(edit.oldY);
-                                DataBag.getInstance().getCurrView().makeEditGrid(eigen, new Point(Math.round(edit.oldX + len * thick), Math.round(edit.oldY + len * thick)));
+                                ArrayList<Scalar> lambda = edit.getEncsMatrix().eigen();
+                                for (int i = 0; i < lambda.size(); i++)
+                                    DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX, spawnY+len*i));
                             } else {
                                 ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
                                 DataBag.getInstance().removeData(edit);
