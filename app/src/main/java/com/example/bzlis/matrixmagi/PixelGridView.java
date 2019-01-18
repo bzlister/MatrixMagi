@@ -33,7 +33,7 @@ public class PixelGridView extends View {
     private int buttonWidth;
     private int spacing;
     private boolean shouldUpdate = false;
-    private Button[] myButs = new Button[9];
+    private Button[] myButs = new Button[12];
     private int scalarVis = View.GONE;
     private int arithVis = View.GONE;
     private int specialVis = View.GONE;
@@ -130,17 +130,17 @@ public class PixelGridView extends View {
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));;
-        buttonWidth = Math.round(getWidth()/5f);
-        spacing = Math.round(getWidth()/10f);
-        String[] text = new String[]{"A + B","AB","Ax = B","scalar","","1-1 matrix","cA","",""};
+        buttonWidth = Math.round(2*getWidth()/13f);
+        spacing = Math.round(getWidth()/13f);
+        String[] text = new String[]{"A + B", "A - B", "AB", "Ax = B", "", "scalar","1x1 matrix", "", "", "cA","",""};
 
         for (int i = 0; i < myButs.length; i++){
             myButs[i] = new Button(DataBag.getInstance().getCurrView().getContext());
-            if (i < 3)
+            if (i < 4)
                 myButs[i].setVisibility(arithVis);
-            else if (i == 3 || i == 5)
+            else if (i == 5 || i == 6)
                 myButs[i].setVisibility(scalarVis);
-            else if (i == 6 || i == 8)
+            else if (i == 9 || i == 10)
                 myButs[i].setVisibility(specialVis);
             else
                 myButs[i].setVisibility(GONE);
@@ -151,7 +151,7 @@ public class PixelGridView extends View {
             myButs[i].setTextColor(Color.GRAY);
             myButs[i].setText(colorize(text[i]));
             myButs[i].setTextSize(18);
-            myButs[i].setTranslationX((i%3)*buttonWidth+((i%3)+1)*spacing);
+            myButs[i].setTranslationX((i%4)*buttonWidth+((i%4)+1)*spacing);
             myButs[i].setTranslationY(cellLength*(numRows-2));
             ((ViewGroup)this.getParent()).addView(myButs[i]);
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
@@ -231,6 +231,8 @@ public class PixelGridView extends View {
                 if (op == 0)
                     C = A.add(B);
                 else if (op == 1)
+                    C = A.add(B.scalarMult(-1));
+                else if (op == 2)
                     C = A.mult(B);
                 else {
                     C = A.leastSquares(B);
@@ -286,8 +288,8 @@ public class PixelGridView extends View {
             scalarVis = View.VISIBLE;
         else
             specialVis = View.VISIBLE;
-        for (int q = 3*i; q < 3*i+3; q++) {
-            if (q != 4 && q != 7)
+        for (int q = 4*i; q < 4*i+4; q++) {
+            if (q != 4 && q != 7 && q != 8 && q != 11)
                 myButs[q].setVisibility(View.VISIBLE);
         }
     }
@@ -307,7 +309,7 @@ public class PixelGridView extends View {
         DataBag.getInstance().getData(a).switchBorderColor(Color.CYAN);
         DataBag.getInstance().getData(b).switchBorderColor(Color.MAGENTA);
         reveal(0);
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 4; i++){
             final int opCode = i;
             myButs[i].setOnClickListener(new OnClickListener() {
                 @Override
@@ -333,17 +335,17 @@ public class PixelGridView extends View {
         SpannableString sr = new SpannableString(expText);
         sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
         sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
-        myButs[6].setText(colorize("n*A"));
-        myButs[8].setText(sr);
+        myButs[9].setText(colorize("n*A"));
+        myButs[10].setText(sr);
         reveal(2);
-        myButs[6].setOnClickListener(new OnClickListener() {
+        myButs[9].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 hide();
                 arithmetic(-1,a, b);
             }
         });
-        myButs[8].setOnClickListener(new OnClickListener() {
+        myButs[10].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 hide();
@@ -354,14 +356,14 @@ public class PixelGridView extends View {
 
     private void scalarQuestionaire(final Point top){
         reveal(1);
-        myButs[3].setOnClickListener(new OnClickListener() {
+        myButs[5].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 hide();
                 makeEditGrid(new Scalar(), top);
             }
         });
-        myButs[5].setOnClickListener(new OnClickListener() {
+        myButs[6].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 hide();
