@@ -1,6 +1,5 @@
 Trash can icon
 Drag icons glow (trash can opens?) when hovering OR AT LEAST flash on action performed
-Gauss elim to support higher dimensionality
 Eigenvalue presentation
 Complex eigenvalues + complex number support in general
 Ads

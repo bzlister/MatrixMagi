@@ -210,7 +210,7 @@ public class Matrix {
 
     protected Matrix guassElim(Matrix B) throws IllegalArgumentException {
         int n = B.getNumRows();
-        if ((this.getNumCols() != this.getNumRows()) || (B.getNumRows() != this.getNumRows()) || (B.getNumCols() > 1))
+        if ((this.getNumCols() != this.getNumRows()) || (B.getNumRows() != this.getNumRows()))
                 throw new IllegalArgumentException();
         Matrix A_new = this.duplicate();
         Matrix B_new = B.duplicate();
