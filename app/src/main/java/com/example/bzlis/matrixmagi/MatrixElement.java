@@ -69,7 +69,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         String s = "";
         if (trueValue == null)
             trueValue = 0.0;
-        if (trueValue == (long)(1.0*trueValue))
+        else if (trueValue == (long)(1.0*trueValue))
             s = String.format(Locale.getDefault(), "%d", (int)(1.0*trueValue));
         else {
             s = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.getDefault())).format(trueValue);

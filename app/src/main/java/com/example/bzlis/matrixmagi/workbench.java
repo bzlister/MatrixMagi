@@ -2,6 +2,7 @@ package com.example.bzlis.matrixmagi;
 
 import android.app.FragmentManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -35,8 +36,8 @@ public class workbench extends AppCompatActivity {
         RelativeLayout frame = new RelativeLayout(this);
         PixelGridView pr = new PixelGridView(this);
         frame.addView(pr);
-        DataBag.getInstance().setCurrView(pr);
         pr.setNumCells(numCells);
+        DataBag.getInstance().setCurrView(pr);
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
@@ -55,8 +56,10 @@ public class workbench extends AppCompatActivity {
             });
             frame.addView(tuts);
         }
-        else
+        else {
             DataBag.getInstance().cleanData(frame);
+
+        }
         setContentView(frame);
     }
 }

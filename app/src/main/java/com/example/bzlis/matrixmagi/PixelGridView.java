@@ -11,6 +11,7 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,49 +68,50 @@ public class PixelGridView extends View {
         lews.setTextSize(50);
         lews.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         lews.setTranslationX(cellLength*(numColumns-2));
-        lews.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        lews.setTranslationY(Math.round(cellLength*(numRows-2)));
         lews.setBackground(null);
         lews.setTextIsSelectable(false);
         lews.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(lews, cellLength*2, cellLength*2);
 
         eigen = new TextView(this.getContext());
-        eigen.setText("eigenvalues");
-        eigen.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)eigen.getBackground()).setColor(Color.LTGRAY);
-        ((GradientDrawable)eigen.getBackground()).setStroke(5, Color.DKGRAY);
-        eigen.setTextSize(20);
-        eigen.setTextColor(Color.rgb(35, 188, 196));
+        eigen.setText("\u03bb");
+        eigen.setBackground(null);
+        eigen.setTextSize(40);
         eigen.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         eigen.setTranslationX(cellLength*4);
-        eigen.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        eigen.setTranslationY(Math.round(cellLength*(numRows-2)));
         eigen.setTextIsSelectable(false);
         eigen.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(eigen, cellLength*2, cellLength*2);
 
         det = new TextView(this.getContext());
-        det.setText("|A|");
-        det.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)det.getBackground()).setColor(Color.LTGRAY);
-        ((GradientDrawable)det.getBackground()).setStroke(5, Color.DKGRAY);
-        det.setTextSize(30);
-        det.setTextColor(Color.rgb(35, 188, 196));
+        SpannableString ss = new SpannableString("|A|");
+        ss.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), 1, 2, 0);
+        det.setText(ss);
+        det.setBackground(null);
+        det.setTextSize(40);
         det.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         det.setTranslationX(cellLength*2);
-        det.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        det.setTranslationY(Math.round(cellLength*(numRows-2)));
         det.setTextIsSelectable(false);
         det.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(det, cellLength*2, cellLength*2);
 
         inv = new TextView(this.getContext());
-        inv.setText("A^-1");
-        inv.setBackgroundResource(R.drawable.tags_rounded_corners);
-        ((GradientDrawable)inv.getBackground()).setColor(Color.LTGRAY);
-        ((GradientDrawable)inv.getBackground()).setStroke(5, Color.DKGRAY);
-        inv.setTextSize(30);
-        inv.setTextColor(Color.rgb(35, 188, 196));
+        Spanned expText;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
+            expText = Html.fromHtml("A<sup>-1</sup>", Html.FROM_HTML_MODE_LEGACY);
+        else
+            expText = Html.fromHtml("A<sup>-1</sup>");
+        SpannableString sr = new SpannableString(expText);
+        sr.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), 0, 1, 0);
+        sr.setSpan(new RelativeSizeSpan(0.6f), 1, 3, 0);
+        inv.setText(sr);
+        inv.setBackground(null);
+        inv.setTextSize(40);
         inv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        inv.setTranslationY(Math.round(cellLength*(numRows-2.2)));
+        inv.setTranslationY(Math.round(cellLength*(numRows-2)));
         inv.setTextIsSelectable(false);
         inv.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(inv, cellLength*2, cellLength*2);
@@ -158,8 +160,8 @@ public class PixelGridView extends View {
        // if (DataBag.getInstance().getA() != DataBag.getInstance().getB())
         if (DataBag.getInstance().getArithOp())
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
-        DataBag.getInstance().snapToGrid();
         DataBag.getInstance().getCurrView().invalidate();
+        DataBag.getInstance().snapToGrid();
     }
 
     @Override
@@ -389,3 +391,8 @@ public class PixelGridView extends View {
         return this.numColumns;
     }
 }
+/*
+        eigen.setBackgroundResource(R.drawable.tags_rounded_corners);
+        ((GradientDrawable)eigen.getBackground()).setColor(Color.LTGRAY);
+        ((GradientDrawable)eigen.getBackground()).setStroke(5, Color.DKGRAY);
+ */

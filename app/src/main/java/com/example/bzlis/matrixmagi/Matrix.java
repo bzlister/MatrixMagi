@@ -1,5 +1,7 @@
 package com.example.bzlis.matrixmagi;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class Matrix {
@@ -7,6 +9,7 @@ public class Matrix {
     private Double[][] mat;
     private int numRows, numCols;
     private double error = 0.0;
+    private final double EPSILON = 1e-10;
 
     public Matrix(int m, int n){
         this.numRows = m;
@@ -137,13 +140,13 @@ public class Matrix {
         Matrix cp = this.duplicate();
         double EPSILON = 1e-10;
         if (this.getNumCols() != this.getNumRows())
-            throw new IllegalArgumentException("Rows(A) =/= Cols(A)");
+            throw new IllegalArgumentException("Not a square matrix!");
         int n = this.getNumRows();
         Matrix inv = new Matrix(n, n);
         for (int i = 0; i < n; i++){
             double alpha = cp.getElement(i,i);
             if (Math.abs(alpha) <= EPSILON)
-                throw new IllegalArgumentException("A is singular or nearly singular");
+                throw new IllegalArgumentException("Singular or nearly singular!");
             for (int j = 0; j < n; j++){
                 cp.setElement(cp.getElement(i,j)/alpha,i,j);
                 inv.setElement(inv.getElement(i,j)/alpha,i,j);
@@ -181,7 +184,7 @@ public class Matrix {
 
     protected Double det() throws IllegalArgumentException {
         if (this.getNumRows() != this.getNumCols())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Not a square matrix!");
         Double det = 0.0;
         if (this.getNumRows() == 2)
             det = this.getElement(0,0)*this.getElement(1,1) - this.getElement(0,1)*this.getElement(1,0);
@@ -192,12 +195,13 @@ public class Matrix {
                 for (int i = 1; i < this.getNumRows(); i++){
                     int j2 = 0;
                     for (int j = 0; j < this.getNumCols(); j++){
-                        if (j != k)
-                            cofactor.setElement(this.getElement(i, j), i, j2);
+                        if (j != k) {
+                            cofactor.setElement(this.getElement(i, j), i - 1, j2);
                             j2++;
+                        }
                     }
                 }
-                det+=mult*cofactor.det();
+                det+=mult*this.getElement(0, k)*cofactor.det();
                 mult*=-1;
             }
         }
@@ -205,7 +209,6 @@ public class Matrix {
     }
 
     protected Matrix guassElim(Matrix B) throws IllegalArgumentException {
-        double EPSILON = 1e-10;
         int n = B.getNumRows();
         if ((this.getNumCols() != this.getNumRows()) || (B.getNumRows() != this.getNumRows()) || (B.getNumCols() > 1))
                 throw new IllegalArgumentException();
@@ -281,17 +284,46 @@ public class Matrix {
 
     public Matrix eigen(){
         Matrix cp = this.duplicate();
+        ArrayList<Scalar> lambda = new ArrayList<>();
         for (int i = 0; i < 100; i++){
             Matrix[] QR = cp.QR();
             cp = QR[1].mult(QR[0]);
         }
-        for (int u = 0; u < cp.getNumRows(); u++){
-            for (int w = 0; w < cp.getNumCols(); w++) {
-                if (u != w)
-                    cp.setElement(0.0, u, w);
+        boolean hess = false;
+        for (int t = 0; t < cp.getNumCols()-1; t++){
+            if (cp.getElement(t+1, t) > EPSILON)
+                hess = true;
+        }
+        String message = "";
+        if (hess){
+            Log.i("MatChan", cp.toString());
+            for (int z = 0; z < cp.getNumCols()-1; z++){
+                Double Tr = cp.getElement(z, z) + cp.getElement(z+1, z+1);
+                Double det = cp.getElement(z, z)*cp.getElement(z+1, z+1) - cp.getElement(z, z+1)*cp.getElement(z+1, z);
+                Double dscrm = Math.pow(Tr, 2)/4 - det;
+                if (dscrm < 0)
+                    message+=(Tr/2) + "+" + (Math.sqrt(-dscrm)) + "i\n" + (Tr/2) + "-" + (Math.sqrt(-dscrm)) + "i";
+                else{
+                    Double L1 = (Tr/2) + Math.sqrt(dscrm);
+                    Double L2 = (Tr/2) - Math.sqrt(dscrm);
+                    Matrix A1 = this.duplicate().add(new Matrix(3, 3).scalarMult(-L1));
+                    Matrix A2 = this.duplicate().add(new Matrix(3, 3).scalarMult(-L2));
+                    Log.i("TaxChan", L1 + ": " + A1.det() + ", " + L2 + ": " + A2.det());
+                    if (Math.abs(A1.det()) < Math.abs(A2.det()))
+                        message+=L1+"\n";
+                    else
+                        message+=L2+"\n";
+                }
             }
         }
-        return cp;
+        else{
+            for (int y = 0; y < cp.getNumCols(); y++){
+                message+=cp.getElement(y, y) + "\n";
+            }
+        }
+        if (true)
+            throw new IllegalArgumentException(message);
+        return null;
     }
 
     public Matrix[] QR(){

@@ -125,28 +125,29 @@ public class EditGridLayout extends RelativeLayout {
                         }
                     }
                     else if (edit.getActualY() >= len*(DataBag.getInstance().getCurrView().numRows-2)){
-                        if (edit.getActualX() < DataBag.getInstance().getCurrView().det.getX()) {
-                            Matrix inv = edit.getEncsMatrix().inverse();
-                            edit.setX(edit.oldX);
-                            edit.setY(edit.oldY);
-                            DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
-                        }
-                        else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX()) {
-                            Scalar det = new Scalar(edit.getEncsMatrix().det());
-                            edit.setX(edit.oldX);
-                            edit.setY(edit.oldY);
-                            DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
-                        }
-                        else if (edit.getActualX() < DataBag.getInstance().getCurrView().inv.getX()+2*len) {
-                            Matrix eigen = edit.getEncsMatrix().eigen();
-                            edit.setX(edit.oldX);
-                            edit.setY(edit.oldY);
-                            DataBag.getInstance().getCurrView().makeEditGrid(eigen, new Point(Math.round(edit.oldX+len*thick), Math.round(edit.oldY+len*thick)));
-                        }
-                        else {
-                            ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
-                            DataBag.getInstance().removeData(edit);
-                            DataBag.getInstance().getCurrView().invalidate();
+                        try {
+                            if (edit.getActualX() < DataBag.getInstance().getCurrView().det.getX()) {
+                                Matrix inv = edit.getEncsMatrix().inverse();
+                                edit.setX(edit.oldX);
+                                edit.setY(edit.oldY);
+                                DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(Math.round(edit.oldX + len * thick), Math.round(edit.oldY + len * thick)));
+                            } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX()) {
+                                Scalar det = new Scalar(edit.getEncsMatrix().det());
+                                edit.setX(edit.oldX);
+                                edit.setY(edit.oldY);
+                                DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(Math.round(edit.oldX + len * thick), Math.round(edit.oldY + len * thick)));
+                            } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
+                                Matrix eigen = edit.getEncsMatrix().eigen();
+                                edit.setX(edit.oldX);
+                                edit.setY(edit.oldY);
+                                DataBag.getInstance().getCurrView().makeEditGrid(eigen, new Point(Math.round(edit.oldX + len * thick), Math.round(edit.oldY + len * thick)));
+                            } else {
+                                ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
+                                DataBag.getInstance().removeData(edit);
+                                DataBag.getInstance().getCurrView().invalidate();
+                            }
+                        } catch (IllegalArgumentException e){
+                            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                     else{
