@@ -158,6 +158,7 @@ public class PixelGridView extends View {
        // if (DataBag.getInstance().getA() != DataBag.getInstance().getB())
         if (DataBag.getInstance().getArithOp())
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
+        DataBag.getInstance().snapToGrid();
         DataBag.getInstance().getCurrView().invalidate();
     }
 

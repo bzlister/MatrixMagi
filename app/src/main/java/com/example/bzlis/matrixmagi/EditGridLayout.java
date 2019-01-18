@@ -25,7 +25,7 @@ import java.util.Locale;
 
 public class EditGridLayout extends RelativeLayout {
 
-    private int cellLength;
+    public int cellLength;
     private static int count = 0;
     private int secret;
     private int matRows;
@@ -68,7 +68,6 @@ public class EditGridLayout extends RelativeLayout {
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
-                    Log.i("SecretChannel", DataBag.getInstance().getCurrView().id+"");
                     DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
                     DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
                     DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);
@@ -299,7 +298,7 @@ public class EditGridLayout extends RelativeLayout {
     }
 
     public int getCellLength(){
-        return this.cellLength;
+        return DataBag.getInstance().getCurrView().cellLength;
     }
 
     public float getThickness(){

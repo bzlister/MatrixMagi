@@ -113,6 +113,7 @@ public class DataBag {
         for (EditGridLayout edit : editList){
             try {
                 ((ViewGroup) edit.getParent()).removeView(edit);
+                //edit.cellLength = currView.cellLength;
             } catch (NullPointerException e) {}
             layout.addView(edit);
         }
@@ -125,8 +126,8 @@ public class DataBag {
 
     public void snapToGrid(){
         for (EditGridLayout edit : editList) {
-            //edit.setX(currView.cellLength * Math.round(edit.getActualX() / currView.cellLength) - currView.cellLength * edit.thick);
-            //edit.setY(currView.cellLength * Math.round(edit.getActualY() / currView.cellLength) - currView.cellLength * edit.thick);
+            edit.setX(currView.cellLength * Math.round((edit.getX()+currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
+            edit.setY(currView.cellLength * Math.round((edit.getY()+currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
         }
     }
 }
