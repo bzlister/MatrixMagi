@@ -169,15 +169,15 @@ public class ExampleUnitTest {
     @Test
     public void testEigen(){
         Matrix A = new Matrix(3, 3);
-        A.setElement(new ComplexForm(-2), 0, 0);
-        A.setElement(new ComplexForm(-2), 0, 1);
-        A.setElement(new ComplexForm(-9), 0, 2);
-        A.setElement(new ComplexForm(-1), 1, 0);
+        A.setElement(new ComplexForm(1), 0, 0);
+        A.setElement(new ComplexForm(2), 0, 1);
+        A.setElement(new ComplexForm(3), 0, 2);
+        A.setElement(new ComplexForm(0), 1, 0);
         A.setElement(new ComplexForm(1),1, 1);
-        A.setElement(new ComplexForm(-3), 1, 2);
-        A.setElement(new ComplexForm(1), 2, 0);
-        A.setElement(new ComplexForm(1), 2, 1);
-        A.setElement(new ComplexForm(4), 2, 2);
+        A.setElement(new ComplexForm(2), 1, 2);
+        A.setElement(new ComplexForm(-1), 2, 0);
+        A.setElement(new ComplexForm(0), 2, 1);
+        A.setElement(new ComplexForm(1), 2, 2);
         ArrayList<Scalar> list = A.eigen();
         for (Scalar s : list)
            System.out.println("Eigenvalue: " + s.getElement(0, 0).getFullString());

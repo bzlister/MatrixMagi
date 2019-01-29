@@ -115,8 +115,8 @@ public class Matrix {
     protected Matrix leastSquares(Matrix B) throws IllegalArgumentException {
         Matrix X = null;
         Matrix T = this.transpose();
-        if (this.getNumCols() != B.getNumCols())
-            throw new IllegalArgumentException("Cols(A) =/= Cols(B)");
+        if (this.getNumRows() != B.getNumRows())
+            throw new IllegalArgumentException("Rows(A) =/= Rows(B)");
         if (this.getNumRows() >= this.getNumCols())
             X = T.mult(this).inverse().mult(T).mult(B);
         else
@@ -353,10 +353,14 @@ public class Matrix {
         for (int j = 0; j < this.getNumCols(); j++){
             Matrix a = this.getCol(j);
             Matrix u = a.duplicate();
-            for (int k = 0; k < j; k++)
+            for (int k = 0; k < j; k++) {
                 u = u.add((proj(U.get(k), a).scalarMult(new ComplexForm(-1))));
+            }
             U.add(u);
-            E.add(u.scalarMult(new ComplexForm(1/u.mag())));
+            Double scal = 1/u.mag();
+            if (scal == Double.POSITIVE_INFINITY)
+                scal = Double.MAX_VALUE;
+            E.add(u.scalarMult(new ComplexForm(scal)));
             int z = 0;
             do {
                 a = a.add(E.get(z).scalarMult(innerProd(E.get(z), a)));
@@ -364,6 +368,20 @@ public class Matrix {
             } while (z < j);
             A.add(a);
         }
+        /*
+        System.out.println("U:");
+        for (Matrix u : U){
+            System.out.print(u);
+        }
+        System.out.println("E:");
+        for (Matrix e : E){
+            System.out.print(e);
+        }
+        System.out.println("A:");
+        for (Matrix a : A){
+            System.out.print(a);
+        }
+        */
         Matrix Q = new Matrix(this.getNumRows(), this.getNumCols());
         for (int j = 0; j < this.getNumCols(); j++){
             for (int i = 0; i < this.getNumRows(); i++)

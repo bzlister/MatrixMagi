@@ -132,7 +132,7 @@ public class PixelGridView extends View {
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));;
         buttonWidth = Math.round(2*getWidth()/13f);
         spacing = Math.round(getWidth()/13f);
-        String[] text = new String[]{"A + B", "A - B", "AB", "Ax = B", "", "scalar","1x1 matrix", "", "", "cA","",""};
+        String[] text = new String[]{"A + B", "A - B", "AB", "AX = B", "", "scalar","1x1 matrix", "", "", "cA","",""};
 
         for (int i = 0; i < myButs.length; i++){
             myButs[i] = new Button(DataBag.getInstance().getCurrView().getContext());

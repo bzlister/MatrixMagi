@@ -58,7 +58,6 @@ public class workbench extends AppCompatActivity {
         }
         else {
             DataBag.getInstance().cleanData(frame);
-
         }
         setContentView(frame);
     }

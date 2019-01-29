@@ -43,7 +43,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
                 if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
                     try {
                         // || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue()))
-                        if (!ComplexForm.parse(((MatrixElement)v).getHint().toString()).equals(trueValue))
+                        if (((MatrixElement)v).trueValue.getFullString().length() > 5)
                             Toast.makeText(((MatrixElement)v).context, trueValue.getFullString(), Toast.LENGTH_SHORT).show();
                     } catch (Exception e){}
                 }
