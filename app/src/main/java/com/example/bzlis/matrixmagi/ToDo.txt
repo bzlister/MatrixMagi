@@ -1,6 +1,4 @@
-Trash can icon
 Ads
-App icon
 Custom keyboard
 PixelGridView shrinks when keyboard spawns
 

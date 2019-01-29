@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,7 +40,7 @@ public class PixelGridView extends View {
     private int scalarVis = View.GONE;
     private int arithVis = View.GONE;
     private int specialVis = View.GONE;
-    protected TextView lews;
+    protected ImageView lews;
     protected TextView eigen;
     protected TextView inv;
     protected TextView det;
@@ -64,17 +65,14 @@ public class PixelGridView extends View {
     }
 
     protected void makeTrashCan(){
-        lews = new TextView(this.getContext());
-        lews.setText("X");
-        lews.setTextColor(Color.RED);
-        lews.setTextSize(50);
-        lews.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        lews = new ImageView(getContext());
+        lews.setLayoutParams(new LinearLayout.LayoutParams((int)(cellLength*1.4), (int)(cellLength*1.4)));
+        lews.setImageResource(R.mipmap.tcan);
+        lews.setBackgroundColor(Color.TRANSPARENT);
         lews.setTranslationX(cellLength*(numColumns-2));
         lews.setTranslationY(Math.round(cellLength*(numRows-2)));
-        lews.setBackground(null);
-        lews.setTextIsSelectable(false);
         lews.setVisibility(INVISIBLE);
-        ((ViewGroup)this.getParent()).addView(lews, cellLength*2, cellLength*2);
+        ((ViewGroup)this.getParent()).addView(lews);
 
         eigen = new TextView(this.getContext());
         eigen.setText("\u03bb");
@@ -176,12 +174,12 @@ public class PixelGridView extends View {
 
         if (corners[0] != null)
             canvas.drawRect(corners[0].x, corners[0].y, corners[1].x, corners[1].y, redPaint);
-
         for (int i = 1; i < numColumns; i++)
             canvas.drawLine(i * cellLength, 0, i * cellLength, height, blackPaint);
 
         for (int i = 1; i < numRows; i++)
             canvas.drawLine(0, i * cellLength, width, i * cellLength, blackPaint);
+
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -212,7 +210,21 @@ public class PixelGridView extends View {
                         makeEditGrid(new Matrix(matRows, matCols), top);
                 }
                 else{
-                    //delete menu?
+                    /*
+                    Button del = new Button(this.getContext());
+                    del.setText("Delete");
+                    del.setBackgroundResource(R.drawable.tags_rounded_corners);
+                    ((GradientDrawable)del.getBackground()).setColor(buttonColor);
+                    ((GradientDrawable)del.getBackground()).setStroke(0, buttonColor);
+                    del.setTextColor(Color.GRAY);
+                    del.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
+                    del.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            v.setVisibility(View.GONE);
+                        }
+                    });
+                    */
                 }
             }
             corners[0] = null;
