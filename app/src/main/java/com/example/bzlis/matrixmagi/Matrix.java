@@ -115,6 +115,8 @@ public class Matrix {
     protected Matrix leastSquares(Matrix B) throws IllegalArgumentException {
         Matrix X = null;
         Matrix T = this.transpose();
+        if (this.getNumCols() != B.getNumCols())
+            throw new IllegalArgumentException("Cols(A) =/= Cols(B)");
         if (this.getNumRows() >= this.getNumCols())
             X = T.mult(this).inverse().mult(T).mult(B);
         else
@@ -302,6 +304,8 @@ public class Matrix {
     }
 
     public ArrayList<Scalar> eigen(){
+        if (this.getNumCols() != this.getNumRows())
+            throw new IllegalArgumentException("Not a square matrix!");
         Matrix cp = this.duplicate();
         ArrayList<Scalar> lambda = new ArrayList<>();
         for (int i = 0; i < 100; i++){

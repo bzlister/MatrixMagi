@@ -237,22 +237,18 @@ public class EditGridLayout extends RelativeLayout {
         for (int i = 0; i < matRows; i++){
             for (int j = 0; j < matCols; j++){
                 String value = edits[i][j].getText().toString();
-                if (value.equals("")) {
+                if (value.equals(""))
                     value = edits[i][j].getHint().toString();
-                    if (value.equals(""))
-                        value = "0";
-                }
-                Number num;
-                try{
-                    num = NumberFormat.getInstance(Locale.getDefault()).parse(value);
-                } catch (Exception n){
-                    num = 0.0;
-                }
-                //This is so autofilled 1's on the diagonal don't turn into 0's when something changes?
-                //true value update?!?!
+                //This is so, when typing in a cell A, cell B doesn't change 1.23456789 to it's displayed value of 1.23
                 if (!value.equals(edits[i][j].getTrueValue().getPrettyString())) {
-                    matrix.setElement(null, i, j);
-                    edits[i][j].setTrueValue(null);
+                    ComplexForm cf;
+                    try {
+                        cf = ComplexForm.parse(value);
+                        matrix.setElement(cf, i, j);
+                        edits[i][j].setTrueValue(cf);
+                    } catch (Exception e){
+                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }

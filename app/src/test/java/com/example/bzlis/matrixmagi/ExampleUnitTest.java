@@ -134,10 +134,31 @@ public class ExampleUnitTest {
     }
 
     @Test
+    public void testComplexFormParse(){
+        Number[] mags = new Number[]{-1, 0, 1, 1.23, -1.23, 7.34E22, -7.34E22, 12.1E-3, -12.1E-3};
+        for (int i = 0; i < mags.length; i++){
+            for (int j = 0; j < mags.length; j++){
+                String cf = new ComplexForm(mags[i], mags[j]).getPrettyString();
+                try {
+                    assertEquals(cf, ComplexForm.parse(cf).getPrettyString());
+                    String s = mags[i].toString() + ((mags[j].doubleValue() > 0) ? "+" : "") + ((mags[j].doubleValue() == 0) ? "" : mags[j] + "i");
+                    assertEquals(cf, ComplexForm.parse(s).getPrettyString());
+                } catch (Exception e){
+                    fail(e.getMessage());
+                }
+            }
+        }
+    }
+
+    @Test
     public void testDetEigenRandom(){
         for (int i = 0; i < 1000; i ++){
             int n = (int)Math.random()*10+1;
             Matrix A = new Matrix(n, n);
+            for (int z = 0; z < n; z++){
+                for (int y = 0; y < n; y++)
+                    A.setElement(new ComplexForm(Math.random()*100-50, Math.random()*100-50), z, y);
+            }
             ComplexForm det = A.det();
             ArrayList<Scalar> eigen = A.eigen();
             for (int j = 1; j < eigen.size(); j++){

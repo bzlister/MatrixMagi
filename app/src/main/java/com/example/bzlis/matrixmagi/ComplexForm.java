@@ -2,6 +2,8 @@ package com.example.bzlis.matrixmagi;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -19,6 +21,44 @@ public class ComplexForm {
     public ComplexForm(Number real){
         this.real = real.doubleValue();
         this.complex = 0.0;
+    }
+
+    public static ComplexForm parse(String s) throws Exception{
+        if (s == null || s.equals(""))
+            return new ComplexForm(0);
+        try {
+            Number r = 0;
+            Number c = 0;
+            if (s.contains("i")) {
+                if ((s.indexOf("i") != s.lastIndexOf("i")) || (((s.charAt(s.indexOf("i")-1) != '+') && (s.charAt(s.indexOf("i")-1) != '-')) && (s.indexOf("i") != s.length()-1)))
+                    throw new ParseException("bla", 0);
+                String[] pedi = new String[2];
+                if (s.contains("+"))//++, -+
+                    pedi = s.split("\\+");
+                else if (s.indexOf('-') != s.lastIndexOf('-')) {//--
+                    s = s.replaceFirst("-", "");
+                    pedi = s.split("-");
+                    pedi[0] = "-" + pedi[0];
+                    pedi[1] = "-" + pedi[1];
+                }
+                else if (s.contains("-")){//+-
+                    pedi = s.split("-");
+                    pedi[1] = "-" + pedi[1];
+                }
+                pedi[1] = pedi[1].replace("i", "");
+                if (pedi[0].length() == 0)
+                    pedi[0]+="0";
+                if (pedi[1].replace("-", "").length() == 0)
+                    pedi[1]+="1";
+                r = NumberFormat.getInstance(Locale.getDefault()).parse(pedi[0]);
+                c = NumberFormat.getInstance(Locale.getDefault()).parse(pedi[1]);
+            }
+            else
+                r = NumberFormat.getInstance(Locale.getDefault()).parse(s);
+            return new ComplexForm(r, c);
+        } catch (ParseException p){
+            throw new Exception(s + " not a properly formatted number!");
+        }
     }
 
     public Double getReal(){
