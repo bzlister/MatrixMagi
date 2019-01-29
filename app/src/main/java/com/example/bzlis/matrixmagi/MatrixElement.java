@@ -20,8 +20,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
 
     private MatrixElement next;
     private Context context;
-    private Double trueValue;
-    private boolean complex = false;
+    private ComplexForm trueValue;
 
     public MatrixElement(Context context){
         super(context);
@@ -42,7 +41,8 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
             public void onClick(View v) {
                 if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
                     try {
-                        if (!(((MatrixElement)v).getHint().toString().equals("") || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue())))
+                        // || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue()))
+                        if (!((MatrixElement)v).getHint().toString().equals(""))
                             Toast.makeText(((MatrixElement)v).context, String.format(Locale.getDefault(), "%g", trueValue), Toast.LENGTH_SHORT).show();
                     } catch (Exception e){}
                 }
@@ -58,29 +58,11 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         return this.next;
     }
 
-    public Double getTrueValue(){
+    public ComplexForm getTrueValue(){
         return this.trueValue;
     }
 
-    public void setTrueValue(Double number){
-        this.trueValue = number;
-    }
-
-    public String getPrettyString(){
-        String s = "";
-        if (trueValue == null)
-            trueValue = 0.0;
-        else if (trueValue == (long)(1.0*trueValue))
-            s = String.format(Locale.getDefault(), "%d", (int)(1.0*trueValue));
-        else {
-            s = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.getDefault())).format(trueValue);
-            /*
-            if (s.replace("-","").length() == 1)
-                s = s + "aaaaaaaa";
-                */
-        }
-        if (s.length() > 5)
-            s = new DecimalFormat("0.##E0", DecimalFormatSymbols.getInstance(Locale.getDefault())).format(trueValue);
-        return s;
+    public void setTrueValue(ComplexForm cf){
+        this.trueValue = cf;
     }
 }

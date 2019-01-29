@@ -231,7 +231,7 @@ public class PixelGridView extends View {
                 if (op == 0)
                     C = A.add(B);
                 else if (op == 1)
-                    C = A.add(B.scalarMult(-1));
+                    C = A.add(B.scalarMult(new ComplexForm(-1.0)));
                 else if (op == 2)
                     C = A.mult(B);
                 else {
@@ -243,8 +243,8 @@ public class PixelGridView extends View {
                 if (op == -1)
                     C = A.mult(B);
                 else {
-                    if (B.getElement(0,0) == (long)(1.0*B.getElement(0,0)))
-                        C = A.power((int) (1.0 * B.getElement(0, 0)));
+                    if (B.getElement(0,0).getReal() == (long)(1.0*B.getElement(0,0).getReal()))
+                        C = A.power((int) (1.0 * B.getElement(0, 0).getReal()));
                     else
                         throw new IllegalArgumentException("Exponents must be integers");
                 }

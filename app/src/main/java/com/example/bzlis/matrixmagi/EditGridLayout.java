@@ -203,7 +203,7 @@ public class EditGridLayout extends RelativeLayout {
                 else
                     edits[(j == 0) ? i - 1 : i][(j == 0) ? matCols-1 : j-1].setNext(input);
                 input.setTrueValue(matrix.getElement(i,j));
-                input.setHint(input.getPrettyString());
+                input.setHint(input.getTrueValue().getPrettyString());
                 if ((i != matRows-1) || (j != matCols-1)) {
                     input.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_FULLSCREEN);
                     input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -248,8 +248,12 @@ public class EditGridLayout extends RelativeLayout {
                 } catch (Exception n){
                     num = 0.0;
                 }
-                if (!value.equals(edits[i][j].getPrettyString()))
-                    matrix.setElement(num.doubleValue(), i, j);
+                //This is so autofilled 1's on the diagonal don't turn into 0's when something changes?
+                //true value update?!?!
+                if (!value.equals(edits[i][j].getTrueValue().getPrettyString())) {
+                    matrix.setElement(null, i, j);
+                    edits[i][j].setTrueValue(null);
+                }
             }
         }
         DataBag.getInstance().getCurrView().hide();

@@ -2,6 +2,7 @@ package com.example.bzlis.matrixmagi;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -13,181 +14,7 @@ import static org.junit.Assert.*;
  */
 public class ExampleUnitTest {
 
-    @Test
-    public void test_inverse(){
-        for (int z = 0; z < 100; z++) {
-            System.out.println();
-            int n = new Random().nextInt(10);
-            if (n == 0)
-                n += 1;
-            double[] plier = new double[]{-1,1};
-            Matrix A = new Matrix(n, n);
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    A.setElement((plier[new Random().nextInt(1)]*(new Random().nextInt(100)+1.0)/(new Random().nextInt(100)+1)), i, j);
-                }
-            }
-            double error;
-            try {
-                Matrix inv = A.inverse();
-                error = inv.getError();
-            } catch (IllegalArgumentException f) {
-                System.out.println(f.getMessage());
-                error = 0.0;
-            }
-            assert(error <= 1e-10);
-        }
-    }
-
-    @Test
-    public void test_det(){
-        for (int z = 0; z < 100; z++) {
-            System.out.println();
-            int n = new Random().nextInt(10);
-            if (n == 0)
-                n += 1;
-            double[] plier = new double[]{-1,1};
-            Matrix A = new Matrix(2, 2);
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 2; j++) {
-                    A.setElement((plier[new Random().nextInt(1)]*(new Random().nextInt(100)+1.0)/(new Random().nextInt(100)+1)), i, j);
-                }
-            }
-            double error = 0;
-            try {
-                Matrix inv = A.inverse();
-                Double temp1 = A.getElement(0, 0);
-                A.setElement(A.getElement(1, 1), 0, 0);
-                A.setElement(temp1, 1, 1);
-                A.setElement(-A.getElement(0, 1),  0, 1);
-                A.setElement(-A.getElement(1, 0), 1, 0);
-                A = A.scalarMult(1/A.det());
-                for (int x = 0; x < 2; x++){
-                    for (int y = 0; y < 2; y++){
-                        error += Math.pow(A.getElement(x, y) - inv.getElement(x, y), 2);
-                    }
-                }
-            } catch (IllegalArgumentException f) {
-                System.out.println(f.getMessage());
-                error = 1;
-            }
-            assert(error <= 1e-10);
-        }
-    }
-
-    @Test
-    public void test_gaussian(){
-        for (int z = 0; z < 100; z++) {
-            System.out.println();
-            int n = new Random().nextInt(10);
-            if (n == 0)
-                n += 1;
-            double[] plier = new double[]{-1, 1};
-            Matrix A = new Matrix(n, n);
-            Matrix B = new Matrix(n, 1);
-            for (int i = 0; i < n; i++) {
-                B.setElement((plier[new Random().nextInt(1)] * (new Random().nextInt(100) + 1.0) / (new Random().nextInt(100) + 1)), i, 0);
-                for (int j = 0; j < n; j++) {
-                    A.setElement((plier[new Random().nextInt(1)] * (new Random().nextInt(100) + 1.0) / (new Random().nextInt(100) + 1)), i, j);
-                }
-            }
-            double error;
-            try {
-                Matrix x = A.guassElim(B);
-                error = x.getError();
-            } catch (IllegalArgumentException f) {
-                System.out.println(f.getMessage());
-                error = 0.0;
-            }
-            assert(error <= 1e-10);
-        }
-    }
-
-    @Test
-    public void test_leastSquares(){
-        for (int z = 0; z < 100; z++) {
-            System.out.println();
-            int rA = new Random().nextInt(5)+1;
-            int cA = new Random().nextInt(5)+1;
-            int rB = new Random().nextInt(5)+1;
-            double[] plier = new double[]{-1, 1};
-            Matrix A = new Matrix(rA, cA);
-            Matrix B = new Matrix(rB, 1);
-            for (int i = 0; i < rA; i++) {
-                for (int j = 0; j < cA; j++) {
-                    A.setElement((plier[new Random().nextInt(1)] * (new Random().nextInt(100) + 1.0) / (new Random().nextInt(100) + 1)), i, j);
-                }
-            }
-            for (int k = 0; k < rB; k++)
-                B.setElement((plier[new Random().nextInt(1)] * (new Random().nextInt(100) + 1.0) / (new Random().nextInt(100) + 1)), k, 0);
-            double error;
-            try{
-                Matrix x = A.leastSquares(B);
-                error = x.getError();
-            } catch (IllegalArgumentException f){
-                System.out.println(f.getMessage());
-                error = 0.0;
-            }
-            System.out.println(error);
-            assert(true);
-        }
-    }
-
-    @Test
-    public void test_power(){
-        for (int z = 0; z < 100; z++) {
-            System.out.println();
-            int n = new Random().nextInt(10);
-            if (n == 0)
-                n += 1;
-            double[] plier = new double[]{-1, 1};
-            Matrix A = new Matrix(n, n);
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    A.setElement(new Random().nextInt(4)+1.0, i, j);
-                }
-            }
-            double error;
-            int pow = (int)plier[new Random().nextInt(1)]*n;
-            try {
-                Matrix result = A.power(pow);
-                Matrix cp = new Matrix(n, n);
-                if (pow < 0)
-                    cp = A.inverse();
-                if (pow > 0)
-                    cp = A.duplicate();
-                Matrix base = cp;
-                while (n > 1) {
-                    cp = cp.mult(base);
-                    n--;
-                }
-                error = result.sumSquaredErrors(cp);
-            } catch (IllegalArgumentException e){
-                System.out.println(e.getMessage());
-                error = 0;
-            }
-            assert(error <= 1e-10);
-        }
-    }
-
-    @Test
-    public void test_QR(){
-        Matrix A = new Matrix(3, 3);
-        A.setElement(12.0, 0, 0);
-        A.setElement(-51.0, 0, 1);
-        A.setElement(4.0, 0, 2);
-        A.setElement(6.0, 1, 0);
-        A.setElement(167.0, 1, 1);
-        A.setElement(-68.0, 1, 2);
-        A.setElement(-4.0, 2, 0);
-        A.setElement(24.0, 2, 1);
-        A.setElement(-41.0, 2, 2);
-        Matrix[] QR = A.QR();
-        System.out.println(QR[0]);
-        System.out.println(QR[1]);
-        assert(true);
-    }
-
+/*
     @Test
     public void testEigen(){
         Matrix A = new Matrix(3, 3);
@@ -203,16 +30,152 @@ public class ExampleUnitTest {
         System.out.println(A.eigen());
         assert(true);
     }
+*/
+
+    @Test
+    public void testAdd(){
+        Matrix A = new Matrix(2, 1);
+        Matrix B = new Matrix(2, 1);
+        A.setElement(new ComplexForm(1, 2), 0, 0);
+        A.setElement(new ComplexForm(2, -1), 1, 0);
+        B.setElement(new ComplexForm(5, 10), 0, 0);
+        B.setElement(new ComplexForm(5, 10), 1, 0);
+        Matrix C = A.add(B);
+        assertEquals(new ComplexForm(6, 12), C.getElement(0, 0));
+        assertEquals(new ComplexForm(7, 9), C.getElement(1, 0));
+    }
+
+    @Test
+    public void testMult(){
+        Matrix A = new Matrix(2, 1);
+        Matrix B = new Matrix(1, 2);
+        A.setElement(new ComplexForm(5, -6.5),0, 0);
+        A.setElement(new ComplexForm(8, 1), 1, 0);
+        B.setElement(new ComplexForm(0, 4), 0, 0);
+        B.setElement(new ComplexForm(4, 0), 0, 1);
+        Matrix C = B.mult(A);
+        assertEquals(1, C.getNumCols());
+        assertEquals(1, C.getNumRows());
+        assertEquals(new ComplexForm(58, 24), C.getElement(0, 0));
+    }
 
     @Test
     public void testComplex(){
-        ComplexForm a = new ComplexForm(3.0, 4.0);
-        ComplexForm b = new ComplexForm(8.0, -2.0);
-        assert(ComplexForm.add(a, b).equals(new ComplexForm(11.0, 2.0)));
-        assert(ComplexForm.mult(a, b).equals(new ComplexForm(32.0, 26.0)));
+        ComplexForm a = new ComplexForm(3, 4);
+        ComplexForm b = new ComplexForm(8, -2);
+        assert(ComplexForm.add(a, b).equals(new ComplexForm(11, 2)));
+        assert(ComplexForm.mult(a, b).equals(new ComplexForm(32, 26)));
         assert(ComplexForm.div(a, b).equals(new ComplexForm(4.0/17, 19.0/34)));
-        ComplexForm c = new ComplexForm(1.0, 1.0);
-        ComplexForm d = new ComplexForm(1.0, -1.0);
-        assert(ComplexForm.mult(c, d).equals(new ComplexForm(2.0, 0.0)));
+        ComplexForm c = new ComplexForm(1, 1);
+        ComplexForm d = new ComplexForm(1, -1);
+        assert(ComplexForm.mult(c, d).equals(new ComplexForm(2, 0)));
+    }
+
+    @Test
+    public void testPower(){
+        Matrix A = new Matrix(2, 2);
+        A.setElement(new ComplexForm(0, 1), 0, 0);
+        A.setElement(new ComplexForm(0, 1), 0, 1);
+        A.setElement(new ComplexForm(1, 0), 1, 0);
+        A.setElement(new ComplexForm(1, 0), 1, 1);
+        Matrix A2 = A.power(2);
+        assertEquals(new ComplexForm(-1, 1), A2.getElement(0, 0));
+        assertEquals(new ComplexForm(-1, 1), A2.getElement(0, 1));
+        assertEquals(new ComplexForm(1, 1), A2.getElement(1, 0));
+        assertEquals(new ComplexForm(1, 1), A2.getElement(1, 1));
+    }
+
+    @Test
+    public void testEquals(){
+        Matrix A = new Matrix(2, 1);
+        A.setElement(new ComplexForm(4.5, 2.3), 0, 0);
+        A.setElement(new ComplexForm(3.4, -1.2), 1, 0);
+        Matrix B = A.add(new Matrix(2, 1));
+        assertEquals(A, B);
+    }
+
+    @Test
+    public void testInverse(){
+        Matrix A = new Matrix(2, 2);
+        A.setElement(new ComplexForm(1), 0, 0);
+        A.setElement(new ComplexForm(0, -1), 0, 1);
+        A.setElement(new ComplexForm(1), 1, 0);
+        A.setElement(new ComplexForm(0, 1), 1, 1);
+        Matrix B = A.inverse();
+        System.out.println(B.toString());
+        assertEquals(new ComplexForm(0.5), B.getElement(0, 0));
+        assertEquals(new ComplexForm(0.5), B.getElement(0, 1));
+        assertEquals(new ComplexForm(0, 0.5), B.getElement(1, 0));
+        assertEquals(new ComplexForm(0, -0.5), B.getElement(1, 1));
+        assertEquals(A.mult(B), new Matrix(2, 2));
+    }
+
+    @Test
+    public void testLS(){
+        Matrix A = new Matrix(2, 2);
+        Matrix B = new Matrix(2, 3);
+        A.setElement(new ComplexForm(1), 0, 0);
+        A.setElement(new ComplexForm(2), 0, 1);
+        A.setElement(new ComplexForm(3), 1, 0);
+        A.setElement(new ComplexForm(4), 1, 1);
+        B.setElement(new ComplexForm(9), 0, 0);
+        B.setElement(new ComplexForm(12), 0, 1);
+        B.setElement(new ComplexForm(15), 0, 2);
+        B.setElement(new ComplexForm(19), 1, 0);
+        B.setElement(new ComplexForm(26), 1, 1);
+        B.setElement(new ComplexForm(33), 1, 2);
+        Matrix X = A.leastSquares(B);
+        System.out.println(A.mult(X));
+        System.out.println(B);
+        assertEquals(A.mult(X), B);
+    }
+
+    @Test
+    public void testLSRandom(){
+        for (int i = 0; i < 1000; i++){
+            int m = (int)(Math.random()*10)+1;
+            int n = (int)(Math.random()*10)+1;
+            int o = (int)(Math.random()*10)+1;
+            Matrix A = new Matrix(m, n);
+            Matrix X = new Matrix(n, o);
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < m; k++)
+                    A.setElement(new ComplexForm(Math.random() * 100 - 50, 0), k, j);
+                for (int p = 0; p < o; p++)
+                    X.setElement(new ComplexForm(Math.random() * 100 - 50, 0), j, p);
+            }
+            try {
+                Matrix X2 = A.leastSquares(A.mult(X));
+                assert(X2.getError() < 1e-10);
+            } catch (IllegalArgumentException e) {
+                fail("Beeeg Yoshi");
+            }
+        }
+        assert(true);
+    }
+
+    @Test
+    public void LS1(){
+        Matrix A = new Matrix(1, 3);
+        Matrix B = new Matrix(1, 1);
+        A.setElement(new ComplexForm(5.35), 0, 0);
+        A.setElement(new ComplexForm(-36.36), 0, 1);
+        A.setElement(new ComplexForm(7.36), 0, 2);
+        B.setElement(new ComplexForm(534.71), 0, 0);
+        Matrix T = A.transpose();
+        T.mult(A.mult(T).inverse()).mult(B);
+        assert(true);
+    }
+
+    @Test
+    public void testPrettyPrint(){
+        ComplexForm cf = new ComplexForm(365345.00783, 0.00002313);
+        assertEquals(cf.getPrettyString(), "3.65E5+i2.31E-5");
+        ComplexForm df = new ComplexForm(1, 1);
+        assertEquals(df.getPrettyString(), "1+i");
+        ComplexForm ef = new ComplexForm(0, -1);
+        assertEquals(ef.getPrettyString(), "-i");
+        ComplexForm ff = new ComplexForm(-323, 255);
+        assertEquals(ff.getPrettyString(), "-323+i255");
     }
 }
