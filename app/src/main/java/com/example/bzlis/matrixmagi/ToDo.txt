@@ -1,11 +1,10 @@
 Trash can icon
-complex number support in general
 Ads
 App icon
-Eigenvector function
 Custom keyboard
 PixelGridView shrinks when keyboard spawns
-Update prettyprint/hint logic
+
+
 a^(b+ic) = a^b(cos(c*ln(a)) + isin(c*ln(a)))
  (a+bi)^(c+di)=(a^2+b^2)^(c/2)e^(-darg(a+ib))×{cos[carg(a+ib)+1/2dln(a^2+b^2)]+isin[carg(a+ib)+1/2dln(a^2+b^2)]}.
 

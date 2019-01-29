@@ -294,11 +294,11 @@ public class Matrix {
         double sum = 0.0;
         if (this.getNumRows() == 1){
             for (int j = 0; j < this.getNumCols(); j++)
-                sum += this.getElement(0,j).magnitude();
+                sum += Math.pow(this.getElement(0,j).magnitude(), 2);
         }
         else if (this.getNumCols() == 1){
             for (int i = 0; i < this.getNumRows(); i++)
-                sum += this.getElement(i,0).magnitude();
+                sum += Math.pow(this.getElement(i,0).magnitude(), 2);
         }
         return Math.sqrt(sum);
     }
@@ -308,7 +308,7 @@ public class Matrix {
             throw new IllegalArgumentException("Not a square matrix!");
         Matrix cp = this.duplicate();
         ArrayList<Scalar> lambda = new ArrayList<>();
-        for (int i = 0; i < 100; i++){
+        for (int i = 0; i < 500; i++){
             Matrix[] QR = cp.QR();
             cp = QR[1].mult(QR[0]);
         }
@@ -329,8 +329,8 @@ public class Matrix {
                 else{
                     ComplexForm L1 = ComplexForm.add(ComplexForm.div(Tr, new ComplexForm(2)), dscrm);
                     ComplexForm L2 = ComplexForm.sub(ComplexForm.div(Tr, new ComplexForm(2)), dscrm);
-                    Matrix A1 = this.duplicate().add(new Matrix(3, 3).scalarMult(ComplexForm.mult(L1, new ComplexForm(-1))));
-                    Matrix A2 = this.duplicate().add(new Matrix(3, 3).scalarMult(ComplexForm.mult(L2, new ComplexForm(-1))));
+                    Matrix A1 = this.duplicate().add(new Matrix(this.getNumRows(), this.getNumCols()).scalarMult(ComplexForm.mult(L1, new ComplexForm(-1))));
+                    Matrix A2 = this.duplicate().add(new Matrix(this.getNumRows(), this.getNumCols()).scalarMult(ComplexForm.mult(L2, new ComplexForm(-1))));
                     if (A1.det().magnitude() < A2.det().magnitude())
                         lambda.add(new Scalar(L1));
                     else
@@ -354,7 +354,7 @@ public class Matrix {
             Matrix a = this.getCol(j);
             Matrix u = a.duplicate();
             for (int k = 0; k < j; k++)
-                u = u.add(proj(U.get(k), a).scalarMult(new ComplexForm(-1)));
+                u = u.add((proj(U.get(k), a).scalarMult(new ComplexForm(-1))));
             U.add(u);
             E.add(u.scalarMult(new ComplexForm(1/u.mag())));
             int z = 0;

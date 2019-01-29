@@ -129,17 +129,23 @@ public class EditGridLayout extends RelativeLayout {
                         try {
                             int spawnX = Math.round(edit.oldX-len*thick);
                             int spawnY = Math.round(edit.oldY-len*thick);
-                            if (edit.getActualX() < DataBag.getInstance().getCurrView().det.getX()) {
-                                Matrix inv = edit.getEncsMatrix().inverse();
-                                DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(spawnX, spawnY));
-                            } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX()) {
-                                Scalar det = new Scalar(edit.getEncsMatrix().det());
-                                DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(spawnX, spawnY));
-                            } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
-                                ArrayList<Scalar> lambda = edit.getEncsMatrix().eigen();
-                                for (int i = 0; i < lambda.size(); i++)
-                                    DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX, spawnY+len*i));
-                            } else {
+                            if (!(edit.getEncsMatrix() instanceof Scalar)){
+                                if (edit.getActualX() < DataBag.getInstance().getCurrView().det.getX()) {
+                                    Matrix inv = edit.getEncsMatrix().inverse();
+                                    DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(spawnX, spawnY));
+                                } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX()) {
+                                    Scalar det = new Scalar(edit.getEncsMatrix().det());
+                                    DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(spawnX, spawnY));
+                                } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
+                                    ArrayList<Scalar> lambda = edit.getEncsMatrix().eigen();
+                                    for (int i = 0; i < lambda.size(); i++)
+                                        DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX, spawnY+len*i));
+                                } else {
+                                    ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
+                                    DataBag.getInstance().removeData(edit);
+                                    DataBag.getInstance().getCurrView().invalidate();
+                                }
+                            } else if (edit.getActualX() > DataBag.getInstance().getCurrView().eigen.getX() + 2*len){
                                 ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
                                 DataBag.getInstance().removeData(edit);
                                 DataBag.getInstance().getCurrView().invalidate();
@@ -203,14 +209,15 @@ public class EditGridLayout extends RelativeLayout {
                 else
                     edits[(j == 0) ? i - 1 : i][(j == 0) ? matCols-1 : j-1].setNext(input);
                 input.setTrueValue(matrix.getElement(i,j));
-                input.setHint(input.getTrueValue().getPrettyString());
+                input.setHint((input.getTrueValue().getPrettyString().equals("") ? "0" : input.getTrueValue().getPrettyString()));
                 if ((i != matRows-1) || (j != matCols-1)) {
                     input.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_FULLSCREEN);
                     input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                         @Override
                         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                            if (actionId == EditorInfo.IME_ACTION_NEXT)
-                                ((MatrixElement)v).getNext().requestFocus();
+                            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                                ((MatrixElement) v).getNext().requestFocus();
+                            }
                             return true;
                         }
                     });
@@ -225,6 +232,12 @@ public class EditGridLayout extends RelativeLayout {
                     @Override
                     public void afterTextChanged(Editable s) {
                         fill();
+                    }
+                });
+                input.setOnFocusChangeListener(new OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        blare();
                     }
                 });
                 setPos(i, j);
@@ -246,8 +259,9 @@ public class EditGridLayout extends RelativeLayout {
                         cf = ComplexForm.parse(value);
                         matrix.setElement(cf, i, j);
                         edits[i][j].setTrueValue(cf);
+                        edits[i][j].setExcepMessage("");
                     } catch (Exception e){
-                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        edits[i][j].setExcepMessage(e.getMessage());
                     }
                 }
             }
@@ -256,10 +270,19 @@ public class EditGridLayout extends RelativeLayout {
        // DataBag.getInstance().addData(this); what does this do
     }
 
+    private void blare(){
+        String s = "";
+        for (int i = 0; i < matRows; i++){
+            for (int j = 0; j < matCols; j++)
+                s+= edits[i][j].getExcepMessage() + "\n";
+        }
+        if (!s.trim().equals(""))
+            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), s.trim(), Toast.LENGTH_LONG).show();
+    }
+
     protected static void hideKeyboard(View v){
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-
     }
 
     private void setPos(int row, int column) {

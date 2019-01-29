@@ -21,6 +21,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
     private MatrixElement next;
     private Context context;
     private ComplexForm trueValue;
+    private String excepMessage = "";
 
     public MatrixElement(Context context){
         super(context);
@@ -42,8 +43,8 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
                 if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
                     try {
                         // || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue()))
-                        if (!((MatrixElement)v).getHint().toString().equals(""))
-                            Toast.makeText(((MatrixElement)v).context, String.format(Locale.getDefault(), "%g", trueValue), Toast.LENGTH_SHORT).show();
+                        if (!ComplexForm.parse(((MatrixElement)v).getHint().toString()).equals(trueValue))
+                            Toast.makeText(((MatrixElement)v).context, trueValue.getFullString(), Toast.LENGTH_SHORT).show();
                     } catch (Exception e){}
                 }
             }
@@ -64,5 +65,13 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
 
     public void setTrueValue(ComplexForm cf){
         this.trueValue = cf;
+    }
+
+    public void setExcepMessage(String s){
+        this.excepMessage = s;
+    }
+
+    public String getExcepMessage(){
+        return excepMessage;
     }
 }

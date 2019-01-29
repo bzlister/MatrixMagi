@@ -151,6 +151,39 @@ public class ExampleUnitTest {
     }
 
     @Test
+    public void testQR(){
+        Matrix A = new Matrix(3, 3);
+        A.setElement(new ComplexForm(-2), 0, 0);
+        A.setElement(new ComplexForm(-2), 0, 1);
+        A.setElement(new ComplexForm(-9), 0, 2);
+        A.setElement(new ComplexForm(-1), 1, 0);
+        A.setElement(new ComplexForm(1),1, 1);
+        A.setElement(new ComplexForm(-3), 1, 2);
+        A.setElement(new ComplexForm(1), 2, 0);
+        A.setElement(new ComplexForm(1), 2, 1);
+        A.setElement(new ComplexForm(4), 2, 2);
+        Matrix[] QR = A.QR();
+        assertEquals(QR[0].mult(QR[1]), A);
+    }
+
+    @Test
+    public void testEigen(){
+        Matrix A = new Matrix(3, 3);
+        A.setElement(new ComplexForm(-2), 0, 0);
+        A.setElement(new ComplexForm(-2), 0, 1);
+        A.setElement(new ComplexForm(-9), 0, 2);
+        A.setElement(new ComplexForm(-1), 1, 0);
+        A.setElement(new ComplexForm(1),1, 1);
+        A.setElement(new ComplexForm(-3), 1, 2);
+        A.setElement(new ComplexForm(1), 2, 0);
+        A.setElement(new ComplexForm(1), 2, 1);
+        A.setElement(new ComplexForm(4), 2, 2);
+        ArrayList<Scalar> list = A.eigen();
+        for (Scalar s : list)
+           System.out.println("Eigenvalue: " + s.getElement(0, 0).getFullString());
+    }
+
+    @Test
     public void testDetEigenRandom(){
         for (int i = 0; i < 1000; i ++){
             int n = (int)Math.random()*10+1;

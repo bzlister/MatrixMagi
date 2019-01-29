@@ -142,4 +142,14 @@ public class ComplexForm {
         }
         return (s+u+t).trim();
     }
+
+    public String getFullString(){
+        String sr = "";
+        String sc = "";
+        if (real != 0.0)
+            sr = real.toString();
+        if (complex != 0.0)
+            sc += ((complex < 0) ? "-" : "+") + "i" + Double.valueOf(Math.abs(complex)).toString();
+        return sr+sc;
+    }
 }
