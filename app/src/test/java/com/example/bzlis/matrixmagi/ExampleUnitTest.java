@@ -111,26 +111,6 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void testLS(){
-        Matrix A = new Matrix(2, 2);
-        Matrix B = new Matrix(2, 3);
-        A.setElement(new ComplexForm(1), 0, 0);
-        A.setElement(new ComplexForm(2), 0, 1);
-        A.setElement(new ComplexForm(3), 1, 0);
-        A.setElement(new ComplexForm(4), 1, 1);
-        B.setElement(new ComplexForm(9), 0, 0);
-        B.setElement(new ComplexForm(12), 0, 1);
-        B.setElement(new ComplexForm(15), 0, 2);
-        B.setElement(new ComplexForm(19), 1, 0);
-        B.setElement(new ComplexForm(26), 1, 1);
-        B.setElement(new ComplexForm(33), 1, 2);
-        Matrix X = A.leastSquares(B);
-        System.out.println(A.mult(X));
-        System.out.println(B);
-        assertEquals(A.mult(X), B);
-    }
-
-    @Test
     public void testLSRandom(){
         for (int i = 0; i < 1000; i++){
             int m = (int)(Math.random()*10)+1;
@@ -140,9 +120,9 @@ public class ExampleUnitTest {
             Matrix X = new Matrix(n, o);
             for (int j = 0; j < n; j++) {
                 for (int k = 0; k < m; k++)
-                    A.setElement(new ComplexForm(Math.random() * 100 - 50, 0), k, j);
+                    A.setElement(new ComplexForm(Math.random() * 100 - 50, Math.random()*100-50), k, j);
                 for (int p = 0; p < o; p++)
-                    X.setElement(new ComplexForm(Math.random() * 100 - 50, 0), j, p);
+                    X.setElement(new ComplexForm(Math.random() * 100 - 50, Math.random()*100-50), j, p);
             }
             try {
                 Matrix X2 = A.leastSquares(A.mult(X));
@@ -151,20 +131,22 @@ public class ExampleUnitTest {
                 fail("Beeeg Yoshi");
             }
         }
-        assert(true);
     }
 
     @Test
-    public void LS1(){
-        Matrix A = new Matrix(1, 3);
-        Matrix B = new Matrix(1, 1);
-        A.setElement(new ComplexForm(5.35), 0, 0);
-        A.setElement(new ComplexForm(-36.36), 0, 1);
-        A.setElement(new ComplexForm(7.36), 0, 2);
-        B.setElement(new ComplexForm(534.71), 0, 0);
-        Matrix T = A.transpose();
-        T.mult(A.mult(T).inverse()).mult(B);
-        assert(true);
+    public void testDetEigenRandom(){
+        for (int i = 0; i < 1000; i ++){
+            int n = (int)Math.random()*10+1;
+            Matrix A = new Matrix(n, n);
+            ComplexForm det = A.det();
+            ArrayList<Scalar> eigen = A.eigen();
+            for (int j = 1; j < eigen.size(); j++){
+                Matrix I = new Matrix(n,n);
+                I.scalarMult(eigen.get(j).getElement(0, 0));
+                I.scalarMult(new ComplexForm(-1));
+                assert(A.add(I).det().magnitude() < 1e-10);
+            }
+        }
     }
 
     @Test
