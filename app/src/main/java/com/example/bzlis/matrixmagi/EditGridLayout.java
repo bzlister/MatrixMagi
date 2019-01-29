@@ -139,7 +139,7 @@ public class EditGridLayout extends RelativeLayout {
                                 } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
                                     ArrayList<Scalar> lambda = edit.getEncsMatrix().eigen();
                                     for (int i = 0; i < lambda.size(); i++)
-                                        DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX, spawnY+len*i));
+                                        DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX+len*i, spawnY+len*i));
                                 } else {
                                     ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
                                     DataBag.getInstance().removeData(edit);

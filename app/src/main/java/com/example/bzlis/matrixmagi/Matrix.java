@@ -1,6 +1,7 @@
 package com.example.bzlis.matrixmagi;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,13 +116,21 @@ public class Matrix {
     protected Matrix leastSquares(Matrix B) throws IllegalArgumentException {
         Matrix X = null;
         Matrix T = this.transpose();
+        String message = "";
         if (this.getNumRows() != B.getNumRows())
             throw new IllegalArgumentException("Rows(A) =/= Rows(B)");
-        if (this.getNumRows() >= this.getNumCols())
+        if (this.getNumRows() >= this.getNumCols()) {
             X = T.mult(this).inverse().mult(T).mult(B);
-        else
+            if (this.getNumRows() != this.getNumCols())
+                message = "System is overdetermined!";
+        }
+        else {
             X = T.mult(this.mult(T).inverse()).mult(B);
+            message = "System is underdetermined!";
+        }
         X.error = this.mult(X).sumSquaredErrors(B);
+        if (!message.equals(""))
+            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), message, Toast.LENGTH_LONG).show();
         return X;
     }
 
@@ -350,14 +359,14 @@ public class Matrix {
         ArrayList<Matrix> U = new ArrayList();
         ArrayList<Matrix> E = new ArrayList();
         ArrayList<Matrix> A = new ArrayList();
-        for (int j = 0; j < this.getNumCols(); j++){
+        for (int j = 0; j < this.getNumCols(); j++) {
             Matrix a = this.getCol(j);
             Matrix u = a.duplicate();
             for (int k = 0; k < j; k++) {
                 u = u.add((proj(U.get(k), a).scalarMult(new ComplexForm(-1))));
             }
             U.add(u);
-            Double scal = 1/u.mag();
+            Double scal = 1 / u.mag();
             if (scal == Double.POSITIVE_INFINITY)
                 scal = Double.MAX_VALUE;
             E.add(u.scalarMult(new ComplexForm(scal)));
@@ -368,20 +377,6 @@ public class Matrix {
             } while (z < j);
             A.add(a);
         }
-        /*
-        System.out.println("U:");
-        for (Matrix u : U){
-            System.out.print(u);
-        }
-        System.out.println("E:");
-        for (Matrix e : E){
-            System.out.print(e);
-        }
-        System.out.println("A:");
-        for (Matrix a : A){
-            System.out.print(a);
-        }
-        */
         Matrix Q = new Matrix(this.getNumRows(), this.getNumCols());
         for (int j = 0; j < this.getNumCols(); j++){
             for (int i = 0; i < this.getNumRows(); i++)

@@ -13,12 +13,14 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -199,14 +201,19 @@ public class PixelGridView extends View {
         } else
             corners[1] = new Point(x, y);
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            if ((corners[0].y - corners[1].y != 0) && (corners[0].x - corners[1].x != 0) && (DataBag.getInstance().isOccupied(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y), Math.max(corners[0].x, corners[1].x), Math.max(corners[0].y, corners[1].y), -1, false) < 0)) {
-                int matCols = Math.round(Math.abs(corners[0].x - corners[1].x) / cellLength);
-                int matRows = Math.round(Math.abs(corners[0].y - corners[1].y) / cellLength);
-                Point top = new Point(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y));
-                if (matCols == 1 && matRows == 1)
-                    scalarQuestionaire(top);
-                else
-                    makeEditGrid(new Matrix(matRows, matCols), top);
+            if ((corners[0].y - corners[1].y != 0) && (corners[0].x - corners[1].x != 0)) {
+                if (DataBag.getInstance().isOccupied(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y), Math.max(corners[0].x, corners[1].x), Math.max(corners[0].y, corners[1].y), -1, false) < 0) {
+                    int matCols = Math.round(Math.abs(corners[0].x - corners[1].x) / cellLength);
+                    int matRows = Math.round(Math.abs(corners[0].y - corners[1].y) / cellLength);
+                    Point top = new Point(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y));
+                    if (matCols == 1 && matRows == 1)
+                        scalarQuestionaire(top);
+                    else
+                        makeEditGrid(new Matrix(matRows, matCols), top);
+                }
+                else{
+                    //delete menu?
+                }
             }
             corners[0] = null;
             corners[1] = null;
@@ -237,7 +244,7 @@ public class PixelGridView extends View {
                 else {
                     C = A.leastSquares(B);
                     if (C.getError() > 1e-10)
-                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "No exact solution. Least-squares approximation error: " + C.getError(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "No exact solution.\nLeast-squares approximation error: " + C.getError(), Toast.LENGTH_LONG).show();
                 }
             } else{
                 if (op == -1)
