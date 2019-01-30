@@ -12,7 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.HashSet;
 
@@ -33,11 +39,29 @@ public class workbench extends AppCompatActivity {
         FragmentManager fm = getFragmentManager();
         mWorkerFragment = (WorkerFragment) fm.findFragmentByTag(TAG_WORKER_FRAGMENT);
         // create the fragment and data the first time
+
         RelativeLayout frame = new RelativeLayout(this);
+
         PixelGridView pr = new PixelGridView(this);
         frame.addView(pr);
         pr.setNumCells(numCells);
         DataBag.getInstance().setCurrView(pr);
+
+        MobileAds.initialize(this, "ca-app-pub-2890801541122304~4346705243");
+        AdView adView = new AdView(this);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        adView.setId(View.generateViewId());
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+        frame.addView(adView);
+        adView.bringToFront();
+        /* RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.FILL_PARENT);
+        lp.addRule(RelativeLayout.ABOVE, adView.getId());
+        */
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();

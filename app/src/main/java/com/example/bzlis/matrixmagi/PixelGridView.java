@@ -13,12 +13,14 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -210,21 +212,6 @@ public class PixelGridView extends View {
                         makeEditGrid(new Matrix(matRows, matCols), top);
                 }
                 else{
-                    /*
-                    Button del = new Button(this.getContext());
-                    del.setText("Delete");
-                    del.setBackgroundResource(R.drawable.tags_rounded_corners);
-                    ((GradientDrawable)del.getBackground()).setColor(buttonColor);
-                    ((GradientDrawable)del.getBackground()).setStroke(0, buttonColor);
-                    del.setTextColor(Color.GRAY);
-                    del.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
-                    del.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            v.setVisibility(View.GONE);
-                        }
-                    });
-                    */
                 }
             }
             corners[0] = null;

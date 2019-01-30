@@ -1,4 +1,3 @@
-Ads
 Custom keyboard
 PixelGridView shrinks when keyboard spawns
 
@@ -7,3 +6,7 @@ a^(b+ic) = a^b(cos(c*ln(a)) + isin(c*ln(a)))
  (a+bi)^(c+di)=(a^2+b^2)^(c/2)e^(-darg(a+ib))×{cos[carg(a+ib)+1/2dln(a^2+b^2)]+isin[carg(a+ib)+1/2dln(a^2+b^2)]}.
 
  arg(x+iy)=tan^(-1)(y/x)
+
+  ca-app-pub-2890801541122304~4346705243
+   real: ca-app-pub-2890801541122304/3308955741
+   test: ca-app-pub-3940256099942544/6300978111

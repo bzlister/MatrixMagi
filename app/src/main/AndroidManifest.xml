@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:textSize="32dp">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2890801541122304~4346705243"/>
         <activity
             android:name="com.example.bzlis.matrixmagi.workbench">
             <intent-filter>
