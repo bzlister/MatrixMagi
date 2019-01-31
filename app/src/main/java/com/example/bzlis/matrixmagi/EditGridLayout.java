@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -68,6 +70,7 @@ public class EditGridLayout extends RelativeLayout {
             @Override
             public boolean onTouch(View v, MotionEvent me){
                 EditGridLayout edit = (EditGridLayout)v;
+                hideKeyboard(v);
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
                     DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
                     DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
@@ -89,7 +92,6 @@ public class EditGridLayout extends RelativeLayout {
                     invalidate();
                 }
                 DataBag.getInstance().getCurrView().hide();
-                hideKeyboard(v);
                 if (me.getAction() == MotionEvent.ACTION_UP){
                     DataBag.getInstance().getCurrView().lews.setVisibility(INVISIBLE);
                     DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
@@ -283,6 +285,14 @@ public class EditGridLayout extends RelativeLayout {
     protected static void hideKeyboard(View v){
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        DataBag.getInstance().boardOut = false;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!DataBag.getInstance().boardOut)
+                    DataBag.getInstance().setAdVis(View.VISIBLE);
+            }
+        }, 500);
     }
 
     private void setPos(int row, int column) {

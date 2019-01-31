@@ -1,7 +1,13 @@
 package com.example.bzlis.matrixmagi;
 
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,10 +21,14 @@ public class DataBag {
     private int A;
     private int B;
     private boolean arithOp;
+    private AdView adView;
+    public boolean boardOut;
+   // private LinearLayout board;
 
     private DataBag(){
         editList = new HashSet<>();
         arithOp = false;
+        boardOut = false;
     }
 
     public static DataBag getInstance(){
@@ -48,6 +58,22 @@ public class DataBag {
                 break;
             }
         }
+    }
+
+    public void adLoader(AdRequest adRequest){
+        adView.loadAd(adRequest);
+    }
+
+    public void setAdView(AdView adView){
+        this.adView = adView;
+    }
+
+    public void setAdVis(int visibility){
+        adView.setVisibility(visibility);
+        if (visibility == View.GONE)
+            adView.pause();
+        else
+            adView.resume();
     }
 
     public int getSize(){
@@ -87,6 +113,21 @@ public class DataBag {
 
     public void setCurrView(PixelGridView px){
         this.currView = px;
+        /*
+        board = new LinearLayout(px.getContext());
+        board.setOrientation(LinearLayout.HORIZONTAL);
+        board.setY(100);
+        //board.setLayoutParams(new LinearLayout.LayoutParams(px.getWidth(), px.getHeight()/3));
+        ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).addView(board);
+        board.setVisibility(View.GONE);
+
+        for (int i = 0; i < 10; i++) {
+            Button digit = new Button(DataBag.getInstance().getCurrView().getContext());
+            digit.setText(new Integer(i).toString());
+            digit.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            board.addView(digit);
+        }
+        */
     }
 
     public PixelGridView getCurrView(){
@@ -130,4 +171,21 @@ public class DataBag {
             edit.setY(currView.cellLength * Math.round((edit.getY()+currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
         }
     }
+/*
+    public void showBoard(final MatrixElement m){
+        board.setVisibility(View.VISIBLE);
+        for (int i = 0; i < board.getChildCount(); i++) {
+            board.getChildAt(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    m.setText(m.getText().toString() + ((Button)view).getText().toString());
+                }
+            });
+        }
+    }
+
+    public void hideBoard(){
+        board.setVisibility(View.GONE);
+    }
+    */
 }

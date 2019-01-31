@@ -1,15 +1,21 @@
 package com.example.bzlis.matrixmagi;
 
 import android.app.FragmentManager;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,12 +46,13 @@ public class workbench extends AppCompatActivity {
         mWorkerFragment = (WorkerFragment) fm.findFragmentByTag(TAG_WORKER_FRAGMENT);
         // create the fragment and data the first time
 
-        RelativeLayout frame = new RelativeLayout(this);
+        final RelativeLayout frame = new RelativeLayout(this);
 
         PixelGridView pr = new PixelGridView(this);
         frame.addView(pr);
         pr.setNumCells(numCells);
         DataBag.getInstance().setCurrView(pr);
+
 
         MobileAds.initialize(this, "ca-app-pub-2890801541122304~4346705243");
         AdView adView = new AdView(this);
@@ -53,10 +60,10 @@ public class workbench extends AppCompatActivity {
         adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         adView.setId(View.generateViewId());
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
         frame.addView(adView);
+        DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
+
         /* RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.FILL_PARENT);
@@ -75,6 +82,7 @@ public class workbench extends AppCompatActivity {
                 public boolean onTouch(View v, MotionEvent event) {
                     ((RelativeLayout)v.getParent()).removeView(v);
                     v.setVisibility(View.GONE);
+                    DataBag.getInstance().adLoader(new AdRequest.Builder().build());
                     return false;
                 }
             });
@@ -82,6 +90,7 @@ public class workbench extends AppCompatActivity {
         }
         else {
             DataBag.getInstance().cleanData(frame);
+            //DataBag.getInstance().adLoader(new AdRequest.Builder().build());
         }
         setContentView(frame);
     }

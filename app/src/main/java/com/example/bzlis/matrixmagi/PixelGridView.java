@@ -27,6 +27,12 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import java.util.Random;
 
 public class PixelGridView extends View {
@@ -164,6 +170,19 @@ public class PixelGridView extends View {
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
         DataBag.getInstance().getCurrView().invalidate();
         DataBag.getInstance().snapToGrid();
+
+        /*
+        MobileAds.initialize(getContext(), "ca-app-pub-2890801541122304~4346705243");
+        AdView adView = new AdView(getContext());
+        adView.setAdSize(AdSize.BANNER);
+        //adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        adView.setId(View.generateViewId());
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        ((ViewGroup)this.getParent()).addView(adView);
+        DataBag.getInstance().setAdView(adView);
+        adView.bringToFront();
+        DataBag.getInstance().adLoader(new AdRequest.Builder().build());
+        */
     }
 
     @Override
