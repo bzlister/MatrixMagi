@@ -83,25 +83,26 @@ public class workbench extends AppCompatActivity {
             DataBag.getInstance().adLoader(new AdRequest.Builder().build());
         }
         setContentView(frame);
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager
-                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-            @Override
-            public void onShake(int count) {
-                if (count >= 1){
-                    DataBag.getInstance().deltut = false;
-                    Iterator<EditGridLayout> it = DataBag.getInstance().getData().iterator();
-                    while (it.hasNext()){
-                        ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(it.next());
-                        it.remove();
+        try {
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mShakeDetector = new ShakeDetector();
+            mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+                @Override
+                public void onShake(int count) {
+                    if (count >= 1) {
+                        DataBag.getInstance().deltut = false;
+                        Iterator<EditGridLayout> it = DataBag.getInstance().getData().iterator();
+                        while (it.hasNext()) {
+                            ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(it.next());
+                            it.remove();
+                        }
+                        DataBag.getInstance().getCurrView().hide();
+                        DataBag.getInstance().getCurrView().invalidate();
                     }
-                    DataBag.getInstance().getCurrView().hide();
-                    DataBag.getInstance().getCurrView().invalidate();
                 }
-            }
-        });
+            });
+        } catch (NullPointerException n){}
     }
 
     @Override
