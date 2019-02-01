@@ -5,10 +5,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -21,10 +19,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class EditGridLayout extends RelativeLayout {
 
@@ -146,11 +141,19 @@ public class EditGridLayout extends RelativeLayout {
                                     ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
                                     DataBag.getInstance().removeData(edit);
                                     DataBag.getInstance().getCurrView().invalidate();
+                                    if (DataBag.getInstance().deltut && DataBag.getInstance().getData().size() > 2) {
+                                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Shake device to delete all!", Toast.LENGTH_SHORT).show();
+                                        DataBag.getInstance().deltut = false;
+                                    }
                                 }
                             } else if (edit.getActualX() > DataBag.getInstance().getCurrView().eigen.getX() + 2*len){
                                 ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
                                 DataBag.getInstance().removeData(edit);
                                 DataBag.getInstance().getCurrView().invalidate();
+                                if (DataBag.getInstance().deltut && DataBag.getInstance().getData().size() > 2) {
+                                    Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Shake device to delete all!", Toast.LENGTH_SHORT).show();
+                                    DataBag.getInstance().deltut = false;
+                                }
                             }
                         } catch (IllegalArgumentException e){
                             Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -175,8 +178,6 @@ public class EditGridLayout extends RelativeLayout {
         this.addView(border);
         this.setOnTouchListener(myOnTouchListener);
         this.addView(grid);
-
-       // this.bringChildToFront(grid);
         DataBag.getInstance().addData(this);
     }
 
@@ -263,13 +264,13 @@ public class EditGridLayout extends RelativeLayout {
                         edits[i][j].setTrueValue(cf);
                         edits[i][j].setExcepMessage("");
                     } catch (Exception e){
+                        e.printStackTrace();
                         edits[i][j].setExcepMessage(e.getMessage());
                     }
                 }
             }
         }
         DataBag.getInstance().getCurrView().hide();
-       // DataBag.getInstance().addData(this); what does this do
     }
 
     private void blare(){
@@ -347,6 +348,4 @@ public class EditGridLayout extends RelativeLayout {
             mutated = true;
         }
     }
-
-
 }

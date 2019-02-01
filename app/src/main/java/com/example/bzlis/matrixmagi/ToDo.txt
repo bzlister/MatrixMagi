@@ -1,5 +1,4 @@
 Custom keyboard
-PixelGridView shrinks when keyboard spawns
 
 
 a^(b+ic) = a^b(cos(c*ln(a)) + isin(c*ln(a)))

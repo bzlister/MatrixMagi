@@ -5,7 +5,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
-import java.util.Objects;
 
 public class ComplexForm {
     private Double real;
@@ -30,11 +29,12 @@ public class ComplexForm {
             Number r = 0;
             Number c = 0;
             if (s.contains("i")) {
-                if ((s.indexOf("i") != s.lastIndexOf("i")) || (((s.charAt(s.indexOf("i")-1) != '+') && (s.charAt(s.indexOf("i")-1) != '-')) && (s.indexOf("i") != s.length()-1)))
+                if ((s.indexOf("i") != s.lastIndexOf("i")) || (((s.indexOf("i") != 0) && (s.charAt(s.indexOf("i") - 1) != '+') && (s.charAt(s.indexOf("i") - 1) != '-')) && (s.indexOf("i") != s.length() - 1)))
                     throw new ParseException("bla", 0);
-                String[] pedi = new String[2];
-                if (s.contains("+"))//++, -+
+                String[] pedi = new String[]{"", ""};
+                if (s.contains("+")){//++, -+
                     pedi = s.split("\\+");
+                }
                 else if (s.indexOf('-') != s.lastIndexOf('-')) {//--
                     s = s.replaceFirst("-", "");
                     pedi = s.split("-");

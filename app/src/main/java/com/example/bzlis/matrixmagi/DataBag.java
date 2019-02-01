@@ -2,14 +2,9 @@ package com.example.bzlis.matrixmagi;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -23,12 +18,14 @@ public class DataBag {
     private boolean arithOp;
     private AdView adView;
     public boolean boardOut;
-   // private LinearLayout board;
+    public boolean itut;
+    public boolean deltut;
 
     private DataBag(){
         editList = new HashSet<>();
         arithOp = false;
         boardOut = false;
+        deltut = true;
     }
 
     public static DataBag getInstance(){

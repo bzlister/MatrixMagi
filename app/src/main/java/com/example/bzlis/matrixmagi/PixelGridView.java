@@ -1,39 +1,25 @@
 package com.example.bzlis.matrixmagi;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
-import android.support.annotation.StringRes;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-
-import java.util.Random;
 
 public class PixelGridView extends View {
     Point[] corners = new Point[2];
@@ -165,24 +151,10 @@ public class PixelGridView extends View {
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
         }
         makeTrashCan();
-       // if (DataBag.getInstance().getA() != DataBag.getInstance().getB())
         if (DataBag.getInstance().getArithOp())
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
         DataBag.getInstance().getCurrView().invalidate();
         DataBag.getInstance().snapToGrid();
-
-        /*
-        MobileAds.initialize(getContext(), "ca-app-pub-2890801541122304~4346705243");
-        AdView adView = new AdView(getContext());
-        adView.setAdSize(AdSize.BANNER);
-        //adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        adView.setId(View.generateViewId());
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        ((ViewGroup)this.getParent()).addView(adView);
-        DataBag.getInstance().setAdView(adView);
-        adView.bringToFront();
-        DataBag.getInstance().adLoader(new AdRequest.Builder().build());
-        */
     }
 
     @Override
@@ -405,20 +377,4 @@ public class PixelGridView extends View {
         DataBag.getInstance().addData(result);
         DataBag.getInstance().getCurrView().invalidate();
     }
-
-    protected int getCellLength(){
-        return this.cellLength;
-    }
-
-    protected int getNumRows(){
-        return this.numRows;
-    }
-
-    protected int getNumColumns(){
-        return this.numColumns;
-    }
 }
-/*
-
-        ((GradientDrawable)eigen.getBackground()).setStroke(5, Color.DKGRAY);
- */

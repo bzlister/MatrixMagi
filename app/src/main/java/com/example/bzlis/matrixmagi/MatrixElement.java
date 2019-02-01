@@ -2,22 +2,11 @@ package com.example.bzlis.matrixmagi;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Spanned;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
 
@@ -31,16 +20,11 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         super(context);
         this.context = context;
         this.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        this.setKeyListener(DigitsKeyListener.getInstance("0123456789.-"));
+        this.setKeyListener(DigitsKeyListener.getInstance("0123456789.-/"));
         //this.setInputType(InputType.TYPE_NULL);
         this.setBackground(null);
         this.setTypeface(Typeface.SERIF, Typeface.ITALIC);
         this.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        /*
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-            this.setAutoSizeTextTypeWithDefaults(AUTO_SIZE_TEXT_TYPE_UNIFORM);
-            */
-
         this.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -53,8 +37,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-               // DataBag.getInstance().showBoard((MatrixElement)v);
-                DataBag.getInstance().boardOut = true;
+               // DataBag.getInstance().boardOut = true;
                 if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
                     try {
                         // || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue()))

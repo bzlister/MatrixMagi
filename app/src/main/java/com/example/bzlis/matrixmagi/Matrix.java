@@ -1,11 +1,7 @@
 package com.example.bzlis.matrixmagi;
 
-import android.util.Log;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class Matrix {
 
@@ -232,6 +228,7 @@ public class Matrix {
         return det;
     }
 
+    /*
     protected Matrix guassElim(Matrix B) throws IllegalArgumentException {
         int n = B.getNumRows();
         if (B.getNumRows() != this.getNumRows())
@@ -273,6 +270,7 @@ public class Matrix {
         else
             return this.leastSquares(B);
      }
+     */
 
 
     private void swapRows(int r1, int r2) {
@@ -420,5 +418,4 @@ public class Matrix {
     protected double getError(){
         return this.error;
     }
-
 }

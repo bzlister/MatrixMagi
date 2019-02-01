@@ -3,20 +3,13 @@ package com.example.bzlis.matrixmagi;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.os.Handler;
-import android.provider.ContactsContract;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -26,9 +19,8 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-import java.util.HashSet;
+import java.util.Iterator;
 
-import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
 import static android.view.View.VISIBLE;
 
 public class workbench extends AppCompatActivity {
@@ -36,6 +28,9 @@ public class workbench extends AppCompatActivity {
     private int numCells = 160;
     private static final String TAG_WORKER_FRAGMENT = "WorkerFragment";
     private WorkerFragment mWorkerFragment;
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
 
     @Override
@@ -64,11 +59,6 @@ public class workbench extends AppCompatActivity {
         DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
 
-        /* RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.FILL_PARENT);
-        lp.addRule(RelativeLayout.ABOVE, adView.getId());
-        */
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
@@ -90,8 +80,41 @@ public class workbench extends AppCompatActivity {
         }
         else {
             DataBag.getInstance().cleanData(frame);
-            //DataBag.getInstance().adLoader(new AdRequest.Builder().build());
+            DataBag.getInstance().adLoader(new AdRequest.Builder().build());
         }
         setContentView(frame);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeDetector = new ShakeDetector();
+        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+            @Override
+            public void onShake(int count) {
+                if (count >= 1){
+                    DataBag.getInstance().deltut = false;
+                    Iterator<EditGridLayout> it = DataBag.getInstance().getData().iterator();
+                    while (it.hasNext()){
+                        ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(it.next());
+                        it.remove();
+                    }
+                    DataBag.getInstance().getCurrView().hide();
+                    DataBag.getInstance().getCurrView().invalidate();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Add the following line to register the Session Manager Listener onResume
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    public void onPause() {
+        // Add the following line to unregister the Sensor Manager onPause
+        mSensorManager.unregisterListener(mShakeDetector);
+        super.onPause();
     }
 }
