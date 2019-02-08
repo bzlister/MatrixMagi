@@ -1,19 +1,16 @@
 package com.example.bzlis.matrixmagi;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -30,6 +27,7 @@ public class DataBag {
     public boolean itut;
     public boolean deltut;
     private GridLayout board;
+    private MatrixElement chosen;
 
     private DataBag(){
         editList = new HashSet<>();
@@ -196,6 +194,8 @@ public class DataBag {
 
     public void showBoard(final MatrixElement m){
         board.setVisibility(View.VISIBLE);
+        board.bringToFront();
+        m.setCursorVisible(true);
         boolean last = false;
         if (m.getNext() == null)
             last = true;
@@ -210,10 +210,13 @@ public class DataBag {
                     String text = ((Button)view).getText().toString();
                     if (text.equals("C"))
                         m.setText("");
-                    else if (text.equals("Next"))
+                    else if (text.equals("Next")) {
+                        DataBag.getInstance().requestSelected(m.getNext());
                         DataBag.getInstance().showBoard(m.getNext());
-                    else if (text.equals("Done"))
+                    }
+                    else if (text.equals("Done")) {
                         EditGridLayout.hideKeyboard(DataBag.getInstance().getCurrView());
+                    }
                     else
                         m.setText(m.getText().toString() + text);
                 }
@@ -221,7 +224,20 @@ public class DataBag {
         }
     }
 
+    public void requestSelected(MatrixElement m){
+        if (chosen != null)
+            chosen.setBackground(null);
+        chosen = m;
+        chosen.setBackgroundColor(Color.GRAY);
+        ((EditGridLayout)chosen.getParent().getParent()).blare();
+    }
+
     public void hideBoard(){
+        if (chosen != null){
+            ((EditGridLayout)chosen.getParent().getParent()).blare();
+            chosen.setBackground(null);
+            chosen = null;
+        }
         board.setVisibility(View.GONE);
     }
 

@@ -4,21 +4,17 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 
 public class EditGridLayout extends RelativeLayout {
@@ -241,12 +237,6 @@ public class EditGridLayout extends RelativeLayout {
                         fill();
                     }
                 });
-                input.setOnFocusChangeListener(new OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        blare();
-                    }
-                });
                 setPos(i, j);
                 grid.addView(input);
             }
@@ -268,7 +258,7 @@ public class EditGridLayout extends RelativeLayout {
                         edits[i][j].setTrueValue(cf);
                         edits[i][j].setExcepMessage("");
                     } catch (Exception e){
-                        e.printStackTrace();
+
                         edits[i][j].setExcepMessage(e.getMessage());
                     }
                 }
@@ -277,7 +267,7 @@ public class EditGridLayout extends RelativeLayout {
         DataBag.getInstance().getCurrView().hide();
     }
 
-    private void blare(){
+    protected void blare(){
         String s = "";
         for (int i = 0; i < matRows; i++){
             for (int j = 0; j < matCols; j++)

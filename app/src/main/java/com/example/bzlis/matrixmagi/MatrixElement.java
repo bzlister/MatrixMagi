@@ -3,7 +3,6 @@ package com.example.bzlis.matrixmagi;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.InputType;
-import android.text.method.DigitsKeyListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -34,6 +33,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
                 DataBag.getInstance().boardOut = true;
                 return false;
                 */
+                DataBag.getInstance().requestSelected((MatrixElement)v);
                 DataBag.getInstance().showBoard((MatrixElement)v);
                 if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
                     try {
