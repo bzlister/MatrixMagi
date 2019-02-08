@@ -1,7 +1,16 @@
 package com.example.bzlis.matrixmagi;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -20,6 +29,7 @@ public class DataBag {
     public boolean boardOut;
     public boolean itut;
     public boolean deltut;
+    private GridLayout board;
 
     private DataBag(){
         editList = new HashSet<>();
@@ -110,21 +120,36 @@ public class DataBag {
 
     public void setCurrView(PixelGridView px){
         this.currView = px;
-        /*
-        board = new LinearLayout(px.getContext());
-        board.setOrientation(LinearLayout.HORIZONTAL);
-        board.setY(100);
-        //board.setLayoutParams(new LinearLayout.LayoutParams(px.getWidth(), px.getHeight()/3));
-        ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).addView(board);
-        board.setVisibility(View.GONE);
+        makeBoard();
+    }
 
-        for (int i = 0; i < 10; i++) {
-            Button digit = new Button(DataBag.getInstance().getCurrView().getContext());
-            digit.setText(new Integer(i).toString());
-            digit.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    public void makeBoard(){
+        if (board != null)
+            ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).removeView(board);
+        board = new GridLayout(getCurrView().getContext());
+        board.setLayoutParams(new RelativeLayout.LayoutParams(getCurrView().getWidth(), (int)Math.round(getCurrView().getHeight()/3.0)));
+        board.setBackgroundResource(R.drawable.button_dark_gradient);
+        board.setVisibility(View.GONE);
+        int w = (int)Math.round(getCurrView().getWidth()/4.0);
+        int h = (int)Math.round(getCurrView().getHeight()/12.0);
+        String[] text = new String[]{"7","8","9","C","4","5","6","+","1","2","3","-","i","0",".","Next"};
+        for (int z = 0; z < 16; z++){
+            Button digit = new Button(getCurrView().getContext());
+            digit.setBackgroundResource(R.drawable.button_light);
+            digit.setText(text[z]);
+            digit.setAllCaps(false);
+            digit.setTextColor(Color.DKGRAY);
+            GridLayout.LayoutParams param = new GridLayout.LayoutParams();
+            param.rowSpec = GridLayout.spec(z/4);
+            param.columnSpec = GridLayout.spec(z%4);
+            param.setGravity(Gravity.CENTER);
+            param.width = w;
+            param.height = h;
+            digit.setLayoutParams(param);
             board.addView(digit);
         }
-        */
+        board.setTranslationY(Math.round(2*getCurrView().getHeight()/3.0));
+        ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).addView(board);
     }
 
     public PixelGridView getCurrView(){
@@ -168,14 +193,29 @@ public class DataBag {
             edit.setY(currView.cellLength * Math.round((edit.getY()+currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
         }
     }
-/*
+
     public void showBoard(final MatrixElement m){
         board.setVisibility(View.VISIBLE);
+        boolean last = false;
+        if (m.getNext() == null)
+            last = true;
         for (int i = 0; i < board.getChildCount(); i++) {
+            if (last && ((Button)board.getChildAt(i)).getText().equals("Next"))
+                ((Button)board.getChildAt(i)).setText("Done");
+            if (!last && ((Button)board.getChildAt(i)).getText().equals("Done"))
+                ((Button)board.getChildAt(i)).setText("Next");
             board.getChildAt(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    m.setText(m.getText().toString() + ((Button)view).getText().toString());
+                    String text = ((Button)view).getText().toString();
+                    if (text.equals("C"))
+                        m.setText("");
+                    else if (text.equals("Next"))
+                        DataBag.getInstance().showBoard(m.getNext());
+                    else if (text.equals("Done"))
+                        EditGridLayout.hideKeyboard(DataBag.getInstance().getCurrView());
+                    else
+                        m.setText(m.getText().toString() + text);
                 }
             });
         }
@@ -184,5 +224,5 @@ public class DataBag {
     public void hideBoard(){
         board.setVisibility(View.GONE);
     }
-    */
+
 }

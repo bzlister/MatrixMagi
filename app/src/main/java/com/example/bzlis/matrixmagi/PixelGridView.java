@@ -123,6 +123,7 @@ public class PixelGridView extends View {
         ques.setTextIsSelectable(false);
         //ques.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(ques, cellLength*2, cellLength*2);
+
     }
 
     @Override
@@ -169,6 +170,7 @@ public class PixelGridView extends View {
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
         DataBag.getInstance().getCurrView().invalidate();
         DataBag.getInstance().snapToGrid();
+        DataBag.getInstance().makeBoard();
     }
 
     @Override

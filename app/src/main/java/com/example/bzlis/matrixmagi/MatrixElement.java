@@ -19,25 +19,39 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
     public MatrixElement(Context context){
         super(context);
         this.context = context;
-        this.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        this.setKeyListener(DigitsKeyListener.getInstance("0123456789.-/"));
-        //this.setInputType(InputType.TYPE_NULL);
+        //this.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        //this.setKeyListener(DigitsKeyListener.getInstance("0123456789.-/"));
+        this.setInputType(InputType.TYPE_NULL);
         this.setBackground(null);
         this.setTypeface(Typeface.SERIF, Typeface.ITALIC);
         this.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
         this.setOnTouchListener(new OnTouchListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public boolean onTouch(View v, MotionEvent motionEvent) {
+            /*
                 DataBag.getInstance().setAdVis(View.GONE);
                 DataBag.getInstance().boardOut = true;
+                return false;
+                */
+                DataBag.getInstance().showBoard((MatrixElement)v);
+                if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
+                    try {
+                        // || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue()))
+                        if (((MatrixElement)v).trueValue.getFullString().length() > 5)
+                            Toast.makeText(((MatrixElement)v).context, trueValue.getFullString(), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e){}
+                }
                 return false;
             }
         });
 
+/*
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                // DataBag.getInstance().boardOut = true;
+                DataBag.getInstance().showBoard();
                 if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
                     try {
                         // || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue()))
@@ -47,6 +61,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
                 }
             }
         });
+        */
     }
 
     public void setNext(MatrixElement next){

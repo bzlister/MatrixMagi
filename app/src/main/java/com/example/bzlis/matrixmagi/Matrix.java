@@ -133,24 +133,21 @@ public class Matrix {
     protected Matrix power(int n){
         if (this.getNumRows() != this.getNumCols())
             throw new IllegalArgumentException("Rows(A) =/= Cols(A)");
-        Matrix H;
+        Matrix H = this.duplicate();
         if (n < 0){
             n*=-1;
             H = this.inverse();
         }
         else if (n == 0)
             H = new Matrix(this.getNumRows(), this.getNumCols());
-        else
-            H = this.duplicate();
-        if (n == 1)
-            return H;
-        else{
+        else if (n > 1){
             Matrix half = H.power(n/2);
             if (n%2==0)
-                return half.mult(half);
+                H = half.mult(half);
             else
-                return H.mult(half.mult(half));
+                H = H.mult(half.mult(half));
         }
+        return H;
     }
 
 

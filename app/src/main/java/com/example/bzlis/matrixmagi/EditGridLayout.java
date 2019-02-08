@@ -215,6 +215,7 @@ public class EditGridLayout extends RelativeLayout {
                     edits[(j == 0) ? i - 1 : i][(j == 0) ? matCols-1 : j-1].setNext(input);
                 input.setTrueValue(matrix.getElement(i,j));
                 input.setHint((input.getTrueValue().getPrettyString().equals("") ? "0" : input.getTrueValue().getPrettyString()));
+                /*
                 if ((i != matRows-1) || (j != matCols-1)) {
                     input.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_FULLSCREEN);
                     input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -229,6 +230,7 @@ public class EditGridLayout extends RelativeLayout {
                 }
                 else
                     input.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_FULLSCREEN);
+                    */
                 input.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -286,6 +288,7 @@ public class EditGridLayout extends RelativeLayout {
     }
 
     protected static void hideKeyboard(View v){
+        /*
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         DataBag.getInstance().boardOut = false;
@@ -296,6 +299,8 @@ public class EditGridLayout extends RelativeLayout {
                     DataBag.getInstance().setAdVis(View.VISIBLE);
             }
         }, 500);
+        */
+        DataBag.getInstance().hideBoard();
     }
 
     private void setPos(int row, int column) {
