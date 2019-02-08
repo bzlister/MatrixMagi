@@ -3,9 +3,9 @@ package com.example.bzlis.matrixmagi;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -135,18 +135,22 @@ public class ExampleUnitTest {
 
     @Test
     public void testComplexFormParse(){
-        Number[] mags = new Number[]{-1, 0, 1, 1.23, -1.23, 7.34E22, -7.34E22, 12.1E-3, -12.1E-3};
-        for (int i = 0; i < mags.length; i++){
-            for (int j = 0; j < mags.length; j++){
-                String cf = new ComplexForm(mags[i], mags[j]).getPrettyString();
-                try {
-                    assertEquals(cf, ComplexForm.parse(cf).getPrettyString());
-                    String s = mags[i].toString() + ((mags[j].doubleValue() > 0) ? "+" : "") + ((mags[j].doubleValue() == 0) ? "" : mags[j] + "i");
-                    assertEquals(cf, ComplexForm.parse(s).getPrettyString());
-                } catch (Exception e){
-                    fail(e.getMessage());
-                }
-            }
+        try {
+            assertEquals(new ComplexForm(3, 2), ComplexForm.parse("3+2i"));
+            assertEquals(new ComplexForm(3, 2), ComplexForm.parse("3+i2"));
+            assertEquals(new ComplexForm(3, 2), ComplexForm.parse("3.0+2.0i"));
+            assertEquals(new ComplexForm(3, 2), ComplexForm.parse("3.0+i2.0"));
+            assertEquals(new ComplexForm(-3, 2), ComplexForm.parse("-3+2i"));
+            assertEquals(new ComplexForm(3, -2), ComplexForm.parse("3-2i"));
+            assertEquals(new ComplexForm(0, 2), ComplexForm.parse("2i"));
+            assertEquals(new ComplexForm(0, -2.1), ComplexForm.parse("-2.1i"));
+            assertEquals(new ComplexForm(-3), ComplexForm.parse("-3"));
+            assertEquals(new ComplexForm(0), ComplexForm.parse("0"));
+            assertEquals(new ComplexForm(0), ComplexForm.parse("0+0i"));
+            assertEquals(new ComplexForm(0), ComplexForm.parse("0-0i"));
+        } catch (Exception p){
+            System.out.println(p.getMessage());
+            fail();
         }
     }
 

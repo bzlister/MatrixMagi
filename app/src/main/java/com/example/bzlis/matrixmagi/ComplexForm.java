@@ -3,7 +3,7 @@ package com.example.bzlis.matrixmagi;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class ComplexForm {
@@ -25,40 +25,44 @@ public class ComplexForm {
     public static ComplexForm parse(String s) throws Exception{
         if (s == null || s.equals(""))
             return new ComplexForm(0);
+        ComplexForm cf = new ComplexForm(0, 0);
         try {
-            Number r = 0;
-            Number c = 0;
-            if (s.contains("i")) {
-                if ((s.indexOf("i") != s.lastIndexOf("i")) || (((s.indexOf("i") != 0) && (s.charAt(s.indexOf("i") - 1) != '+') && (s.charAt(s.indexOf("i") - 1) != '-')) && (s.indexOf("i") != s.length() - 1)))
-                    throw new ParseException("bla", 0);
-                String[] pedi = new String[]{"", ""};
-                if (s.contains("+")){//++, -+
-                    pedi = s.split("\\+");
+            ArrayList<String> nums = new ArrayList<>();
+            int start = 0;
+            while (start < s.length()){
+                int end = start+1;
+                while (end < s.length() && (s.charAt(end) != '+' && s.charAt(end) != '-')) {
+                    end++;
                 }
-                else if (s.indexOf('-') != s.lastIndexOf('-')) {//--
-                    s = s.replaceFirst("-", "");
-                    pedi = s.split("-");
-                    pedi[0] = "-" + pedi[0];
-                    pedi[1] = "-" + pedi[1];
-                }
-                else if (s.contains("-")){//+-
-                    pedi = s.split("-");
-                    pedi[1] = "-" + pedi[1];
-                }
-                pedi[1] = pedi[1].replace("i", "");
-                if (pedi[0].length() == 0)
-                    pedi[0]+="0";
-                if (pedi[1].replace("-", "").length() == 0)
-                    pedi[1]+="1";
-                r = NumberFormat.getInstance(Locale.getDefault()).parse(pedi[0]);
-                c = NumberFormat.getInstance(Locale.getDefault()).parse(pedi[1]);
+                nums.add(s.substring(start, end));
+                start = end;
             }
-            else
-                r = NumberFormat.getInstance(Locale.getDefault()).parse(s);
-            return new ComplexForm(r, c);
-        } catch (ParseException p){
+            for (String num : nums){
+                if (!num.equals("")) {
+                    num = num.replace("+", "");
+                    if (num.contains("i")) {
+                        boolean negative = false;
+                        if (num.contains("-")) {
+                            num = num.replace("-", "");
+                            negative = true;
+                        }
+                        if (num.indexOf('i') != 0 && num.indexOf('i') != num.length() - 1)
+                            throw new Exception();
+                        num = num.replace("i", "");
+                        if (num.equals(""))
+                            num = "1";
+                        if (negative)
+                            num = "-" + num;
+                        cf = ComplexForm.add(cf, new ComplexForm(0, NumberFormat.getInstance(Locale.getDefault()).parse(num)));
+                    }
+                    else
+                        cf = ComplexForm.add(cf, new ComplexForm(NumberFormat.getInstance(Locale.getDefault()).parse(num)));
+                }
+            }
+        } catch (Exception p){
             throw new Exception(s + " not a properly formatted number!");
         }
+        return cf;
     }
 
     public Double getReal(){
@@ -140,7 +144,10 @@ public class ComplexForm {
                 }
             }
         }
-        return (s+u+t).trim();
+        String retVal = (s+u+t).trim();
+        if (retVal.length() > 0 && retVal.charAt(0) == '+')
+            retVal = retVal.substring(1, retVal.length());
+        return retVal;
     }
 
     public String getFullString(){
@@ -150,6 +157,9 @@ public class ComplexForm {
             sr = real.toString();
         if (complex != 0.0)
             sc += ((complex < 0) ? "-" : "+") + "i" + Double.valueOf(Math.abs(complex)).toString();
-        return sr+sc;
+        String retVal = sr+sc;
+        if (retVal.length() > 0 && retVal.charAt(0) == '+')
+            retVal = retVal.substring(1, retVal.length());
+        return retVal;
     }
 }

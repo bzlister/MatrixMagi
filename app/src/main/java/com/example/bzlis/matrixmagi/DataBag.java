@@ -11,8 +11,11 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class DataBag {
 
@@ -130,7 +133,9 @@ public class DataBag {
         board.setVisibility(View.GONE);
         int w = (int)Math.round(getCurrView().getWidth()/4.0);
         int h = (int)Math.round(getCurrView().getHeight()/12.0);
-        String[] text = new String[]{"7","8","9","C","4","5","6","+","1","2","3","-","i","0",".","Next"};
+        String[] text = new String[]{"7","8","9","C","4","5","6","+","1","2","3","-","i","0","","Next"};
+        DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+        text[14] = Character.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()).toString();
         for (int z = 0; z < 16; z++){
             Button digit = new Button(getCurrView().getContext());
             digit.setBackgroundResource(R.drawable.button_light);

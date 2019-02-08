@@ -258,7 +258,6 @@ public class EditGridLayout extends RelativeLayout {
                         edits[i][j].setTrueValue(cf);
                         edits[i][j].setExcepMessage("");
                     } catch (Exception e){
-
                         edits[i][j].setExcepMessage(e.getMessage());
                     }
                 }
@@ -270,8 +269,13 @@ public class EditGridLayout extends RelativeLayout {
     protected void blare(){
         String s = "";
         for (int i = 0; i < matRows; i++){
-            for (int j = 0; j < matCols; j++)
-                s+= edits[i][j].getExcepMessage() + "\n";
+            for (int j = 0; j < matCols; j++) {
+                if (!edits[i][j].getExcepMessage().equals("")) {
+                    s += edits[i][j].getExcepMessage() + "\n";
+                    edits[i][j].setText("0");
+                    edits[i][j].setExcepMessage("");
+                }
+            }
         }
         if (!s.trim().equals(""))
             Toast.makeText(DataBag.getInstance().getCurrView().getContext(), s.trim(), Toast.LENGTH_LONG).show();
