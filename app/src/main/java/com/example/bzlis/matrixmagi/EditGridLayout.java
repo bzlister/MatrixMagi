@@ -67,10 +67,11 @@ public class EditGridLayout extends RelativeLayout {
                 EditGridLayout edit = (EditGridLayout)v;
                 hideKeyboard(v);
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
-                    DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
-                    DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
-                    DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);
-                    DataBag.getInstance().getCurrView().inv.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().ques.setVisibility(INVISIBLE);
+                    //DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
+                    //DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
+                    //DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);
+                    //DataBag.getInstance().getCurrView().inv.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
                     int x0 = len*Math.round((me.getRawX()+len*thick)/len);
                     int y0 = len*Math.round((me.getRawY()-len*thick)/len);
@@ -88,10 +89,11 @@ public class EditGridLayout extends RelativeLayout {
                 }
                 DataBag.getInstance().getCurrView().hide();
                 if (me.getAction() == MotionEvent.ACTION_UP){
-                    DataBag.getInstance().getCurrView().lews.setVisibility(INVISIBLE);
-                    DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
-                    DataBag.getInstance().getCurrView().det.setVisibility(INVISIBLE);
-                    DataBag.getInstance().getCurrView().inv.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().ques.setVisibility(VISIBLE);
+                    //DataBag.getInstance().getCurrView().lews.setVisibility(INVISIBLE);
+                    //DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
+                    //DataBag.getInstance().getCurrView().det.setVisibility(INVISIBLE);
+                    //DataBag.getInstance().getCurrView().inv.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
                     edit.setX(len*(Math.round((edit.getX()+len*edit.getThickness())/len)-edit.getThickness()));
                     edit.setY(len*(Math.round((edit.getY()+len*edit.getThickness())/len)-edit.getThickness()));

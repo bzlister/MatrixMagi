@@ -62,21 +62,7 @@ public class workbench extends AppCompatActivity {
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
-            ImageView tuts = new ImageView(this);
-            tuts.setLayoutParams(pr.getLayoutParams());
-            tuts.setImageResource(R.mipmap.tuts);
-            tuts.setBackgroundColor(Color.WHITE);
-            tuts.setVisibility(VISIBLE);
-            tuts.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    ((RelativeLayout)v.getParent()).removeView(v);
-                    v.setVisibility(View.GONE);
-                    DataBag.getInstance().adLoader(new AdRequest.Builder().build());
-                    return false;
-                }
-            });
-            frame.addView(tuts);
+            DataBag.getInstance().adLoader(new AdRequest.Builder().build());
         }
         else {
             DataBag.getInstance().cleanData(frame);
