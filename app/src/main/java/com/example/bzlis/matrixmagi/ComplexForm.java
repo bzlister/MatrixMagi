@@ -70,7 +70,11 @@ public class ComplexForm {
     }
 
     public boolean isComplex(){
-        return complex != 0.0;
+        return Math.abs(complex) > EPSILON;
+    }
+
+    public ComplexForm duplicate(){
+        return new ComplexForm(real.doubleValue(), complex.doubleValue());
     }
 
     public Double magnitude(){

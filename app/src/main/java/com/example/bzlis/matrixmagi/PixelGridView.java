@@ -1,4 +1,5 @@
 package com.example.bzlis.matrixmagi;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -20,18 +21,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-
 
 public class PixelGridView extends View {
     Point[] corners = new Point[2];
     protected int numColumns, numRows, numCells, cellLength;
     private Paint blackPaint = new Paint();
     private Paint redPaint = new Paint();
-    private int buttonColor;
     private int buttonWidth;
     private int spacing;
-    private boolean shouldUpdate = false;
+    protected boolean shouldUpdate = false;
     private Button[] myButs = new Button[12];
     private int scalarVis = View.GONE;
     private int arithVis = View.GONE;
@@ -41,6 +39,7 @@ public class PixelGridView extends View {
     protected TextView eigen;
     protected TextView inv;
     protected TextView det;
+    protected TextView vvv;
     public int id;
     public static int count;
 
@@ -53,7 +52,6 @@ public class PixelGridView extends View {
         redPaint.setColor(Color.RED);
         redPaint.setStrokeWidth(5);
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        buttonColor = Color.rgb(255, 193, 102);
     }
 
     public void setNumCells(int numCells){
@@ -66,20 +64,18 @@ public class PixelGridView extends View {
         lews.setLayoutParams(new LinearLayout.LayoutParams((int)(cellLength*1.4), (int)(cellLength*1.4)));
         lews.setImageResource(R.mipmap.tcan);
         lews.setBackgroundColor(Color.TRANSPARENT);
-        lews.setTranslationX(cellLength*6);
+        lews.setTranslationX(Math.round(cellLength*(numColumns-2)));
         lews.setTranslationY(Math.round(cellLength*(numRows-2)));
-        //lews.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(lews);
 
         eigen = new TextView(this.getContext());
-        eigen.setText("\u03bb");
+                eigen.setText("\u03bb");
         eigen.setBackground(null);
         eigen.setTextSize(40);
         eigen.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         eigen.setTranslationX(cellLength*4);
         eigen.setTranslationY(Math.round(cellLength*(numRows-2)));
         eigen.setTextIsSelectable(false);
-       // eigen.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(eigen, cellLength*2, cellLength*2);
 
         det = new TextView(this.getContext());
@@ -92,7 +88,6 @@ public class PixelGridView extends View {
         det.setTranslationX(cellLength*2);
         det.setTranslationY(Math.round(cellLength*(numRows-2)));
         det.setTextIsSelectable(false);
-       // det.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(det, cellLength*2, cellLength*2);
 
         inv = new TextView(this.getContext());
@@ -110,18 +105,28 @@ public class PixelGridView extends View {
         inv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         inv.setTranslationY(Math.round(cellLength*(numRows-2)));
         inv.setTextIsSelectable(false);
-        //inv.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(inv, cellLength*2, cellLength*2);
+
+        vvv = new TextView(this.getContext());
+        vvv.setText("v");
+        vvv.setBackground(null);
+        vvv.setTextSize(40);
+        vvv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        vvv.setTranslationX(cellLength*6);
+        vvv.setTranslationY(Math.round(cellLength*(numRows-2)));
+        vvv.setTextIsSelectable(false);
+        vvv.setVisibility(INVISIBLE);
+        ((ViewGroup)this.getParent()).addView(vvv, cellLength*2, cellLength*2);
 
         ques = new TextView(this.getContext());
         ques.setText("?");
         ques.setBackground(null);
         ques.setTextSize(40);
+        ques.setTextColor(Color.RED);
         ques.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         ques.setTranslationX(cellLength*(numColumns-2));
-        ques.setTranslationY(Math.round(cellLength*(numRows-2)));
+        //ques.setTranslationY(Math.round(cellLength*(numRows-2)));
         ques.setTextIsSelectable(false);
-        //ques.setVisibility(INVISIBLE);
         ((ViewGroup)this.getParent()).addView(ques, cellLength*2, cellLength*2);
 
     }
@@ -154,8 +159,8 @@ public class PixelGridView extends View {
             else
                 myButs[i].setVisibility(GONE);
             myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
-            ((GradientDrawable)myButs[i].getBackground()).setColor(buttonColor);
-            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, buttonColor);
+            ((GradientDrawable)myButs[i].getBackground()).setColor(Color.rgb(240, 240, 240));
+            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, Color.rgb(240, 240, 240));
             myButs[i].setAllCaps(false);
             myButs[i].setTextColor(Color.GRAY);
             myButs[i].setText(colorize(text[i]));
@@ -230,24 +235,25 @@ public class PixelGridView extends View {
                     else if (event.getX() < 6 * cellLength)
                         Toast.makeText(this.getContext(),"Drag matrix to find eigenvalues", Toast.LENGTH_SHORT).show();
                     else if (event.getX() < 8 * cellLength)
+                        Toast.makeText(this.getContext(), "Drag matrix to find eigenvectors", Toast.LENGTH_SHORT).show();
+                    else
                         Toast.makeText(this.getContext(), "Drag matrix to delete", Toast.LENGTH_SHORT).show();
-                    else{
-                        ImageView tuts = new ImageView(this.getContext());
-                        tuts.setLayoutParams(this.getLayoutParams());
-                        tuts.setImageResource(R.mipmap.tuts);
-                        tuts.setBackgroundColor(Color.WHITE);
-                        tuts.setVisibility(VISIBLE);
-                        tuts.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                ((RelativeLayout)v.getParent()).removeView(v);
-                                v.setVisibility(View.GONE);
-                                return false;
-                            }
-                        });
-                        ((ViewGroup)this.getParent()).addView(tuts);
-                    }
-
+                }
+                else if (event.getY() < 2*cellLength){
+                    ImageView tuts = new ImageView(this.getContext());
+                    tuts.setLayoutParams(this.getLayoutParams());
+                    tuts.setImageResource(R.mipmap.tuts);
+                    tuts.setBackgroundColor(Color.WHITE);
+                    tuts.setVisibility(VISIBLE);
+                    tuts.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            ((RelativeLayout)v.getParent()).removeView(v);
+                            v.setVisibility(View.GONE);
+                            return false;
+                        }
+                    });
+                    ((ViewGroup)this.getParent()).addView(tuts);
                 }
             }
             corners[0] = null;

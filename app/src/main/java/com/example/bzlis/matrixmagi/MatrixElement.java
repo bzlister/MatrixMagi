@@ -33,12 +33,18 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
                 DataBag.getInstance().boardOut = true;
                 return false;
                 */
+                if (DataBag.getInstance().getCurrView().shouldUpdate) {
+                    for (EditGridLayout layout : DataBag.getInstance().getData())
+                        layout.switchBorderColor(-1);
+                    DataBag.getInstance().getCurrView().shouldUpdate = false;
+                    //invalidate();
+                }
+                DataBag.getInstance().getCurrView().hide();
                 DataBag.getInstance().requestSelected((MatrixElement)v);
                 DataBag.getInstance().showBoard((MatrixElement)v);
                 if (((((MatrixElement)v).getText() == null) || ((MatrixElement)v).getText().toString().equals("")) && (((MatrixElement)v).getHint() != null)) {
                     try {
-                        // || ((MatrixElement)v).trueValue.doubleValue() == (DecimalFormat.getInstance(Locale.getDefault()).parse(((MatrixElement)v).getPrettyString()).doubleValue()))
-                        if (((MatrixElement)v).trueValue.getFullString().length() > 5)
+                        if (!((MatrixElement)v).trueValue.equals(ComplexForm.parse(((MatrixElement)v).trueValue.getPrettyString())))
                             Toast.makeText(((MatrixElement)v).context, trueValue.getFullString(), Toast.LENGTH_SHORT).show();
                     } catch (Exception e){}
                 }

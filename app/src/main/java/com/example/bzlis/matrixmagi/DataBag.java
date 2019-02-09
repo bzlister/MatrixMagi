@@ -142,6 +142,8 @@ public class DataBag {
             digit.setText(text[z]);
             digit.setAllCaps(false);
             digit.setTextColor(Color.DKGRAY);
+            if (z == 3)
+                digit.setTextColor(Color.rgb(255, 128, 128));
             GridLayout.LayoutParams param = new GridLayout.LayoutParams();
             param.rowSpec = GridLayout.spec(z/4);
             param.columnSpec = GridLayout.spec(z%4);
@@ -233,7 +235,7 @@ public class DataBag {
         if (chosen != null)
             chosen.setBackground(null);
         chosen = m;
-        chosen.setBackgroundColor(Color.GRAY);
+        chosen.setBackgroundColor(Color.LTGRAY);
         ((EditGridLayout)chosen.getParent().getParent()).blare();
     }
 

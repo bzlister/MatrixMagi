@@ -1,6 +1,7 @@
 package com.example.bzlis.matrixmagi;
 
 import android.widget.Toast;
+
 import java.util.ArrayList;
 
 public class Matrix {
@@ -225,49 +226,99 @@ public class Matrix {
         return det;
     }
 
-    /*
-    protected Matrix guassElim(Matrix B) throws IllegalArgumentException {
-        int n = B.getNumRows();
-        if (B.getNumRows() != this.getNumRows())
-                throw new IllegalArgumentException();
-        if (numRows == numCols) {
-            Matrix A_new = this.duplicate();
-            Matrix B_new = B.duplicate();
-            for (int p = 0; p < n; p++) {
-                int max = p;
-                for (int i = p + 1; i < n; i++) {
-                    if (A_new.getElement(i, p).magnitude() > A_new.getElement(max, p).magnitude())
-                        max = i;
+    protected ArrayList<Matrix> eigenVector() throws IllegalArgumentException {
+        int fcount = 0;
+        if (this.getNumCols() != this.getNumRows())
+            throw new IllegalArgumentException("Not a square matrix!");
+        int n = this.getNumRows();
+        ArrayList<Scalar> eigenvalues = this.eigenValue();
+        ArrayList<Matrix> eigenvectors = new ArrayList<>();
+        for (Scalar eigen : eigenvalues) {
+            Matrix A_new = this.duplicate().add(new Matrix(this.getNumRows(), this.getNumCols()).scalarMult(ComplexForm.mult(new ComplexForm(-1), eigen.getElement(0, 0))));
+            for (int i = 0; i < n-1; i++){
+                ComplexForm first = new ComplexForm(1);
+                for (int j = 0; j < n; j++){
+                    if (A_new.getElement(i, j).magnitude() > EPSILON) {
+                        first = A_new.getElement(i, j).duplicate();
+                        break;
+                    }
                 }
-                A_new.swapRows(p, max);
-                B_new.swapRows(p, max);
-                if (A_new.getElement(p, p).magnitude() < EPSILON)
-                    throw new IllegalArgumentException("A is singular or nearly singular");
-                for (int i = p + 1; i < n; i++) {
-                    ComplexForm alpha = ComplexForm.div(A_new.getElement(i, p), A_new.getElement(p, p));
-                    for (int j = p; j < n; j++) {
-                        A_new.setElement(ComplexForm.sub(A_new.getElement(i, j), ComplexForm.mult(alpha, A_new.getElement(p, j))), i, j);
-                        B_new.setElement(ComplexForm.sub(B_new.getElement(i, j), ComplexForm.mult(alpha, B_new.getElement(p, j))), i, j);
+                for (int j2 = 0; j2 < n; j2++){
+                    A_new.setElement(ComplexForm.div(A_new.getElement(i, j2), first), i, j2);
+                }
+                for (int i2 = i+1; i2 < n; i2++) {
+                    ComplexForm second = new ComplexForm(1);
+                    for (int y = 0; y < n; y++){
+                        if (A_new.getElement(i2, y).magnitude() > EPSILON){
+                            second = A_new.getElement(i2, y).duplicate();
+                            break;
+                        }
+                    }
+                    ComplexForm mult = ComplexForm.mult(new ComplexForm(-1), second);
+                    for (int j3 = 0; j3 < n; j3++) {
+                        A_new.setElement(ComplexForm.add(A_new.getElement(i2, j3), ComplexForm.mult(mult, A_new.getElement(i, j3))), i2, j3);
                     }
                 }
             }
-            ComplexForm[][] x = new ComplexForm[this.getNumCols()][B.getNumCols()];
-            for (int z = B.getNumCols() - 1; z >= 0; z--) {
-                for (int i = this.getNumCols() - 1; i >= 0; i--) {
-                    ComplexForm sum = new ComplexForm(0);
-                    for (int j = i + 1; j < this.getNumCols(); j++)
-                        sum = ComplexForm.add(sum, ComplexForm.mult(A_new.getElement(i, j), x[j][z]));
-                    x[i][z] = ComplexForm.div(ComplexForm.sub(B_new.getElement(i, z), sum), A_new.getElement(i, i));
+            for (int k = n-1; k > 0; k--){
+                ComplexForm numerator = new ComplexForm(1);
+                ComplexForm denominator = new ComplexForm(1);
+                for (int h = 0; h < n; h++){
+                    if (A_new.getElement(k-1, h).magnitude() > EPSILON && A_new.getElement(k, h).magnitude() > EPSILON) {
+                        numerator = A_new.getElement(k-1, h);
+                        denominator = A_new.getElement(k, h);
+                        break;
+                    }
+                }
+                ComplexForm mult = ComplexForm.div(numerator, denominator);
+                for (int h2 = 0; h2 < n; h2++){
+                    A_new.setElement(ComplexForm.sub(A_new.getElement(k-1,h2), ComplexForm.mult(mult, A_new.getElement(k, h2))), k-1, h2);
                 }
             }
-            Matrix X = new Matrix(x);
-            // X.error = (this.mult(X)).sumSquaredErrors(B);
-            return X;
+            for (int w = n-2; w >= 0; w--){
+                boolean same = true;
+                for (int t = 0; t < n; t++){
+                    if (ComplexForm.add(A_new.getElement(w, t), A_new.getElement(w+1, t)).magnitude() > EPSILON){
+                        same = false;
+                        break;
+                    }
+                }
+                if (same){
+                    for (int e = 0; e < n; e++){
+                        A_new.setElement(ComplexForm.add(A_new.getElement(w, e), A_new.getElement(w+1, e)), w+1, e);
+                    }
+                    ComplexForm first = new ComplexForm(1);
+                    boolean searching = true;
+                    for (int v = 0; v < n; v++){
+                        if (A_new.getElement(w, v).magnitude() > EPSILON && searching){
+                            first = A_new.getElement(w, v).duplicate();
+                            searching = false;
+                        }
+                        A_new.setElement(ComplexForm.div(A_new.getElement(w, v), first), w, v);
+                    }
+                }
+            }
+            Matrix v = new Matrix(n, 1);
+            for (int i = n-2; i >=0; i--){
+                ComplexForm sum = new ComplexForm(0);
+                if (A_new.getElement(i, i).equals(new ComplexForm(1))){
+                    if (v.getElement(i+1, 0).equals(new ComplexForm(0)))
+                        v.setElement(new ComplexForm(1), i + 1, 0);
+                    for (int j = i + 1; j < n; j++)
+                        sum = ComplexForm.add(sum, ComplexForm.mult(v.getElement(j, 0), ComplexForm.mult(new ComplexForm(-1), A_new.getElement(i, j))));
+                    v.setElement(sum, i, 0);
+                }
+            }
+            Matrix check = this.duplicate().add(new Matrix(this.getNumRows(), this.getNumCols()).scalarMult(ComplexForm.mult(new ComplexForm(-1), eigen.getElement(0, 0))));
+           // if (check.mult(v).mag() < EPSILON)
+                eigenvectors.add(v);
+           // else
+             //   fcount++;
         }
-        else
-            return this.leastSquares(B);
+  //      if (fcount != this.numCols)
+//            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Found " + (this.numCols-fcount) + " out of " + this.numCols + " eigenvectors", Toast.LENGTH_SHORT).show();
+        return eigenvectors;
      }
-     */
 
 
     private void swapRows(int r1, int r2) {
@@ -307,12 +358,12 @@ public class Matrix {
         return Math.sqrt(sum);
     }
 
-    public ArrayList<Scalar> eigen(){
+    public ArrayList<Scalar> eigenValue(){
         if (this.getNumCols() != this.getNumRows())
             throw new IllegalArgumentException("Not a square matrix!");
         Matrix cp = this.duplicate();
         ArrayList<Scalar> lambda = new ArrayList<>();
-        for (int i = 0; i < 500; i++){
+        for (int i = 0; i < 900; i++){
             Matrix[] QR = cp.QR();
             cp = QR[1].mult(QR[0]);
         }
@@ -322,6 +373,7 @@ public class Matrix {
                 hess = true;
         }
         if (hess){
+            System.out.println("hess");
             for (int z = 0; z < cp.getNumCols()-1; z++){
                 ComplexForm Tr = ComplexForm.add(cp.getElement(z, z), cp.getElement(z+1, z+1));
                 ComplexForm det = ComplexForm.sub(ComplexForm.mult(cp.getElement(z, z), cp.getElement(z+1, z+1)), ComplexForm.mult(cp.getElement(z, z+1), cp.getElement(z+1, z)));
@@ -339,13 +391,29 @@ public class Matrix {
                         lambda.add(new Scalar(L1));
                     else
                         lambda.add(new Scalar(L2));
+
                 }
             }
         }
         else {
+            System.out.println("not hess");
             for (int y = 0; y < cp.getNumCols(); y++) {
                 lambda.add(new Scalar(cp.getElement(y, y)));
             }
+        }
+        if (lambda.size() > this.getNumRows()) {
+            Double grossest = 0.0;
+            int blacksheep = 0;
+            for (int z = 0; z < lambda.size(); z++) {
+                Matrix I = new Matrix(this.getNumRows(), this.getNumCols());
+                I = I.scalarMult(ComplexForm.mult(new ComplexForm(-1), lambda.get(z).getElement(0, 0)));
+                Double mag = this.add(I).det().magnitude();
+                if (mag > grossest) {
+                    grossest = mag;
+                    blacksheep = z;
+                }
+            }
+            lambda.remove(blacksheep);
         }
         return lambda;
     }
@@ -395,7 +463,7 @@ public class Matrix {
         for (int i = 0; i < numRows; i++) {
             retVal += "\n";
             for (int j = 0; j < numCols; j++) {
-                retVal += this.getElement(i,j).getPrettyString() + " ";
+                retVal += this.getElement(i,j).getPrettyString() + ", ";
             }
         }
         return retVal;

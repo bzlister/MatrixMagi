@@ -63,11 +63,11 @@ public class EditGridLayout extends RelativeLayout {
                 EditGridLayout edit = (EditGridLayout)v;
                 hideKeyboard(v);
                 if (me.getAction() == MotionEvent.ACTION_MOVE  ){
-                    DataBag.getInstance().getCurrView().ques.setVisibility(INVISIBLE);
-                    //DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
-                    //DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
-                    //DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);
-                    //DataBag.getInstance().getCurrView().inv.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().inv.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().vvv.setVisibility(VISIBLE);
+                    DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
                     int len = edit.getCellLength();
                     int x0 = len*Math.round((me.getRawX()+len*thick)/len);
                     int y0 = len*Math.round((me.getRawY()-len*thick)/len);
@@ -85,11 +85,11 @@ public class EditGridLayout extends RelativeLayout {
                 }
                 DataBag.getInstance().getCurrView().hide();
                 if (me.getAction() == MotionEvent.ACTION_UP){
-                    DataBag.getInstance().getCurrView().ques.setVisibility(VISIBLE);
-                    //DataBag.getInstance().getCurrView().lews.setVisibility(INVISIBLE);
-                    //DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
-                    //DataBag.getInstance().getCurrView().det.setVisibility(INVISIBLE);
-                    //DataBag.getInstance().getCurrView().inv.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().det.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().inv.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().vvv.setVisibility(INVISIBLE);
+                    DataBag.getInstance().getCurrView().lews.setVisibility(INVISIBLE);
                     int len = edit.getCellLength();
                     edit.setX(len*(Math.round((edit.getX()+len*edit.getThickness())/len)-edit.getThickness()));
                     edit.setY(len*(Math.round((edit.getY()+len*edit.getThickness())/len)-edit.getThickness()));
@@ -132,10 +132,15 @@ public class EditGridLayout extends RelativeLayout {
                                     Scalar det = new Scalar(edit.getEncsMatrix().det());
                                     DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(spawnX, spawnY));
                                 } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
-                                    ArrayList<Scalar> lambda = edit.getEncsMatrix().eigen();
+                                    ArrayList<Scalar> lambda = edit.getEncsMatrix().eigenValue();
                                     for (int i = 0; i < lambda.size(); i++)
                                         DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX+len*i, spawnY+len*i));
-                                } else {
+                                } else if (edit.getActualX() < DataBag.getInstance().getCurrView().vvv.getX() + 2 * len) {
+                                    ArrayList<Matrix> evecs = edit.getEncsMatrix().eigenVector();
+                                    for (int i = 0; i < evecs.size(); i++)
+                                        DataBag.getInstance().getCurrView().makeEditGrid(evecs.get(i), new Point(spawnX+len*i, spawnY));
+                                }
+                                else {
                                     ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
                                     DataBag.getInstance().removeData(edit);
                                     DataBag.getInstance().getCurrView().invalidate();
@@ -144,7 +149,7 @@ public class EditGridLayout extends RelativeLayout {
                                         DataBag.getInstance().deltut = false;
                                     }
                                 }
-                            } else if (edit.getActualX() > DataBag.getInstance().getCurrView().eigen.getX() + 2*len){
+                            } else if (edit.getActualX() > DataBag.getInstance().getCurrView().vvv.getX() + 2*len){
                                 ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
                                 DataBag.getInstance().removeData(edit);
                                 DataBag.getInstance().getCurrView().invalidate();
