@@ -3,6 +3,7 @@ package com.example.bzlis.matrixmagi;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Matrix {
 
@@ -21,6 +22,16 @@ public class Matrix {
         this.mat = mat;
         this.numRows = mat.length;
         this.numCols = mat[0].length;
+    }
+
+    public Matrix(Number... numbers){
+        this.numRows = (int)Math.round(Math.sqrt(numbers.length));
+        this.numCols = this.numRows;
+        this.mat = new ComplexForm[numRows][numCols];
+        for (int i = 0; i < numRows; i++){
+            for (int j = 0; j < numCols; j++)
+                mat[i][j] = new ComplexForm(numbers[numCols*i+j]);
+        }
     }
 
     public int getNumRows() {
@@ -358,64 +369,97 @@ public class Matrix {
         return Math.sqrt(sum);
     }
 
-    public ArrayList<Scalar> eigenValue(){
+    public ArrayList<Scalar> eigenValue() throws ArithmeticException{
         if (this.getNumCols() != this.getNumRows())
             throw new IllegalArgumentException("Not a square matrix!");
-        Matrix cp = this.duplicate();
-        ArrayList<Scalar> lambda = new ArrayList<>();
-        for (int i = 0; i < 900; i++){
+        int n = this.getNumCols();
+        Matrix S = new Matrix(n, n);
+        for (int a = 0; a < n; a++){
+            for (int b = 0; b < n; b++){
+                S.setElement(new ComplexForm(Math.random()*2-1), a, b);
+            }
+        }
+        S = new Matrix(-.9007, .88957, .80543, -.018272);
+        Matrix cp = S.mult(this.duplicate()).mult(S.inverse());
+        for (int i = 0; i < 10; i++){
             Matrix[] QR = cp.QR();
             cp = QR[1].mult(QR[0]);
+            System.out.println(i  + ": " + cp);
         }
-        boolean hess = false;
-        for (int t = 0; t < cp.getNumCols()-1; t++){
-            if (cp.getElement(t+1, t).magnitude() > EPSILON)
-                hess = true;
-        }
-        if (hess){
-            System.out.println("hess");
-            for (int z = 0; z < cp.getNumCols()-1; z++){
-                ComplexForm Tr = ComplexForm.add(cp.getElement(z, z), cp.getElement(z+1, z+1));
-                ComplexForm det = ComplexForm.sub(ComplexForm.mult(cp.getElement(z, z), cp.getElement(z+1, z+1)), ComplexForm.mult(cp.getElement(z, z+1), cp.getElement(z+1, z)));
-                ComplexForm dscrm = ComplexForm.sqrt(ComplexForm.sub(ComplexForm.div(ComplexForm.mult(Tr, Tr), new ComplexForm(4)), det));
-                if (dscrm.isComplex()){
-                    lambda.add(new Scalar(ComplexForm.add(ComplexForm.div(Tr, new ComplexForm(2)), dscrm)));
-                    lambda.add(new Scalar(ComplexForm.sub(ComplexForm.div(Tr, new ComplexForm(2)), dscrm)));
+        System.out.println(cp);
+        ArrayList<Scalar> method1 = new ArrayList<Scalar>();
+        ArrayList<Scalar> method2 = new ArrayList<Scalar>();
+        int goochypoint = 0;
+        if (n % 2 == 1) {
+            Double min = 100000.0;
+            int x = 0;
+            while (x < n){
+                ComplexForm goochyvalue = cp.getElement(x, x);
+                Double det = this.add(new Matrix(n,n).scalarMult(ComplexForm.mult(goochyvalue, new ComplexForm(-1)))).det().magnitude();
+                if (det < min){
+                    min = det;
+                    goochypoint = x;
                 }
-                else{
-                    ComplexForm L1 = ComplexForm.add(ComplexForm.div(Tr, new ComplexForm(2)), dscrm);
-                    ComplexForm L2 = ComplexForm.sub(ComplexForm.div(Tr, new ComplexForm(2)), dscrm);
-                    Matrix A1 = this.duplicate().add(new Matrix(this.getNumRows(), this.getNumCols()).scalarMult(ComplexForm.mult(L1, new ComplexForm(-1))));
-                    Matrix A2 = this.duplicate().add(new Matrix(this.getNumRows(), this.getNumCols()).scalarMult(ComplexForm.mult(L2, new ComplexForm(-1))));
-                    if (A1.det().magnitude() < A2.det().magnitude())
-                        lambda.add(new Scalar(L1));
-                    else
-                        lambda.add(new Scalar(L2));
+                x+=2;
+            }
+            method1.add(new Scalar(cp.getElement(goochypoint, goochypoint)));
+        }
+        int z = 0;
+        int numEvaluates = 0;
+        while (numEvaluates < n/2) {
+            if (z == goochypoint && n%2 == 1)
+                z++;
+            ComplexForm Tr = ComplexForm.add(cp.getElement(z, z), cp.getElement(z + 1, z + 1));
+            ComplexForm det = ComplexForm.sub(ComplexForm.mult(cp.getElement(z, z), cp.getElement(z + 1, z + 1)), ComplexForm.mult(cp.getElement(z, z + 1), cp.getElement(z + 1, z)));
+            ComplexForm dscrm = ComplexForm.sqrt(ComplexForm.sub(ComplexForm.mult(Tr, Tr), ComplexForm.mult(new ComplexForm(4), det)));
+            if (Double.isNaN(Tr.magnitude()) || Double.isNaN(det.magnitude()) || Double.isNaN(dscrm.magnitude()) || Tr.magnitude().isInfinite() || det.magnitude().isInfinite() || dscrm.magnitude().isInfinite())
+                throw new ArithmeticException("Overflow error");
+            method1.add(new Scalar(ComplexForm.div(ComplexForm.add(Tr, dscrm), new ComplexForm(2))));
+            method1.add(new Scalar(ComplexForm.div(ComplexForm.sub(Tr, dscrm), new ComplexForm(2))));
+            z+=2;
+            numEvaluates++;
+        }
+        for (int y = 0; y < n; y++) {
+            method2.add(new Scalar(cp.getElement(y, y)));
+        }
+        ArrayList<Scalar> retVal = new ArrayList();
+        boolean method1Better = true;
+        double max = 0;
+        for (int s = 0; s < this.getNumCols(); s++){
+            Double det1 = this.add(new Matrix(n,n).scalarMult(ComplexForm.mult(new ComplexForm(-1), method1.get(s).getElement(0,0)))).det().magnitude();
+            Double det2 = this.add(new Matrix(n,n).scalarMult(ComplexForm.mult(new ComplexForm(-1), method2.get(s).getElement(0,0)))).det().magnitude();
+            if (max < det1){
+                method1Better = false;
+                max = det1;
+            }
+            if (max < det2){
+                method1Better = true;
+                max = det2;
+            }
+        }
+        if (method1Better)
+            retVal = method1;
+        else
+            retVal = method2;
 
-                }
-            }
+        /*
+        Iterator<Scalar> itr1 = method1.iterator();
+        Iterator<Scalar> itr2 = method2.iterator();
+        while (itr1.hasNext()){
+            Double det1 = this.add(new Matrix(n,n).scalarMult(ComplexForm.mult(new ComplexForm(-1), itr1.next().getElement(0,0)))).det().magnitude();
+            if (det1 > 1)
+                itr1.remove();
         }
-        else {
-            System.out.println("not hess");
-            for (int y = 0; y < cp.getNumCols(); y++) {
-                lambda.add(new Scalar(cp.getElement(y, y)));
-            }
+        while (itr2.hasNext()){
+            Double det2 = this.add(new Matrix(n,n).scalarMult(ComplexForm.mult(new ComplexForm(-1), itr2.next().getElement(0,0)))).det().magnitude();
+            if (det2 > 1)
+                itr2.remove();
         }
-        if (lambda.size() > this.getNumRows()) {
-            Double grossest = 0.0;
-            int blacksheep = 0;
-            for (int z = 0; z < lambda.size(); z++) {
-                Matrix I = new Matrix(this.getNumRows(), this.getNumCols());
-                I = I.scalarMult(ComplexForm.mult(new ComplexForm(-1), lambda.get(z).getElement(0, 0)));
-                Double mag = this.add(I).det().magnitude();
-                if (mag > grossest) {
-                    grossest = mag;
-                    blacksheep = z;
-                }
-            }
-            lambda.remove(blacksheep);
-        }
-        return lambda;
+        ArrayList<Scalar> retVal = (method1.size() >= method2.size()) ? method1 : method2;
+       // if (retVal.size() != n)
+           // Toast.makeText(DataBag.getInstance().getCurrView().getContext(), ("Found " + retVal.size() + " out of " + n + " eigenvalues."), Toast.LENGTH_SHORT).show();
+           */
+        return retVal;
     }
 
     public Matrix[] QR(){
@@ -430,7 +474,7 @@ public class Matrix {
             }
             U.add(u);
             Double scal = 1 / u.mag();
-            if (scal == Double.POSITIVE_INFINITY)
+            if (scal == Double.POSITIVE_INFINITY || Double.isNaN(scal))
                 scal = Double.MAX_VALUE;
             E.add(u.scalarMult(new ComplexForm(scal)));
             int z = 0;

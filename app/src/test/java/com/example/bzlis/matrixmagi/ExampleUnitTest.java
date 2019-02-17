@@ -156,19 +156,23 @@ public class ExampleUnitTest {
 
     @Test
     public void testQR(){
-        Matrix A = new Matrix(3, 3);
-        A.setElement(new ComplexForm(-2), 0, 0);
-        A.setElement(new ComplexForm(-2), 0, 1);
-        A.setElement(new ComplexForm(-9), 0, 2);
-        A.setElement(new ComplexForm(-1), 1, 0);
-        A.setElement(new ComplexForm(1),1, 1);
-        A.setElement(new ComplexForm(-3), 1, 2);
-        A.setElement(new ComplexForm(1), 2, 0);
-        A.setElement(new ComplexForm(1), 2, 1);
-        A.setElement(new ComplexForm(4), 2, 2);
+        Matrix A = new Matrix(-4, 2, 1, 0, 1, -2, -3, -3, -3, -3, 2, 3, -1, -2, -1, 4, 4, 0, 3, -2, -3, -1, -4, 1, -5);
         Matrix[] QR = A.QR();
-        assertEquals(QR[0].mult(QR[1]), A);
+        System.out.print(QR[0]);
+        System.out.print(QR[1]);
     }
+
+
+    @Test
+    public void testFunkyC(){
+        Matrix A = new Matrix(3, 2);
+        assertEquals(3, A.getNumRows());
+        assertEquals(2, A.getNumCols());
+        Matrix B = new Matrix(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        assertEquals(3, B.getNumRows());
+        assertEquals(3, B.getNumCols());
+    }
+
 
     @Test
     public void testEigen(){
@@ -188,64 +192,39 @@ public class ExampleUnitTest {
     public void testDetEigenRandom(){
         int success = 0;
         int fail = 0;
-        for (int i = 0; i < 100; i ++){
+        int excepCount = 0;
+        for (int i = 0; i < 1; i ++){
             int n = 2;
             Matrix A = new Matrix(n, n);
             for (int z = 0; z < n; z++){
                 for (int y = 0; y < n; y++)
-                    A.setElement(new ComplexForm((int)(Math.random()*10)-5, 0), z, y);
+                    A.setElement(new ComplexForm((int)(Math.random()*10)-5, (int)(Math.random()*10)-5), z, y);
             }
-            /*
-            A = new Matrix(5, 5);
-            A.setElement(new ComplexForm(-5), 0, 0);
-            A.setElement(new ComplexForm(2), 0, 1);
-            A.setElement(new ComplexForm(-5), 0, 2);
-            A.setElement(new ComplexForm(2), 0, 3);
-            A.setElement(new ComplexForm(1), 0, 4);
-
-            A.setElement(new ComplexForm(1), 1, 0);
-            A.setElement(new ComplexForm(-2), 1, 1);
-            A.setElement(new ComplexForm(3), 1, 2);
-            A.setElement(new ComplexForm(2), 1, 3);
-            A.setElement(new ComplexForm(4), 1, 4);
-
-            A.setElement(new ComplexForm(1), 2, 0);
-            A.setElement(new ComplexForm(2), 2, 1);
-            A.setElement(new ComplexForm(0), 2, 2);
-            A.setElement(new ComplexForm(0), 2, 3);
-            A.setElement(new ComplexForm(-4), 2, 4);
-
-            A.setElement(new ComplexForm(-4), 3, 0);
-            A.setElement(new ComplexForm(1),3, 1);
-            A.setElement(new ComplexForm(3), 3, 2);
-            A.setElement(new ComplexForm(4), 3, 3);
-            A.setElement(new ComplexForm(-3),3, 4);
-
-            A.setElement(new ComplexForm(-3), 4, 0);
-            A.setElement(new ComplexForm(4), 4, 1);
-            A.setElement(new ComplexForm(-5),4, 2);
-            A.setElement(new ComplexForm(1), 4, 3);
-            A.setElement(new ComplexForm(3), 4, 4);
-            */
-            //System.out.println(A);
-            ArrayList<Scalar> eigen = A.eigenValue();
-            if (eigen.size() != 2) {
-                System.out.println(A);
+            A.setElement(new ComplexForm(-3, -2), 0, 0);
+            A.setElement(new ComplexForm(-3, 4), 0, 1);
+            A.setElement(new ComplexForm(4, -3), 1, 0);
+            A.setElement(new ComplexForm(-3, -5), 1, 1);
+            try {
+                ArrayList<Scalar> eigen = A.eigenValue();
                 for (int j = 0; j < eigen.size(); j++) {
-                    System.out.println(eigen.get(j).getElement(0, 0).getFullString());
+                    System.out.println(j + ": " + eigen.get(j).getElement(0, 0).getFullString());
                     Matrix I = new Matrix(n, n);
                     I = I.scalarMult(eigen.get(j).getElement(0, 0));
                     I = I.scalarMult(new ComplexForm(-1));
-                    if (A.add(I).det().magnitude() < 1e-7) {
+                    if (A.add(I).det().magnitude() < 1) {
                         success++;
                     } else {
                         fail++;
+                        System.out.println(A.add(I).det().magnitude());
+                        fail();
                     }
                 }
-                break;
+                fail+=(n-eigen.size());
+            } catch (ArithmeticException e){
+                excepCount++;
             }
         }
-        //System.out.println(success + ", " + fail);
+        System.out.println(success +", " + fail + ", " + excepCount);
     }
 
     @Test

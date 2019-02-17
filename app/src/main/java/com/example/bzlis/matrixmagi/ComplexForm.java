@@ -88,7 +88,8 @@ public class ComplexForm {
     }
 
     public static ComplexForm add(ComplexForm a, ComplexForm b){
-        return new ComplexForm(a.real + b.real, a.complex + b.complex);
+        ComplexForm retVal = new ComplexForm(a.real + b.real, a.complex + b.complex);
+        return retVal;
     }
 
     public static ComplexForm sub(ComplexForm a, ComplexForm b){
@@ -96,7 +97,16 @@ public class ComplexForm {
     }
 
     public static ComplexForm mult(ComplexForm a, ComplexForm b){
-        return new ComplexForm(a.real*b.real - a.complex*b.complex, a.real*b.complex + a.complex*b.real);
+        ComplexForm retVal =  new ComplexForm(a.real*b.real - a.complex*b.complex, a.real*b.complex + a.complex*b.real);
+        return retVal;
+    }
+
+    public ComplexForm correct(){
+        if (this.real == Double.POSITIVE_INFINITY || Double.isNaN(this.real))
+            this.real = Double.MAX_VALUE;
+        if (this.complex == Double.POSITIVE_INFINITY || Double.isNaN(this.complex))
+            this.complex = Double.MAX_VALUE;
+        return this;
     }
 
     public static ComplexForm div(ComplexForm a, ComplexForm b){

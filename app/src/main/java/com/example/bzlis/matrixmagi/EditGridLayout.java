@@ -132,13 +132,21 @@ public class EditGridLayout extends RelativeLayout {
                                     Scalar det = new Scalar(edit.getEncsMatrix().det());
                                     DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(spawnX, spawnY));
                                 } else if (edit.getActualX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
-                                    ArrayList<Scalar> lambda = edit.getEncsMatrix().eigenValue();
-                                    for (int i = 0; i < lambda.size(); i++)
-                                        DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX+len*i, spawnY+len*i));
+                                    try {
+                                        ArrayList<Scalar> lambda = edit.getEncsMatrix().eigenValue();
+                                        for (int i = 0; i < lambda.size(); i++)
+                                            DataBag.getInstance().getCurrView().makeEditGrid(lambda.get(i), new Point(spawnX + len * i, spawnY + len * i));
+                                    } catch (ArithmeticException e){
+                                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
                                 } else if (edit.getActualX() < DataBag.getInstance().getCurrView().vvv.getX() + 2 * len) {
-                                    ArrayList<Matrix> evecs = edit.getEncsMatrix().eigenVector();
-                                    for (int i = 0; i < evecs.size(); i++)
-                                        DataBag.getInstance().getCurrView().makeEditGrid(evecs.get(i), new Point(spawnX+len*i, spawnY));
+                                    try {
+                                        ArrayList<Matrix> evecs = edit.getEncsMatrix().eigenVector();
+                                        for (int i = 0; i < evecs.size(); i++)
+                                            DataBag.getInstance().getCurrView().makeEditGrid(evecs.get(i), new Point(spawnX + len * i, spawnY));
+                                    } catch (ArithmeticException e){
+                                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                                 else {
                                     ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(edit);
