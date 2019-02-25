@@ -155,11 +155,27 @@ public class ExampleUnitTest {
     }
 
     @Test
+    public void testMag(){
+        for (int numT = 0; numT < 100; numT++) {
+            int n = (int) (Math.random() * 9) + 2;
+            Matrix z = new Matrix(n, 1);
+            for (int i = 0; i < n; i++)
+                z.setElement(new ComplexForm(Math.random() * 100 - 50, Math.random() * 100 - 50), i, 0);
+            assertEquals(ComplexForm.sqrt((z.transpose().mult(z)).getElement(0, 0)).getReal(), new Double(z.mag()), 1e-5);
+        }
+    }
+
+    @Test
     public void testQR(){
-        Matrix A = new Matrix(-4, 2, 1, 0, 1, -2, -3, -3, -3, -3, 2, 3, -1, -2, -1, 4, 4, 0, 3, -2, -3, -1, -4, 1, -5);
+        Matrix A = new Matrix(2, 2);
+        A.setElement(new ComplexForm(0,3),0,0);
+        A.setElement(new ComplexForm(2,-2),0,1);
+        A.setElement(new ComplexForm(4,7),1,0);
+        A.setElement(new ComplexForm(-1,5),1,1);
         Matrix[] QR = A.QR();
         System.out.print(QR[0]);
         System.out.print(QR[1]);
+        System.out.print(QR[0].mult(QR[1]));
     }
 
 
@@ -193,21 +209,22 @@ public class ExampleUnitTest {
         int success = 0;
         int fail = 0;
         int excepCount = 0;
-        for (int i = 0; i < 1; i ++){
-            int n = 2;
+        for (int i = 0; i < 100; i ++){
+            int n = 3;
             Matrix A = new Matrix(n, n);
             for (int z = 0; z < n; z++){
                 for (int y = 0; y < n; y++)
-                    A.setElement(new ComplexForm((int)(Math.random()*10)-5, (int)(Math.random()*10)-5), z, y);
+                    A.setElement(new ComplexForm(Math.random()*100-50, Math.random()*100-50), z, y);
             }
+            /*
             A.setElement(new ComplexForm(-3, -2), 0, 0);
             A.setElement(new ComplexForm(-3, 4), 0, 1);
             A.setElement(new ComplexForm(4, -3), 1, 0);
             A.setElement(new ComplexForm(-3, -5), 1, 1);
+            */
             try {
                 ArrayList<Scalar> eigen = A.eigenValue();
                 for (int j = 0; j < eigen.size(); j++) {
-                    System.out.println(j + ": " + eigen.get(j).getElement(0, 0).getFullString());
                     Matrix I = new Matrix(n, n);
                     I = I.scalarMult(eigen.get(j).getElement(0, 0));
                     I = I.scalarMult(new ComplexForm(-1));
@@ -216,15 +233,36 @@ public class ExampleUnitTest {
                     } else {
                         fail++;
                         System.out.println(A.add(I).det().magnitude());
-                        fail();
                     }
                 }
-                fail+=(n-eigen.size());
+                if (eigen.size() != n){
+                    System.out.print(A);
+                    //fail();
+                }
             } catch (ArithmeticException e){
                 excepCount++;
             }
         }
         System.out.println(success +", " + fail + ", " + excepCount);
+    }
+
+    @Test
+    public void testHermitian(){
+        Matrix x = new Matrix(2, 1);
+        x.setElement(new ComplexForm(3), 0, 0);
+        x.setElement(new ComplexForm(2), 1, 0);
+        Matrix y = new Matrix(2, 1);
+        y.setElement(new ComplexForm(4), 0, 0);
+        y.setElement(new ComplexForm(-2), 1, 0);
+        assertEquals(new ComplexForm(8), x.innerProd(x,y));
+
+        Matrix F = new Matrix(2, 1);
+        F.setElement(new ComplexForm(2,-1),0,0);
+        F.setElement(new ComplexForm(4,1),1,0);
+        Matrix G = new Matrix(2,1);
+        G.setElement(new ComplexForm(0,3),0,0);
+        G.setElement(new ComplexForm(2,2),1,0);
+        assertEquals(new ComplexForm(7,12), F.innerProd(F,G));
     }
 
     @Test

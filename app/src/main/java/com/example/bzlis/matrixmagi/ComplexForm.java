@@ -101,6 +101,10 @@ public class ComplexForm {
         return retVal;
     }
 
+    public ComplexForm conjugate(){
+        return new ComplexForm(real.doubleValue(), -complex.doubleValue());
+    }
+
     public ComplexForm correct(){
         if (this.real == Double.POSITIVE_INFINITY || Double.isNaN(this.real))
             this.real = Double.MAX_VALUE;

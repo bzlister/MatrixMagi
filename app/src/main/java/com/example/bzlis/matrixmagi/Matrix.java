@@ -116,7 +116,7 @@ public class Matrix {
         Matrix tpose = new Matrix(this.getNumCols(), this.getNumRows());
         for (int i = 0; i < this.getNumRows(); i++){
             for (int j = 0; j < this.getNumCols(); j++)
-                tpose.setElement(this.getElement(i,j),j,i);
+                tpose.setElement(this.getElement(i,j).conjugate(),j,i);
         }
         return tpose;
     }
@@ -379,14 +379,13 @@ public class Matrix {
                 S.setElement(new ComplexForm(Math.random()*2-1), a, b);
             }
         }
-        S = new Matrix(-.9007, .88957, .80543, -.018272);
-        Matrix cp = S.mult(this.duplicate()).mult(S.inverse());
-        for (int i = 0; i < 10; i++){
+        //S = new Matrix(-.9007, .88957, .80543, -.018272);
+        //Matrix cp = S.mult(this.duplicate()).mult(S.inverse());
+        Matrix cp = this.duplicate();
+        for (int i = 0; i < 1000; i++){
             Matrix[] QR = cp.QR();
             cp = QR[1].mult(QR[0]);
-            System.out.println(i  + ": " + cp);
         }
-        System.out.println(cp);
         ArrayList<Scalar> method1 = new ArrayList<Scalar>();
         ArrayList<Scalar> method2 = new ArrayList<Scalar>();
         int goochypoint = 0;
@@ -422,6 +421,7 @@ public class Matrix {
         for (int y = 0; y < n; y++) {
             method2.add(new Scalar(cp.getElement(y, y)));
         }
+        /*
         ArrayList<Scalar> retVal = new ArrayList();
         boolean method1Better = true;
         double max = 0;
@@ -441,8 +441,8 @@ public class Matrix {
             retVal = method1;
         else
             retVal = method2;
+        */
 
-        /*
         Iterator<Scalar> itr1 = method1.iterator();
         Iterator<Scalar> itr2 = method2.iterator();
         while (itr1.hasNext()){
@@ -458,7 +458,6 @@ public class Matrix {
         ArrayList<Scalar> retVal = (method1.size() >= method2.size()) ? method1 : method2;
        // if (retVal.size() != n)
            // Toast.makeText(DataBag.getInstance().getCurrView().getContext(), ("Found " + retVal.size() + " out of " + n + " eigenvalues."), Toast.LENGTH_SHORT).show();
-           */
         return retVal;
     }
 
@@ -473,10 +472,8 @@ public class Matrix {
                 u = u.add((proj(U.get(k), a).scalarMult(new ComplexForm(-1))));
             }
             U.add(u);
-            Double scal = 1 / u.mag();
-            if (scal == Double.POSITIVE_INFINITY || Double.isNaN(scal))
-                scal = Double.MAX_VALUE;
-            E.add(u.scalarMult(new ComplexForm(scal)));
+            ComplexForm mag = ComplexForm.sqrt((u.transpose().mult(u)).getElement(0,0));
+            E.add(u.scalarMult(ComplexForm.div(new ComplexForm(1), mag).correct()));
             int z = 0;
             do {
                 a = a.add(E.get(z).scalarMult(innerProd(E.get(z), a)));
@@ -497,7 +494,11 @@ public class Matrix {
     }
 
     public ComplexForm innerProd(Matrix v, Matrix w){
-        return v.transpose().mult(w).getElement(0,0);
+        ComplexForm sum = new ComplexForm(0);
+        for (int i = 0; i < v.getNumRows(); i++){
+            sum = ComplexForm.add(sum, ComplexForm.mult(v.getElement(i,0).conjugate(), w.getElement(i,0)));
+        }
+        return sum;
     }
 
 

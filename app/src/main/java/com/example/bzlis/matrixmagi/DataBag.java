@@ -1,6 +1,8 @@
 package com.example.bzlis.matrixmagi;
 
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Vibrator;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,7 @@ public class DataBag {
     public boolean deltut;
     private GridLayout board;
     private MatrixElement chosen;
+    public Vibrator vibes;
 
     private DataBag(){
         editList = new HashSet<>();
@@ -133,17 +136,27 @@ public class DataBag {
         board.setVisibility(View.GONE);
         int w = (int)Math.round(getCurrView().getWidth()/4.0);
         int h = (int)Math.round(getCurrView().getHeight()/12.0);
-        String[] text = new String[]{"7","8","9","C","4","5","6","+","1","2","3","-","i","0","","Next"};
+        String[] text = new String[]{"7","8","9","C","4","5","6","+","1","2","3","-","i","0",".","Next"};
         DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
         text[14] = Character.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()).toString();
         for (int z = 0; z < 16; z++){
             Button digit = new Button(getCurrView().getContext());
-            digit.setBackgroundResource(R.drawable.button_light);
+            if (z != 15)
+                digit.setBackgroundResource(R.drawable.button_light);
+            else
+                digit.setBackgroundResource(R.drawable.button_next);
             digit.setText(text[z]);
+            digit.setTextSize(15);
             digit.setAllCaps(false);
             digit.setTextColor(Color.DKGRAY);
             if (z == 3)
                 digit.setTextColor(Color.rgb(255, 128, 128));
+            else if (z == 7 || z == 11)
+                digit.setTextColor(Color.rgb(35, 188, 196));
+            else if (z == 12)
+                digit.setTextColor(Color.rgb(188, 66, 244));
+            else if (z == 15)
+                digit.setTextColor(Color.WHITE);
             GridLayout.LayoutParams param = new GridLayout.LayoutParams();
             param.rowSpec = GridLayout.spec(z/4);
             param.columnSpec = GridLayout.spec(z%4);
@@ -214,6 +227,7 @@ public class DataBag {
             board.getChildAt(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    DataBag.getInstance().vibes.vibrate(20);
                     String text = ((Button)view).getText().toString();
                     if (text.equals("C"))
                         m.setText("");
@@ -222,7 +236,7 @@ public class DataBag {
                         DataBag.getInstance().showBoard(m.getNext());
                     }
                     else if (text.equals("Done")) {
-                        EditGridLayout.hideKeyboard(DataBag.getInstance().getCurrView());
+                        EditGridLayout.hideKeyboard();
                     }
                     else
                         m.setText(m.getText().toString() + text);
@@ -237,6 +251,10 @@ public class DataBag {
         chosen = m;
         chosen.setBackgroundColor(Color.LTGRAY);
         ((EditGridLayout)chosen.getParent().getParent()).blare();
+    }
+
+    public void setVibrator(Vibrator vibes){
+        this.vibes = vibes;
     }
 
     public void hideBoard(){

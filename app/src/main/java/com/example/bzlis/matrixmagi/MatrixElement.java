@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.Toast;
 
 public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
@@ -24,15 +25,10 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         this.setBackground(null);
         this.setTypeface(Typeface.SERIF, Typeface.ITALIC);
         this.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
+/*
         this.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent motionEvent) {
-            /*
-                DataBag.getInstance().setAdVis(View.GONE);
-                DataBag.getInstance().boardOut = true;
-                return false;
-                */
                 if (DataBag.getInstance().getCurrView().shouldUpdate) {
                     for (EditGridLayout layout : DataBag.getInstance().getData())
                         layout.switchBorderColor(-1);
@@ -48,10 +44,10 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
                             Toast.makeText(((MatrixElement)v).context, trueValue.getFullString(), Toast.LENGTH_SHORT).show();
                     } catch (Exception e){}
                 }
-                return false;
+                return true;
             }
         });
-
+*/
 /*
         this.setOnClickListener(new OnClickListener() {
             @Override

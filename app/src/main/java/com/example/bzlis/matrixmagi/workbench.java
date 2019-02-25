@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -47,7 +48,7 @@ public class workbench extends AppCompatActivity {
         frame.addView(pr);
         pr.setNumCells(numCells);
         DataBag.getInstance().setCurrView(pr);
-
+        DataBag.getInstance().setVibrator((Vibrator)this.getSystemService(VIBRATOR_SERVICE));
 
         MobileAds.initialize(this, "ca-app-pub-2890801541122304~4346705243");
         AdView adView = new AdView(this);
