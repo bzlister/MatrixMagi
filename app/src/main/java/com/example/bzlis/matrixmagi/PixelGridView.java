@@ -8,9 +8,11 @@ import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Html;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +32,7 @@ public class PixelGridView extends View {
     private int buttonWidth;
     private int spacing;
     protected boolean shouldUpdate = false;
-    private Button[] myButs = new Button[12];
+    private Button[] myButs = new Button[11];
     private int scalarVis = View.GONE;
     private int arithVis = View.GONE;
     private int specialVis = View.GONE;
@@ -41,6 +43,7 @@ public class PixelGridView extends View {
     protected TextView det;
     protected TextView vvv;
     protected TextView ttt;
+    protected TextView mag;
     public int id;
     public static int count;
 
@@ -61,41 +64,36 @@ public class PixelGridView extends View {
     }
 
     protected void makeTrashCan(){
-        lews = new ImageView(getContext());
-        lews.setLayoutParams(new LinearLayout.LayoutParams((int)(cellLength), cellLength));
-        lews.setImageResource(R.mipmap.tcan);
-        lews.setBackgroundColor(Color.TRANSPARENT);
-        lews.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Drag matrix to delete", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((ViewGroup)this.getParent()).addView(lews);
 
-        eigen = new TextView(this.getContext());
-                eigen.setText("\u03bb");
-        eigen.setBackground(null);
-        eigen.setTextSize(40);
-        eigen.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        eigen.setTranslationX(cellLength*6);
-        eigen.setTranslationY(Math.round(cellLength*(numRows-2)));
-        eigen.setTextIsSelectable(false);
-        eigen.setVisibility(View.INVISIBLE);
-        ((ViewGroup)this.getParent()).addView(eigen, cellLength*2, cellLength*2);
+        LinearLayout bottomRow = new LinearLayout(getContext());
+        bottomRow.setOrientation(LinearLayout.HORIZONTAL);
+        bottomRow.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int)Math.round(1.5*cellLength)));
+        bottomRow.setTranslationY(cellLength*(numRows-2));
+        int bottomRowWidth = Math.round(getWidth()/7.5f);
+
+        mag = new TextView(this.getContext());
+        SpannableString sst = new SpannableString("\u2016x\u2016");
+        sst.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), 1, 2, 0);
+        mag.setText(sst);
+        mag.setBackground(null);
+        mag.setTextSize(35);
+        mag.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        mag.setVisibility(View.INVISIBLE);
+        mag.setTextIsSelectable(false);
+        //mag.setTranslationX(buttonWidth/4f);
+        bottomRow.addView(mag, new LinearLayout.LayoutParams(bottomRowWidth, cellLength));
 
         det = new TextView(this.getContext());
         SpannableString ss = new SpannableString("|A|");
         ss.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), 1, 2, 0);
         det.setText(ss);
         det.setBackground(null);
-        det.setTextSize(40);
+        det.setTextSize(35);
         det.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        det.setTranslationX(cellLength*2);
-        det.setTranslationY(Math.round(cellLength*(numRows-2)));
         det.setVisibility(View.INVISIBLE);
         det.setTextIsSelectable(false);
-        ((ViewGroup)this.getParent()).addView(det, cellLength*2, cellLength*2);
+        //det.setTranslationX(buttonWidth/4f);
+        bottomRow.addView(det, new LinearLayout.LayoutParams(bottomRowWidth, cellLength));
 
         inv = new TextView(this.getContext());
         Spanned expText;
@@ -108,23 +106,12 @@ public class PixelGridView extends View {
         sr.setSpan(new RelativeSizeSpan(0.6f), 1, 3, 0);
         inv.setText(sr);
         inv.setBackground(null);
-        inv.setTextSize(40);
+        inv.setTextSize(35);
         inv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         inv.setVisibility(View.INVISIBLE);
-        inv.setTranslationY(Math.round(cellLength*(numRows-2)));
         inv.setTextIsSelectable(false);
-        ((ViewGroup)this.getParent()).addView(inv, cellLength*2, cellLength*2);
+        bottomRow.addView(inv, new LinearLayout.LayoutParams(bottomRowWidth, cellLength));
 
-        vvv = new TextView(this.getContext());
-        vvv.setText("v");
-        vvv.setBackground(null);
-        vvv.setTextSize(40);
-        vvv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        vvv.setTranslationX(cellLength*8);
-        vvv.setTranslationY(Math.round(cellLength*(numRows-2)));
-        vvv.setTextIsSelectable(false);
-        vvv.setVisibility(INVISIBLE);
-        ((ViewGroup)this.getParent()).addView(vvv, cellLength*2, cellLength*2);
 
         ttt = new TextView(this.getContext());
         Spanned tttText;
@@ -137,26 +124,58 @@ public class PixelGridView extends View {
         srt.setSpan(new RelativeSizeSpan(0.6f), 1, 2, 0);
         ttt.setText(srt);
         ttt.setBackground(null);
-        ttt.setTextSize(40);
+        ttt.setTextSize(35);
         ttt.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         ttt.setVisibility(View.INVISIBLE);
-        ttt.setTranslationY(Math.round(cellLength*(numRows-2)));
-        ttt.setTranslationX(cellLength*4);
         ttt.setTextIsSelectable(false);
         ttt.setVisibility(INVISIBLE);
-        ((ViewGroup)this.getParent()).addView(ttt, cellLength*2, cellLength*2);
+        //ttt.setTranslationX(buttonWidth/4f);
+        bottomRow.addView(ttt, new LinearLayout.LayoutParams(bottomRowWidth, cellLength));
+
+        eigen = new TextView(this.getContext());
+        eigen.setText("\u03bb");
+        eigen.setBackground(null);
+        eigen.setTextSize(35);
+        eigen.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        eigen.setTextIsSelectable(false);
+        eigen.setVisibility(View.INVISIBLE);
+        //eigen.setTranslationX(buttonWidth/4f);
+        bottomRow.addView(eigen, new LinearLayout.LayoutParams(bottomRowWidth, cellLength));
+
+        vvv = new TextView(this.getContext());
+        vvv.setText("v");
+        vvv.setBackground(null);
+        vvv.setTextSize(35);
+        vvv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        vvv.setTextIsSelectable(false);
+        vvv.setVisibility(INVISIBLE);
+        //vvv.setTranslationX(buttonWidth/4f);
+        bottomRow.addView(vvv, new LinearLayout.LayoutParams(bottomRowWidth, cellLength));
+
+        lews = new ImageView(getContext());
+        lews.setImageResource(R.mipmap.tcan);
+        lews.setBackgroundColor(Color.TRANSPARENT);
+        lews.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Drag matrix to delete", Toast.LENGTH_SHORT).show();
+            }
+        });
+        bottomRow.addView(lews, new LinearLayout.LayoutParams(bottomRowWidth*2, ViewGroup.LayoutParams.MATCH_PARENT));
+
 
         ques = new TextView(this.getContext());
         ques.setText("?");
         ques.setBackground(null);
-        ques.setTextSize(44);
+        ques.setTextSize(40);
         ques.setTextColor(Color.RED);
-        ques.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        ques.setTranslationX(cellLength*(numColumns-2));
-        ques.setTranslationY((int)(-cellLength*0.1));
-        //ques.setTranslationY(Math.round(cellLength*(numRows-2)));
+        ques.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
+        ques.setGravity(Gravity.RIGHT);
+        ques.setTranslationX(getWidth()-2*cellLength);
         ques.setTextIsSelectable(false);
         ((ViewGroup)this.getParent()).addView(ques, cellLength*2, cellLength*2);
+
+        ((ViewGroup)this.getParent()).addView(bottomRow);
 
     }
 
@@ -175,7 +194,7 @@ public class PixelGridView extends View {
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));;
         buttonWidth = Math.round(2*getWidth()/13f);
         spacing = Math.round(getWidth()/13f);
-        String[] text = new String[]{"A + B", "A - B", "AB", "AX = B", "", "scalar","1x1 matrix", "", "", "cA","",""};
+        String[] text = new String[]{"A + B", "A - B", "AB", "AX = B", "", "scalar","1x1 matrix", "", "cA","",""};
 
         for (int i = 0; i < myButs.length; i++){
             myButs[i] = new Button(DataBag.getInstance().getCurrView().getContext());
@@ -183,7 +202,7 @@ public class PixelGridView extends View {
                 myButs[i].setVisibility(arithVis);
             else if (i == 5 || i == 6)
                 myButs[i].setVisibility(scalarVis);
-            else if (i == 9 || i == 10)
+            else if (i == 8 || i == 9)
                 myButs[i].setVisibility(specialVis);
             else
                 myButs[i].setVisibility(GONE);
@@ -194,7 +213,12 @@ public class PixelGridView extends View {
             myButs[i].setTextColor(Color.GRAY);
             myButs[i].setText(colorize(text[i]));
             myButs[i].setTextSize(18);
-            myButs[i].setTranslationX((i%4)*buttonWidth+((i%4)+1)*spacing);
+            if (i == 9)
+                myButs[i].setTextSize(12);
+            if (i < 8)
+                myButs[i].setTranslationX((i%4)*buttonWidth+((i%4)+1)*spacing);
+            else
+                myButs[i].setTranslationX(((i-8)%3)*(4f/3)*buttonWidth+(((i-8)%3)+1)*(4f/3)*spacing);
             myButs[i].setTranslationY(cellLength*(numRows-2));
             ((ViewGroup)this.getParent()).addView(myButs[i]);
             myButs[i].setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, cellLength));
@@ -256,20 +280,6 @@ public class PixelGridView extends View {
                 }
             }
             else{
-                /*
-                if (event.getY() > cellLength*(numRows-2)) {
-                    if (event.getX() < 2 * cellLength)
-                        Toast.makeText(this.getContext(), "Drag matrix to find inverse", Toast.LENGTH_SHORT).show();
-                    else if (event.getX() < 4 * cellLength)
-                        Toast.makeText(this.getContext(), "Drag matrix to find determinant", Toast.LENGTH_SHORT).show();
-                    else if (event.getX() < 6 * cellLength)
-                        Toast.makeText(this.getContext(),"Drag matrix to find eigenvalues", Toast.LENGTH_SHORT).show();
-                    else if (event.getX() < 8 * cellLength)
-                        Toast.makeText(this.getContext(), "Drag matrix to find eigenvectors", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(this.getContext(), "Drag matrix to delete", Toast.LENGTH_SHORT).show();
-                }
-                */
                 if (event.getY() < 2*cellLength){
                     DataBag.getInstance().hideBoard();
                     ImageView tuts = new ImageView(this.getContext());
@@ -335,6 +345,9 @@ public class PixelGridView extends View {
             } else{
                 if (op == -1)
                     C = A.mult(B);
+                else if (op == -2){
+                    C = new Scalar(ComplexForm.div(new ComplexForm(1), B.getElement(0,0))).mult(A);
+                }
                 else {
                     if (B.getElement(0,0).getReal() == (long)(1.0*B.getElement(0,0).getReal()))
                         C = A.power((int) (1.0 * B.getElement(0, 0).getReal()));
@@ -381,8 +394,14 @@ public class PixelGridView extends View {
             scalarVis = View.VISIBLE;
         else
             specialVis = View.VISIBLE;
-        for (int q = 4*i; q < 4*i+4; q++) {
-            if (q != 4 && q != 7 && q != 8 && q != 11)
+        if (i != 2) {
+            for (int q = 4 * i; q < 4 * i + 4; q++) {
+                if (q != 4 && q != 7)
+                    myButs[q].setVisibility(View.VISIBLE);
+            }
+        }
+        else{
+            for (int q = 8; q < 11; q++)
                 myButs[q].setVisibility(View.VISIBLE);
         }
     }
@@ -428,21 +447,37 @@ public class PixelGridView extends View {
         SpannableString sr = new SpannableString(expText);
         sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
         sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
-        myButs[9].setText(colorize("n*A"));
+
+        Spanned etest = Html.fromHtml("<sup>1</sup>/<sub>n</sub>*A");
+        SpannableString test = new SpannableString(etest);
+        test.setSpan(new ForegroundColorSpan(Color.CYAN), 4, 5, 0);
+        test.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 2, 3, 0);
+
+
+
+        myButs[8].setText(colorize("n*A"));
+        myButs[9].setText(test);
         myButs[10].setText(sr);
         reveal(2);
-        myButs[9].setOnClickListener(new OnClickListener() {
+        myButs[8].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 hide();
                 arithmetic(-1,a, b);
             }
         });
+        myButs[9].setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hide();
+                arithmetic(-2,a, b);
+            }
+        });
         myButs[10].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 hide();
-                arithmetic(-2,a,b);
+                arithmetic(-3,a,b);
             }
         });
     }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -52,7 +53,21 @@ public class EditGridLayout extends RelativeLayout {
                 } else {
                     long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
                     if (clickDuration < MAX_CLICK_DURATION && motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Click!", Toast.LENGTH_SHORT).show();
+                        if (DataBag.getInstance().getCurrView().shouldUpdate) {
+                            for (EditGridLayout layout : DataBag.getInstance().getData())
+                                layout.switchBorderColor(-1);
+                            DataBag.getInstance().getCurrView().shouldUpdate = false;
+                            //invalidate();
+                        }
+                        DataBag.getInstance().getCurrView().hide();
+                        DataBag.getInstance().requestSelected((MatrixElement)view);
+                        DataBag.getInstance().showBoard((MatrixElement)view);
+                        if (((((MatrixElement)view).getText() == null) || ((MatrixElement)view).getText().toString().equals("")) && (((MatrixElement)view).getHint() != null)) {
+                            try {
+                                if (!((MatrixElement)view).trueValue.equals(ComplexForm.parse(((MatrixElement)view).trueValue.getPrettyString())))
+                                    Toast.makeText(DataBag.getInstance().getCurrView().getContext(), ((MatrixElement)view).trueValue.getFullString(), Toast.LENGTH_SHORT).show();
+                            } catch (Exception e){}
+                        }
                         lastAction = MotionEvent.ACTION_UP;
                     } else if (clickDuration >= MAX_CLICK_DURATION && motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
                         lastAction = MotionEvent.ACTION_MOVE;
@@ -118,14 +133,15 @@ public class EditGridLayout extends RelativeLayout {
 
     protected boolean moveIt(MotionEvent me){
         if (me.getAction() == MotionEvent.ACTION_MOVE) {
+            DataBag.getInstance().getCurrView().mag.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().det.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().inv.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().vvv.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().ttt.setVisibility(VISIBLE);
             int len = getCellLength();
-            int x0 = len * Math.round((me.getRawX() + len * thick) / len);
-            int y0 = len * Math.round((me.getRawY() - len * thick) / len);
+            int x0 = Math.round(me.getRawX()-tranX+len*getThickness());
+            int y0 = Math.round(me.getRawY()-tranY+len*getThickness());
             int x1 = x0 + len * getNumCols();
             int y1 = y0 + len * getNumRows();
             if (DataBag.getInstance().isOccupied(x0, y0, x1, y1, getSecret(), false) < 0) {
@@ -140,6 +156,7 @@ public class EditGridLayout extends RelativeLayout {
         }
         DataBag.getInstance().getCurrView().hide();
         if (me.getAction() == MotionEvent.ACTION_UP) {
+            DataBag.getInstance().getCurrView().mag.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().det.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().inv.setVisibility(INVISIBLE);
@@ -178,15 +195,21 @@ public class EditGridLayout extends RelativeLayout {
                     int spawnY = Math.round(oldY - len * thick);
                     if (!(getEncsMatrix() instanceof Scalar)) {
                         if (me.getRawX() < DataBag.getInstance().getCurrView().det.getX()) {
-                            Matrix inv = getEncsMatrix().inverse();
-                            DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(spawnX, spawnY));
-                        } else if (me.getRawX() < DataBag.getInstance().getCurrView().ttt.getX()) {
+                            Scalar mag = new Scalar(new ComplexForm(getEncsMatrix().mag()));
+                            DataBag.getInstance().getCurrView().makeEditGrid(mag, new Point(spawnX, spawnY));
+
+                        } else if (me.getRawX() < DataBag.getInstance().getCurrView().inv.getX()) {
                             Scalar det = new Scalar(getEncsMatrix().det());
                             DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(spawnX, spawnY));
-                        } else if (me.getRawX() < DataBag.getInstance().getCurrView().eigen.getX() + 2 * len) {
+                        } else if (me.getRawX() < DataBag.getInstance().getCurrView().ttt.getX()) {
+                            Matrix inv = getEncsMatrix().inverse();
+                            DataBag.getInstance().getCurrView().makeEditGrid(inv, new Point(spawnX, spawnY));
+
+
+                        } else if (me.getRawX() < DataBag.getInstance().getCurrView().eigen.getX()) {
                             Matrix tpose = getEncsMatrix().transpose();
                             DataBag.getInstance().getCurrView().makeEditGrid(tpose, new Point(spawnX, spawnY));
-                        } else if (me.getRawX() < DataBag.getInstance().getCurrView().vvv.getX() + 2 * len) {
+                        } else if (me.getRawX() < DataBag.getInstance().getCurrView().vvv.getX()){
                             try {
                                 ArrayList<Scalar> lambda = getEncsMatrix().eigenValue();
                                 for (int i = 0; i < lambda.size(); i++)
@@ -194,7 +217,8 @@ public class EditGridLayout extends RelativeLayout {
                             } catch (ArithmeticException e) {
                                 Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        } else {
+                        }
+                        else if (me.getRawX() < DataBag.getInstance().getCurrView().lews.getX()) {
                             try {
                                 ArrayList<Matrix> evecs = getEncsMatrix().eigenVector();
                                 for (int i = 0; i < evecs.size(); i++)
@@ -204,16 +228,17 @@ public class EditGridLayout extends RelativeLayout {
                             }
                         }
                     }
+                    if (me.getRawX() >= DataBag.getInstance().getCurrView().lews.getX()){
+                        ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(this);
+                        DataBag.getInstance().removeData(this);
+                        DataBag.getInstance().getCurrView().invalidate();
+                        if (DataBag.getInstance().deltut && DataBag.getInstance().getData().size() > 2) {
+                            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Shake device to delete all!", Toast.LENGTH_SHORT).show();
+                            DataBag.getInstance().deltut = false;
+                        }
+                    }
                 } catch (IllegalArgumentException e) {
                     Toast.makeText(DataBag.getInstance().getCurrView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            } else if (me.getRawY() < 1.1 * DataBag.getInstance().getCurrView().cellLength && me.getRawX() < 1.2 * DataBag.getInstance().getCurrView().cellLength) {
-                ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(this);
-                DataBag.getInstance().removeData(this);
-                DataBag.getInstance().getCurrView().invalidate();
-                if (DataBag.getInstance().deltut && DataBag.getInstance().getData().size() > 2) {
-                    Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Shake device to delete all!", Toast.LENGTH_SHORT).show();
-                    DataBag.getInstance().deltut = false;
                 }
             } else {
                 oldX = getX();

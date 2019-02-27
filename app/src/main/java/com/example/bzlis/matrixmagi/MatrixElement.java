@@ -13,7 +13,7 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
 
     private MatrixElement next;
     private Context context;
-    private ComplexForm trueValue;
+    protected ComplexForm trueValue;
     private String excepMessage = "";
 
     public MatrixElement(Context context){

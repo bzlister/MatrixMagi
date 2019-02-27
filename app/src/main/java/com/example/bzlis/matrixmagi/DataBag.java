@@ -99,8 +99,8 @@ public class DataBag {
                 if (!actual) {
                     x2 = edit.getActualX();
                     y2 = edit.getActualY();
-                    x3 = edit.getActualX() + edit.getNumCols() * edit.getCellLength();
-                    y3 = edit.getActualY() + edit.getNumRows() * edit.getCellLength();
+                    x3 = x2 + edit.getNumCols() * edit.getCellLength();
+                    y3 = y2 + edit.getNumRows() * edit.getCellLength();
                 } else {
                     x2 = edit.getX();
                     y2 = edit.getY();

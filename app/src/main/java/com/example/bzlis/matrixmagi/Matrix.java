@@ -356,7 +356,7 @@ public class Matrix {
 
     public double mag(){
         if (this.getNumRows() != 1 && this.getNumCols() != 1)
-            throw new IllegalArgumentException("Matrix must be 1xn or nx1");
+            throw new IllegalArgumentException("Matrix must be a row or column vector");
         double sum = 0.0;
         if (this.getNumRows() == 1){
             for (int j = 0; j < this.getNumCols(); j++)

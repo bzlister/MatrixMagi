@@ -26,7 +26,7 @@ import static android.view.View.VISIBLE;
 
 public class workbench extends AppCompatActivity {
 
-    private int numCells = 160;
+    private int numCells = 180;
     private static final String TAG_WORKER_FRAGMENT = "WorkerFragment";
     private WorkerFragment mWorkerFragment;
     private SensorManager mSensorManager;
