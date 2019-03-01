@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -60,6 +61,30 @@ public class workbench extends AppCompatActivity {
         DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
 
+        Button deleteAll = new Button(this);
+        RelativeLayout.LayoutParams rlparam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rlparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        deleteAll.setLayoutParams(rlparam);
+        deleteAll.setAllCaps(false);
+        deleteAll.setText("Delete all?");
+        deleteAll.setVisibility(View.GONE);
+        frame.addView(deleteAll);
+        DataBag.getInstance().deletor = deleteAll;
+        deleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DataBag.getInstance().deltut = false;
+                Iterator<EditGridLayout> it = DataBag.getInstance().getData().iterator();
+                while (it.hasNext()) {
+                    ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(it.next());
+                    it.remove();
+                }
+                DataBag.getInstance().getCurrView().hide();
+                DataBag.getInstance().getCurrView().invalidate();
+                DataBag.getInstance().deletor.setVisibility(View.GONE);
+            }
+        });
+
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
             fm.beginTransaction().add(mWorkerFragment, TAG_WORKER_FRAGMENT).commit();
@@ -77,15 +102,14 @@ public class workbench extends AppCompatActivity {
             mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
                 @Override
                 public void onShake(int count) {
-                    if (count >= 1) {
-                        DataBag.getInstance().deltut = false;
-                        Iterator<EditGridLayout> it = DataBag.getInstance().getData().iterator();
-                        while (it.hasNext()) {
-                            ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(it.next());
-                            it.remove();
-                        }
+                    if (DataBag.getInstance().getData().size() > 0) {
                         DataBag.getInstance().getCurrView().hide();
-                        DataBag.getInstance().getCurrView().invalidate();
+                        if (DataBag.getInstance().getCurrView().shouldUpdate) {
+                            for (EditGridLayout layout : DataBag.getInstance().getData())
+                                layout.switchBorderColor(-1);
+                            DataBag.getInstance().getCurrView().shouldUpdate = false;
+                        }
+                        DataBag.getInstance().deletor.setVisibility(View.VISIBLE);
                     }
                 }
             });

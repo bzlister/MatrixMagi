@@ -379,8 +379,6 @@ public class Matrix {
                 S.setElement(new ComplexForm(Math.random()*2-1), a, b);
             }
         }
-        //S = new Matrix(-.9007, .88957, .80543, -.018272);
-        //Matrix cp = S.mult(this.duplicate()).mult(S.inverse());
         Matrix cp = this.duplicate();
         for (int i = 0; i < 1000; i++){
             Matrix[] QR = cp.QR();
@@ -456,8 +454,8 @@ public class Matrix {
                 itr2.remove();
         }
         ArrayList<Scalar> retVal = (method1.size() >= method2.size()) ? method1 : method2;
-       // if (retVal.size() != n)
-           // Toast.makeText(DataBag.getInstance().getCurrView().getContext(), ("Found " + retVal.size() + " out of " + n + " eigenvalues."), Toast.LENGTH_SHORT).show();
+       if (retVal.size() != n)
+           Toast.makeText(DataBag.getInstance().getCurrView().getContext(), ("Found " + retVal.size() + " out of " + n + " eigenvalues."), Toast.LENGTH_SHORT).show();
         return retVal;
     }
 

@@ -30,7 +30,7 @@ public class EditGridLayout extends RelativeLayout {
     private Matrix matrix;
     private MatrixElement[][] edits;
     private GridLayout grid;
-    protected final float thick = 0.5f;
+    protected final float thick = 0.3f;
     private int borderColor = Color.rgb(35, 188, 196);
     private ImageView border;
     private static boolean mutated;
@@ -46,6 +46,7 @@ public class EditGridLayout extends RelativeLayout {
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+            DataBag.getInstance().deletor.setVisibility(View.GONE);
             if (lastAction == MotionEvent.ACTION_DOWN || lastAction == MotionEvent.ACTION_UP) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     startClickTime = Calendar.getInstance().getTimeInMillis();
@@ -57,7 +58,6 @@ public class EditGridLayout extends RelativeLayout {
                             for (EditGridLayout layout : DataBag.getInstance().getData())
                                 layout.switchBorderColor(-1);
                             DataBag.getInstance().getCurrView().shouldUpdate = false;
-                            //invalidate();
                         }
                         DataBag.getInstance().getCurrView().hide();
                         DataBag.getInstance().requestSelected((MatrixElement)view);
@@ -132,6 +132,7 @@ public class EditGridLayout extends RelativeLayout {
     }
 
     protected boolean moveIt(MotionEvent me){
+        DataBag.getInstance().deletor.setVisibility(View.GONE);
         if (me.getAction() == MotionEvent.ACTION_MOVE) {
             DataBag.getInstance().getCurrView().mag.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
@@ -139,6 +140,7 @@ public class EditGridLayout extends RelativeLayout {
             DataBag.getInstance().getCurrView().inv.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().vvv.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().ttt.setVisibility(VISIBLE);
+            DataBag.getInstance().getCurrView().lews.setVisibility(VISIBLE);
             int len = getCellLength();
             int x0 = Math.round(me.getRawX()-tranX+len*getThickness());
             int y0 = Math.round(me.getRawY()-tranY+len*getThickness());
@@ -148,6 +150,10 @@ public class EditGridLayout extends RelativeLayout {
                 setX(me.getRawX()-tranX);
                 setY(me.getRawY()-tranY);
             }
+            if (me.getRawY() >= len * (DataBag.getInstance().getCurrView().numRows - 2))
+                DataBag.getInstance().getCurrView().makeGlow(me);
+            else
+                DataBag.getInstance().getCurrView().makeDim();
         }
         if (mutated) {
             for (EditGridLayout layout : DataBag.getInstance().getData())
@@ -156,12 +162,14 @@ public class EditGridLayout extends RelativeLayout {
         }
         DataBag.getInstance().getCurrView().hide();
         if (me.getAction() == MotionEvent.ACTION_UP) {
+            DataBag.getInstance().getCurrView().makeDim();
             DataBag.getInstance().getCurrView().mag.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().eigen.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().det.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().inv.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().vvv.setVisibility(INVISIBLE);
             DataBag.getInstance().getCurrView().ttt.setVisibility(INVISIBLE);
+            DataBag.getInstance().getCurrView().lews.setVisibility(INVISIBLE);
             int len = getCellLength();
             setX(len * (Math.round((getX() + len * getThickness()) / len) - getThickness()));
             setY(len * (Math.round((getY() + len * getThickness()) / len) - getThickness()));
@@ -197,7 +205,6 @@ public class EditGridLayout extends RelativeLayout {
                         if (me.getRawX() < DataBag.getInstance().getCurrView().det.getX()) {
                             Scalar mag = new Scalar(new ComplexForm(getEncsMatrix().mag()));
                             DataBag.getInstance().getCurrView().makeEditGrid(mag, new Point(spawnX, spawnY));
-
                         } else if (me.getRawX() < DataBag.getInstance().getCurrView().inv.getX()) {
                             Scalar det = new Scalar(getEncsMatrix().det());
                             DataBag.getInstance().getCurrView().makeEditGrid(det, new Point(spawnX, spawnY));

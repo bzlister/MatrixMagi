@@ -1,7 +1,6 @@
 package com.example.bzlis.matrixmagi;
 
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Vibrator;
 import android.view.Gravity;
 import android.view.View;
@@ -27,13 +26,14 @@ public class DataBag {
     private int A;
     private int B;
     private boolean arithOp;
-    private AdView adView;
+    protected AdView adView;
     public boolean boardOut;
     public boolean itut;
     public boolean deltut;
     private GridLayout board;
     private MatrixElement chosen;
     public Vibrator vibes;
+    public Button deletor;
 
     private DataBag(){
         editList = new HashSet<>();
@@ -128,6 +128,7 @@ public class DataBag {
     }
 
     public void makeBoard(){
+        getCurrView().makeDim();
         if (board != null)
             ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).removeView(board);
         board = new GridLayout(getCurrView().getContext());
