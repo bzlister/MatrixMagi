@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.ads.AdRequest;
@@ -33,7 +34,7 @@ public class DataBag {
     private GridLayout board;
     private MatrixElement chosen;
     public Vibrator vibes;
-    public Button deletor;
+    public LinearLayout deletor;
 
     private DataBag(){
         editList = new HashSet<>();
@@ -65,7 +66,6 @@ public class DataBag {
         while (itr.hasNext()){
             if (itr.next().equals(edit)) {
                 itr.remove();
-                //edit.removeAllViews();
                 break;
             }
         }
@@ -77,18 +77,6 @@ public class DataBag {
 
     public void setAdView(AdView adView){
         this.adView = adView;
-    }
-
-    public void setAdVis(int visibility){
-        adView.setVisibility(visibility);
-        if (visibility == View.GONE)
-            adView.pause();
-        else
-            adView.resume();
-    }
-
-    public int getSize(){
-        return editList.size();
     }
 
     public int isOccupied(int x0, int y0, int x1, int y1, int secret, boolean actual){
@@ -266,5 +254,4 @@ public class DataBag {
         }
         board.setVisibility(View.GONE);
     }
-
 }

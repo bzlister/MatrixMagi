@@ -115,7 +115,6 @@ public class PixelGridView extends View {
     }
 
     protected void makeTrashCan(){
-        DataBag.getInstance().deletor.setTranslationY(getHeight()/3f);
         LinearLayout bottomRow = new LinearLayout(getContext());
         bottomRow.setOrientation(LinearLayout.HORIZONTAL);
         bottomRow.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int)Math.round(1.5*cellLength)));
@@ -210,8 +209,51 @@ public class PixelGridView extends View {
         ques.setBackground(null);
         ques.setTextSize(40);
         ques.setTextColor(Color.RED);
+        ques.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         ques.setGravity(Gravity.CENTER);
         ques.setTextIsSelectable(false);
+        ques.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DataBag.getInstance().hideBoard();
+                DataBag.getInstance().getCurrView().hide();
+                ImageView tuts = new ImageView(DataBag.getInstance().getCurrView().getContext());
+                tuts.setLayoutParams(DataBag.getInstance().getCurrView().getLayoutParams());
+                tuts.setImageResource(R.mipmap.tuts);
+                tuts.setBackgroundColor(Color.rgb(250, 250, 250));
+                tuts.setVisibility(VISIBLE);
+                tuts.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        hide();
+                        EditGridLayout.hideKeyboard();
+                        if (shouldUpdate) {
+                            for (EditGridLayout layout : DataBag.getInstance().getData())
+                                layout.switchBorderColor(-1);
+                            shouldUpdate = false;
+                        }
+                        DataBag.getInstance().deletor.setVisibility(View.GONE);
+                        ((RelativeLayout)v.getParent()).removeView(v);
+                        v.setVisibility(View.GONE);
+                        ImageView tuts2 = new ImageView(DataBag.getInstance().getCurrView().getContext());
+                        tuts2.setLayoutParams(DataBag.getInstance().getCurrView().getLayoutParams());
+                        tuts2.setBackgroundColor(Color.rgb(250, 250, 250));
+                        tuts2.setImageResource(R.mipmap.tut2);
+                        tuts2.setVisibility(VISIBLE);
+                        ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).addView(tuts2);
+                        tuts2.setOnTouchListener(new View.OnTouchListener(){
+                            @Override
+                            public  boolean onTouch(View v, MotionEvent event){
+                                ((RelativeLayout)v.getParent()).removeView(v);
+                                v.setVisibility(View.GONE);
+                                return false;
+                            }
+                        });
+                    }
+                });
+                ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).addView(tuts);
+            }
+        });
         ((ViewGroup)this.getParent()).addView(ques, cellLength, cellLength);
 
         ((ViewGroup)this.getParent()).addView(bottomRow);
@@ -308,47 +350,13 @@ public class PixelGridView extends View {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             if ((corners[0].y - corners[1].y != 0) && (corners[0].x - corners[1].x != 0)) {
                 if (DataBag.getInstance().isOccupied(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y), Math.max(corners[0].x, corners[1].x), Math.max(corners[0].y, corners[1].y), -1, false) < 0) {
-                    int matCols = Math.round(Math.abs(corners[0].x - corners[1].x) / cellLength);
-                    int matRows = Math.round(Math.abs(corners[0].y - corners[1].y) / cellLength);
+                    int matCols = Math.round(Math.abs(corners[0].x - corners[1].x) / (1f*cellLength));
+                    int matRows = Math.round(Math.abs(corners[0].y - corners[1].y) / (1f*cellLength));
                     Point top = new Point(Math.min(corners[0].x, corners[1].x), Math.min(corners[0].y, corners[1].y));
                     if (matCols == 1 && matRows == 1)
                         scalarQuestionaire(top);
                     else
                         makeEditGrid(new Matrix(matRows, matCols), top);
-                }
-                else{
-                }
-            }
-            else{
-                if (event.getY() < 2*cellLength){
-                    DataBag.getInstance().hideBoard();
-                    ImageView tuts = new ImageView(this.getContext());
-                    tuts.setLayoutParams(this.getLayoutParams());
-                    tuts.setImageResource(R.mipmap.tuts);
-                    tuts.setBackgroundColor(Color.WHITE);
-                    tuts.setVisibility(VISIBLE);
-                    tuts.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            ((RelativeLayout)v.getParent()).removeView(v);
-                            v.setVisibility(View.GONE);
-                            ImageView tuts2 = new ImageView(DataBag.getInstance().getCurrView().getContext());
-                           // tuts2.setLayoutParams(DataBag.getInstance().getCurrView().getLayoutParams());
-                            tuts2.setImageResource(R.mipmap.tut2);
-                            tuts2.setVisibility(VISIBLE);
-                            ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).addView(tuts2);
-                            tuts2.setOnTouchListener(new View.OnTouchListener(){
-                                @Override
-                                public  boolean onTouch(View v, MotionEvent event){
-                                    ((RelativeLayout)v.getParent()).removeView(v);
-                                    v.setVisibility(View.GONE);
-                                    return false;
-                                }
-                            });
-                            return false;
-                        }
-                    });
-                    ((ViewGroup)this.getParent()).addView(tuts);
                 }
             }
             corners[0] = null;
@@ -420,7 +428,7 @@ public class PixelGridView extends View {
             text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B', j), s.indexOf('B', j) + 1, 0);
             j = s.indexOf('B', j) + 1;
         }
-        if (s.contains("x") && !s.contains("matrix"))
+        if (s.contains("x") && !s.contains("matrix") && !s.contains("Exponents"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('x'), s.indexOf('x') + 1, 0);
         if (s.contains("n*A"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), s.indexOf('n'), s.indexOf('n')+1,0);

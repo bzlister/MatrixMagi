@@ -144,7 +144,7 @@ public class Matrix {
 
     protected Matrix power(int n){
         if (this.getNumRows() != this.getNumCols())
-            throw new IllegalArgumentException("Rows(A) =/= Cols(A)");
+            throw new IllegalArgumentException("Not a square matrix!");
         Matrix H = this.duplicate();
         if (n < 0){
             n*=-1;
@@ -321,22 +321,15 @@ public class Matrix {
                 }
             }
             Matrix check = this.duplicate().add(new Matrix(this.getNumRows(), this.getNumCols()).scalarMult(ComplexForm.mult(new ComplexForm(-1), eigen.getElement(0, 0))));
-           // if (check.mult(v).mag() < EPSILON)
+            if (check.mult(v).mag() < 1e-4)
                 eigenvectors.add(v);
-           // else
-             //   fcount++;
+            else
+              fcount++;
         }
-  //      if (fcount != this.numCols)
-//            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Found " + (this.numCols-fcount) + " out of " + this.numCols + " eigenvectors", Toast.LENGTH_SHORT).show();
+      if (fcount != this.numCols)
+            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Found " + (this.numCols-fcount) + " out of " + this.numCols + " eigenvectors", Toast.LENGTH_SHORT).show();
         return eigenvectors;
      }
-
-
-    private void swapRows(int r1, int r2) {
-        ComplexForm[] temp = this.mat[r1];
-        this.mat[r1] = this.mat[r2];
-        this.mat[r2] = temp;
-    }
 
     protected Matrix scalarMult(ComplexForm cf){
         Matrix prod = this.duplicate();
@@ -419,28 +412,6 @@ public class Matrix {
         for (int y = 0; y < n; y++) {
             method2.add(new Scalar(cp.getElement(y, y)));
         }
-        /*
-        ArrayList<Scalar> retVal = new ArrayList();
-        boolean method1Better = true;
-        double max = 0;
-        for (int s = 0; s < this.getNumCols(); s++){
-            Double det1 = this.add(new Matrix(n,n).scalarMult(ComplexForm.mult(new ComplexForm(-1), method1.get(s).getElement(0,0)))).det().magnitude();
-            Double det2 = this.add(new Matrix(n,n).scalarMult(ComplexForm.mult(new ComplexForm(-1), method2.get(s).getElement(0,0)))).det().magnitude();
-            if (max < det1){
-                method1Better = false;
-                max = det1;
-            }
-            if (max < det2){
-                method1Better = true;
-                max = det2;
-            }
-        }
-        if (method1Better)
-            retVal = method1;
-        else
-            retVal = method2;
-        */
-
         Iterator<Scalar> itr1 = method1.iterator();
         Iterator<Scalar> itr2 = method2.iterator();
         while (itr1.hasNext()){

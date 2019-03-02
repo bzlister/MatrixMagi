@@ -8,13 +8,12 @@ import android.hardware.SensorManager;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -23,7 +22,6 @@ import com.google.android.gms.ads.MobileAds;
 
 import java.util.Iterator;
 
-import static android.view.View.VISIBLE;
 
 public class workbench extends AppCompatActivity {
 
@@ -38,10 +36,8 @@ public class workbench extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // find the retained fragment on activity restarts
         FragmentManager fm = getFragmentManager();
         mWorkerFragment = (WorkerFragment) fm.findFragmentByTag(TAG_WORKER_FRAGMENT);
-        // create the fragment and data the first time
 
         final RelativeLayout frame = new RelativeLayout(this);
 
@@ -61,16 +57,30 @@ public class workbench extends AppCompatActivity {
         DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
 
-        Button deleteAll = new Button(this);
+        LinearLayout deleteAll = new LinearLayout(this);
+        deleteAll.setOrientation(LinearLayout.VERTICAL);
         RelativeLayout.LayoutParams rlparam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         rlparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         deleteAll.setLayoutParams(rlparam);
-        deleteAll.setAllCaps(false);
-        deleteAll.setText("Delete all?");
-        deleteAll.setVisibility(View.GONE);
-        frame.addView(deleteAll);
-        DataBag.getInstance().deletor = deleteAll;
-        deleteAll.setOnClickListener(new View.OnClickListener() {
+        TextView tv = new TextView(this);
+        deleteAll.setBackgroundResource(R.drawable.button_light);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        tv.setAllCaps(false);
+        tv.setText("Delete all?");
+        deleteAll.addView(tv);
+        LinearLayout buttonRow = new LinearLayout(this);
+        buttonRow.setOrientation(LinearLayout.HORIZONTAL);
+        Button yes = new Button(this);
+        yes.setTextColor(Color.rgb(35, 188, 196));
+        yes.setBackground(null);
+        yes.setAllCaps(false);
+        yes.setText("Yes");
+        Button no = new Button(this);
+        no.setTextColor(Color.rgb(35, 188, 196));
+        no.setBackground(null);
+        no.setAllCaps(false);
+        no.setText("No");
+        yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DataBag.getInstance().deltut = false;
@@ -84,6 +94,19 @@ public class workbench extends AppCompatActivity {
                 DataBag.getInstance().deletor.setVisibility(View.GONE);
             }
         });
+        no.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                DataBag.getInstance().deltut = false;
+                DataBag.getInstance().deletor.setVisibility(View.GONE);
+            }
+        });
+        buttonRow.addView(yes);
+        buttonRow.addView(no);
+        deleteAll.addView(buttonRow);
+        DataBag.getInstance().deletor = deleteAll;
+        deleteAll.setVisibility(View.GONE);
+        frame.addView(deleteAll);
 
         if (mWorkerFragment == null) {
             mWorkerFragment = new WorkerFragment();
@@ -103,6 +126,7 @@ public class workbench extends AppCompatActivity {
                 @Override
                 public void onShake(int count) {
                     if (DataBag.getInstance().getData().size() > 0) {
+                        DataBag.getInstance().deletor.bringToFront();
                         DataBag.getInstance().getCurrView().hide();
                         if (DataBag.getInstance().getCurrView().shouldUpdate) {
                             for (EditGridLayout layout : DataBag.getInstance().getData())
@@ -119,13 +143,11 @@ public class workbench extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        // Add the following line to register the Session Manager Listener onResume
         mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
     public void onPause() {
-        // Add the following line to unregister the Sensor Manager onPause
         mSensorManager.unregisterListener(mShakeDetector);
         super.onPause();
     }

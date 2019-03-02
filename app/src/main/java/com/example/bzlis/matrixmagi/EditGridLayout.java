@@ -4,10 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
-import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -179,9 +177,9 @@ public class EditGridLayout extends RelativeLayout {
             int y1 = Math.round(y0 + len * (getNumRows() + 2 * getThickness()));
             int secret;
             if ((secret = DataBag.getInstance().isOccupied(x0, y0, x1, y1, getSecret(), true)) >= 0) {
+                hideKeyboard();
                 int a, b;
                 EditGridLayout other = DataBag.getInstance().getData(secret);
-
                 if (getEncsMatrix() instanceof Scalar || other.getEncsMatrix() instanceof Scalar) {
                     if (!(getEncsMatrix() instanceof Scalar))
                         DataBag.getInstance().getCurrView().scalarButtons(getSecret(), other.getSecret());
@@ -199,8 +197,8 @@ public class EditGridLayout extends RelativeLayout {
                 }
             } else if (me.getRawY() >= len * (DataBag.getInstance().getCurrView().numRows - 2)) {
                 try {
-                    int spawnX = Math.round(oldX - len * thick);
-                    int spawnY = Math.round(oldY - len * thick);
+                    int spawnX = Math.round(oldX + len * thick);
+                    int spawnY = Math.round(oldY + len * thick);
                     if (!(getEncsMatrix() instanceof Scalar)) {
                         if (me.getRawX() < DataBag.getInstance().getCurrView().det.getX()) {
                             Scalar mag = new Scalar(new ComplexForm(getEncsMatrix().mag()));

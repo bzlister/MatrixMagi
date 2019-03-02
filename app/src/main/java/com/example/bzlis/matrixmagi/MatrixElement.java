@@ -3,10 +3,7 @@ package com.example.bzlis.matrixmagi;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.InputType;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.GridLayout;
-import android.widget.Toast;
 
 public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
 
