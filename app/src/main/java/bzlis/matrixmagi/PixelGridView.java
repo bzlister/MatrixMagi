@@ -243,12 +243,11 @@ public class PixelGridView extends View {
                         tuts2.setImageResource(R.mipmap.tut2);
                         tuts2.setVisibility(VISIBLE);
                         ((ViewGroup)DataBag.getInstance().getCurrView().getParent()).addView(tuts2);
-                        tuts2.setOnTouchListener(new View.OnTouchListener(){
+                        tuts2.setOnClickListener(new OnClickListener(){
                             @Override
-                            public  boolean onTouch(View v, MotionEvent event){
+                            public  void onClick(View v){
                                 ((RelativeLayout)v.getParent()).removeView(v);
                                 v.setVisibility(View.GONE);
-                                return false;
                             }
                         });
                     }
@@ -274,7 +273,7 @@ public class PixelGridView extends View {
         }
         cellLength = (int)Math.round(Math.sqrt((getWidth()*getHeight()*1.0)/numCells));
         numColumns = (int)Math.round(getWidth()/(0.0 + cellLength));
-        numRows = (int)Math.round(getHeight()/(0.0 + cellLength));;
+        numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
         buttonWidth = Math.round(2*getWidth()/13f);
         spacing = Math.round(getWidth()/13f);
         String[] text = new String[]{"A + B", "A - B", "AB", "AX = B", "", "scalar","1x1 matrix", "", "cA","",""};
