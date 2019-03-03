@@ -218,8 +218,16 @@ public class PixelGridView extends View {
         ques.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                DataBag.getInstance().tutOut = true;
                 DataBag.getInstance().hideBoard();
                 DataBag.getInstance().getCurrView().hide();
+                EditGridLayout.hideKeyboard();
+                if (shouldUpdate) {
+                    for (EditGridLayout layout : DataBag.getInstance().getData())
+                        layout.switchBorderColor(-1);
+                    shouldUpdate = false;
+                }
+                DataBag.getInstance().deletor.setVisibility(View.GONE);
                 ImageView tuts = new ImageView(DataBag.getInstance().getCurrView().getContext());
                 tuts.setLayoutParams(DataBag.getInstance().getCurrView().getLayoutParams());
                 tuts.setImageResource(R.mipmap.tuts);
@@ -228,14 +236,6 @@ public class PixelGridView extends View {
                 tuts.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        hide();
-                        EditGridLayout.hideKeyboard();
-                        if (shouldUpdate) {
-                            for (EditGridLayout layout : DataBag.getInstance().getData())
-                                layout.switchBorderColor(-1);
-                            shouldUpdate = false;
-                        }
-                        DataBag.getInstance().deletor.setVisibility(View.GONE);
                         ((RelativeLayout)v.getParent()).removeView(v);
                         v.setVisibility(View.GONE);
                         ImageView tuts2 = new ImageView(DataBag.getInstance().getCurrView().getContext());
@@ -247,6 +247,7 @@ public class PixelGridView extends View {
                         tuts2.setOnClickListener(new OnClickListener(){
                             @Override
                             public  void onClick(View v){
+                                DataBag.getInstance().tutOut = false;
                                 ((RelativeLayout)v.getParent()).removeView(v);
                                 v.setVisibility(View.GONE);
                             }
@@ -296,8 +297,6 @@ public class PixelGridView extends View {
             myButs[i].setTextColor(Color.GRAY);
             myButs[i].setText(colorize(text[i]));
             myButs[i].setTextSize(18);
-            if (i == 9)
-                myButs[i].setTextSize(12);
             if (i < 8)
                 myButs[i].setTranslationX((i%4)*buttonWidth+((i%4)+1)*spacing);
             else
@@ -432,8 +431,8 @@ public class PixelGridView extends View {
         }
         if (s.contains("\u2016x\u2016"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('x'), s.indexOf('x') + 1, 0);
-        if (s.contains("nA"))
-            text.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), s.indexOf('n'), s.indexOf('n')+1,0);
+        if (s.contains("cA"))
+            text.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), s.indexOf('c'), s.indexOf('c')+1,0);
         return text;
     }
 
@@ -492,21 +491,21 @@ public class PixelGridView extends View {
         DataBag.getInstance().getData(b).switchBorderColor(Color.rgb(93,204,115));
         Spanned expText;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
-            expText = Html.fromHtml("A<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
+            expText = Html.fromHtml("A<sup>c</sup>", Html.FROM_HTML_MODE_LEGACY);
         else
-            expText = Html.fromHtml("A<sup>n</sup>");
+            expText = Html.fromHtml("A<sup>c</sup>");
         SpannableString sr = new SpannableString(expText);
         sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
         sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
 
-        Spanned etest = Html.fromHtml("<sup>1</sup>/<sub>n</sub>A");
+        Spanned etest = Html.fromHtml("A\u00f7c");
         SpannableString test = new SpannableString(etest);
-        test.setSpan(new ForegroundColorSpan(Color.CYAN), 3, 4, 0);
+        test.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
         test.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 2, 3, 0);
 
 
 
-        myButs[8].setText(colorize("nA"));
+        myButs[8].setText(colorize("cA"));
         myButs[9].setText(test);
         myButs[10].setText(sr);
         reveal(2);
@@ -534,21 +533,57 @@ public class PixelGridView extends View {
     }
 
     private void scalarQuestionaire(final Point top){
-        reveal(1);
-        myButs[5].setOnClickListener(new OnClickListener() {
+        DataBag.getInstance().hideBoard();
+        DataBag.getInstance().getCurrView().hide();
+        EditGridLayout.hideKeyboard();
+        if (shouldUpdate) {
+            for (EditGridLayout layout : DataBag.getInstance().getData())
+                layout.switchBorderColor(-1);
+            shouldUpdate = false;
+        }
+        DataBag.getInstance().deletor.setVisibility(View.GONE);
+        final LinearLayout scalarQ = new LinearLayout(getContext());
+        scalarQ.setOrientation(LinearLayout.VERTICAL);
+        RelativeLayout.LayoutParams rlparam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rlparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        scalarQ.setLayoutParams(rlparam);
+        TextView tv = new TextView(getContext());
+        scalarQ.setBackgroundResource(R.drawable.button_light);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        tv.setAllCaps(false);
+        tv.setText("Make a");
+        scalarQ.addView(tv);
+        LinearLayout buttonRow = new LinearLayout(getContext());
+        buttonRow.setOrientation(LinearLayout.HORIZONTAL);
+        final Button scalar = new Button(getContext());
+        scalar.setTextColor(Color.GRAY);
+        scalar.setBackground(null);
+        scalar.setAllCaps(false);
+        scalar.setText("Scalar");
+        Button mat1x1 = new Button(getContext());
+        SpannableString sst = new SpannableString("1x1 matrix");
+        sst.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), 4, 10, 0);
+        mat1x1.setBackground(null);
+        mat1x1.setAllCaps(false);
+        mat1x1.setText(sst);
+        scalar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                hide();
+            public void onClick(View view) {
+                scalarQ.setVisibility(View.GONE);
                 makeEditGrid(new Scalar(), top);
             }
         });
-        myButs[6].setOnClickListener(new OnClickListener() {
+        mat1x1.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View v) {
-                hide();
+            public void onClick(View view){
+                scalarQ.setVisibility(View.GONE);
                 makeEditGrid(new Matrix(1, 1), top);
             }
         });
+        buttonRow.addView(scalar);
+        buttonRow.addView(mat1x1);
+        scalarQ.addView(buttonRow);
+        ((ViewGroup)this.getParent()).addView(scalarQ);
         invalidate();
     }
 

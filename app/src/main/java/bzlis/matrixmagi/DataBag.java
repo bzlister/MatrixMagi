@@ -36,12 +36,14 @@ public class DataBag {
     private MatrixElement chosen;
     public Vibrator vibes;
     public LinearLayout deletor;
+    public boolean tutOut;
 
     private DataBag(){
         editList = new HashSet<>();
         arithOp = false;
         boardOut = false;
         deltut = true;
+        tutOut = false;
     }
 
     public static DataBag getInstance(){

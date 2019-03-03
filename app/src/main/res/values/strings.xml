@@ -31,7 +31,7 @@
 
     <string name="capNum">Number</string>
     <string name="lilNum">number</string>
-    <stirng name="rows"> of Rows</stirng>
+    <string name="rows"> of Rows</string>
     <string name="cols"> of Columns</string>
     <string name="mismatch1"> of A must equal </string>
     <string name="mismatch2"> of B!</string>

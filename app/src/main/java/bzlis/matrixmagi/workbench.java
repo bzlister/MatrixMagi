@@ -126,7 +126,7 @@ public class workbench extends AppCompatActivity {
             mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
                 @Override
                 public void onShake(int count) {
-                    if (DataBag.getInstance().getData().size() > 0) {
+                    if ((DataBag.getInstance().getData().size() > 0) && !DataBag.getInstance().tutOut){
                         DataBag.getInstance().deletor.bringToFront();
                         DataBag.getInstance().getCurrView().hide();
                         if (DataBag.getInstance().getCurrView().shouldUpdate) {
