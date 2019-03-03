@@ -212,6 +212,7 @@ public class PixelGridView extends View {
         ques.setTextSize(35);
         ques.setTextColor(Color.RED);
         ques.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        ques.setVisibility(View.VISIBLE);
         ques.setGravity(Gravity.CENTER);
         ques.setTextIsSelectable(false);
         ques.setOnClickListener(new OnClickListener() {
@@ -429,9 +430,9 @@ public class PixelGridView extends View {
             text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B', j), s.indexOf('B', j) + 1, 0);
             j = s.indexOf('B', j) + 1;
         }
-        if (s.contains("x") && !s.contains("matrix") && !s.contains("Exponents"))
+        if (s.contains("\u2016x\u2016"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('x'), s.indexOf('x') + 1, 0);
-        if (s.contains("n*A"))
+        if (s.contains("nA"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), s.indexOf('n'), s.indexOf('n')+1,0);
         return text;
     }
@@ -498,14 +499,14 @@ public class PixelGridView extends View {
         sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
         sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
 
-        Spanned etest = Html.fromHtml("<sup>1</sup>/<sub>n</sub>*A");
+        Spanned etest = Html.fromHtml("<sup>1</sup>/<sub>n</sub>A");
         SpannableString test = new SpannableString(etest);
-        test.setSpan(new ForegroundColorSpan(Color.CYAN), 4, 5, 0);
+        test.setSpan(new ForegroundColorSpan(Color.CYAN), 3, 4, 0);
         test.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 2, 3, 0);
 
 
 
-        myButs[8].setText(colorize("n*A"));
+        myButs[8].setText(colorize("nA"));
         myButs[9].setText(test);
         myButs[10].setText(sr);
         reveal(2);

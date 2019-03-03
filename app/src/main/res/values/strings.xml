@@ -1,4 +1,56 @@
 <resources>
-    <string name="app_name">MatrixMagi</string>
-    <string name="toasty">rutinous</string>
+    <string name="app_name">Matrix Magi</string>
+    <string name="tut1">Drag diagonally to create a new matrix</string>
+    <string name="tut2">Tap cells to enter numbers</string>
+    <string name="tut3">Move a matrix next to another to:</string>
+    <string name="add">Add</string>
+    <string name="subtract">Subtract</string>
+    <string name="multiply">Multiply</string>
+    <string name="solve">Solve</string>
+    <string name="tut4">To create a scalar, draw a 1x1 matrix and select</string>
+    <string name="tut5">Move a scalar next to a matrix to:</string>
+    <string name="divide">Divide</string>
+    <string name="expo">Exponentiate</string>
+    <string name="tut6">Drag a matrix to the bottom row to find its:</string>
+    <string name="tut7">Drag to the bin to delete</string>
+    <string name="mag">Magnitude</string>
+    <string name="det">Determinant</string>
+    <string name="inv">Inverse</string>
+    <string name="tpose">Transpose</string>
+    <string name="eval">Eigenvalues</string>
+    <string name="evec">Eigenvectors</string>
+
+    <string name="magErr">Matrix must be a row or column vector</string>
+    <string name="squareErr">Not a square matrix!</string>
+    <string name="singErr">Singular or nearly singular!</string>
+    <string name="overflowErr">Overflow error</string>
+    <string name="eigen1">Found </string>
+    <string name="eigen2"> out of </string>
+    <string name="eigen3_val"> eigenvalues</string>
+    <string name="eigen3_vec"> eigenvectors</string>
+
+    <string name="capNum">Number</string>
+    <string name="lilNum">number</string>
+    <stirng name="rows"> of Rows</stirng>
+    <string name="cols"> of Columns</string>
+    <string name="mismatch1"> of A must equal </string>
+    <string name="mismatch2"> of B!</string>
+
+    <string name="delAll">Delete all?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="scalar">Scalar</string>
+
+    <string name="cfExcep"> not a properly formatted number!</string>
+
+    <string name="next">Next</string>
+    <string name="done">Done</string>
+
+    <string name="under">System is underdetermined!</string>
+    <string name="over">System is overdetermined!</string>
+
+    <string name="ls1">No exact solution.</string>
+    <string name="ls2">Least-squares approximation error: </string>
+    <string name="pow">Exponents must be integers!</string>
 </resources>
