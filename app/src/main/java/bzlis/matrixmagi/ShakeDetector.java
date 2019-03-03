@@ -1,4 +1,4 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;

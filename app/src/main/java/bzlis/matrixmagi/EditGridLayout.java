@@ -1,4 +1,4 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -14,6 +14,8 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.example.bzlis.matrixmagi.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;

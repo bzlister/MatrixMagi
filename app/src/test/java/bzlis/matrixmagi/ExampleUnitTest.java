@@ -1,8 +1,12 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
+
+import bzlis.matrixmagi.ComplexForm;
+import bzlis.matrixmagi.Matrix;
+import bzlis.matrixmagi.Scalar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

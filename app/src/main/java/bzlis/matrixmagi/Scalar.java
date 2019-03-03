@@ -1,6 +1,6 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
-public class Scalar extends com.example.bzlis.matrixmagi.Matrix {
+public class Scalar extends Matrix {
 
 
     public Scalar(){

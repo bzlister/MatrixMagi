@@ -15,7 +15,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-2890801541122304~4346705243"/>
         <activity
-            android:name="com.example.bzlis.matrixmagi.workbench">
+            android:name="bzlis.matrixmagi.workbench">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,4 +1,4 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
 import android.app.FragmentManager;
 import android.content.Context;
@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.bzlis.matrixmagi.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -53,9 +54,9 @@ public class workbench extends AppCompatActivity {
         adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         adView.setId(View.generateViewId());
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        frame.addView(adView);
+        //frame.addView(adView);
         DataBag.getInstance().setAdView(adView);
-        adView.bringToFront();
+        //adView.bringToFront();
 
         LinearLayout deleteAll = new LinearLayout(this);
         deleteAll.setOrientation(LinearLayout.VERTICAL);

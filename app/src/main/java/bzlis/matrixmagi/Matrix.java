@@ -1,4 +1,4 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
 import android.widget.Toast;
 
@@ -326,7 +326,7 @@ public class Matrix {
             else
               fcount++;
         }
-      if (fcount != this.numCols)
+      if (eigenvectors.size() != this.numCols)
             Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Found " + (this.numCols-fcount) + " out of " + this.numCols + " eigenvectors", Toast.LENGTH_SHORT).show();
         return eigenvectors;
      }

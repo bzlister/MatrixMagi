@@ -1,4 +1,4 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

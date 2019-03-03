@@ -1,4 +1,4 @@
-package com.example.bzlis.matrixmagi;
+package bzlis.matrixmagi;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -21,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.bzlis.matrixmagi.R;
 
 
 public class PixelGridView extends View {
@@ -207,7 +209,7 @@ public class PixelGridView extends View {
         ques = new TextView(this.getContext());
         ques.setText("?");
         ques.setBackground(null);
-        ques.setTextSize(40);
+        ques.setTextSize(35);
         ques.setTextColor(Color.RED);
         ques.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         ques.setGravity(Gravity.CENTER);
