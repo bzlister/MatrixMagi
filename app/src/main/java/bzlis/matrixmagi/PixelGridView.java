@@ -278,7 +278,7 @@ public class PixelGridView extends View {
         numRows = (int)Math.round(getHeight()/(0.0 + cellLength));
         buttonWidth = Math.round(2*getWidth()/13f);
         spacing = Math.round(getWidth()/13f);
-        String[] text = new String[]{"A + B", "A - B", "AB", "AX = B", "", "scalar","1x1 matrix", "", "cA","",""};
+        String[] text = new String[]{"A + B", "A - B", "AB", "AX = B", "", "","", "", "nA","",""};
 
         for (int i = 0; i < myButs.length; i++){
             myButs[i] = new Button(DataBag.getInstance().getCurrView().getContext());
@@ -292,7 +292,7 @@ public class PixelGridView extends View {
                 myButs[i].setVisibility(GONE);
             myButs[i].setBackgroundResource(R.drawable.tags_rounded_corners);
             ((GradientDrawable)myButs[i].getBackground()).setColor(Color.rgb(240, 240, 240));
-            ((GradientDrawable)myButs[i].getBackground()).setStroke(0, Color.rgb(240, 240, 240));
+            ((GradientDrawable)myButs[i].getBackground()).setStroke((int)Math.round(0.05*cellLength), Color.GRAY);
             myButs[i].setAllCaps(false);
             myButs[i].setTextColor(Color.GRAY);
             myButs[i].setText(colorize(text[i]));
@@ -389,7 +389,7 @@ public class PixelGridView extends View {
                 else {
                     C = A.leastSquares(B);
                     if (C.getError() > 1e-10)
-                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "No exact solution.\nLeast-squares approximation error: " + C.getError(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(DataBag.getInstance().getCurrView().getContext(), getResources().getString(R.string.ls) + C.getError(), Toast.LENGTH_LONG).show();
                 }
             } else{
                 if (op == -1)
@@ -401,7 +401,7 @@ public class PixelGridView extends View {
                     if (B.getElement(0,0).getReal() == (long)(1.0*B.getElement(0,0).getReal()))
                         C = A.power((int) (1.0 * B.getElement(0, 0).getReal()));
                     else
-                        throw new IllegalArgumentException("Exponents must be integers");
+                        throw new IllegalArgumentException(getResources().getString(R.string.pow));
                 }
             }
             vg.removeView(layoutB);
@@ -410,7 +410,7 @@ public class PixelGridView extends View {
             DataBag.getInstance().removeData(layoutA);
             makeEditGrid(C, new Point(layoutB.getActualX(), layoutB.getActualY()));
         }catch (IllegalArgumentException e) {
-            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), colorize(e.getMessage()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), colorize(e.getMessage()), Toast.LENGTH_LONG).show();
         }
         invalidate();
         return true;
@@ -421,18 +421,24 @@ public class PixelGridView extends View {
         int i = 0;
         int j = 0;
         int z = 0;
-        while(s.indexOf('A', i) != -1) {
-            text.setSpan(new ForegroundColorSpan(Color.CYAN), s.indexOf('A', i), s.indexOf('A', i) + 1, 0);
-            i = s.indexOf('A', i) + 1;
-        }
-        while(s.indexOf('B', j) != -1) {
-            text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B', j), s.indexOf('B', j) + 1, 0);
-            j = s.indexOf('B', j) + 1;
-        }
+        if (s.equals("AX = B"))
+            text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('X'), s.indexOf('X')+1, 0);
+        try {
+            while (s.indexOf('A', i) != -1) {
+                if (s.equals("AB") || s.equals("AX = B") || s.indexOf('A', i) == s.length()-1 || s.charAt(s.indexOf('A', i) + 1) == ' ')
+                    text.setSpan(new ForegroundColorSpan(Color.CYAN), s.indexOf('A', i), s.indexOf('A', i) + 1, 0);
+                i = s.indexOf('A', i) + 1;
+            }
+            while (s.indexOf('B', j) != -1) {
+                if (s.equals("AB") || s.equals("AX = B") || s.indexOf('B', j) == s.length()-1 || s.charAt(s.indexOf('B', j) + 1) == ' ')
+                    text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B', j), s.indexOf('B', j) + 1, 0);
+                j = s.indexOf('B', j) + 1;
+            }
+        } catch (StringIndexOutOfBoundsException sn){}
         if (s.contains("\u2016x\u2016"))
             text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('x'), s.indexOf('x') + 1, 0);
-        if (s.contains("cA"))
-            text.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), s.indexOf('c'), s.indexOf('c')+1,0);
+        if (s.contains("nA"))
+            text.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), s.indexOf('n'), s.indexOf('n')+1,0);
         return text;
     }
 
@@ -491,21 +497,21 @@ public class PixelGridView extends View {
         DataBag.getInstance().getData(b).switchBorderColor(Color.rgb(93,204,115));
         Spanned expText;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
-            expText = Html.fromHtml("A<sup>c</sup>", Html.FROM_HTML_MODE_LEGACY);
+            expText = Html.fromHtml("A<sup>n</sup>", Html.FROM_HTML_MODE_LEGACY);
         else
-            expText = Html.fromHtml("A<sup>c</sup>");
+            expText = Html.fromHtml("A<sup>n</sup>");
         SpannableString sr = new SpannableString(expText);
         sr.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
         sr.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 1, 2, 0);
 
-        Spanned etest = Html.fromHtml("A\u00f7c");
+        Spanned etest = Html.fromHtml("A\u00f7n");
         SpannableString test = new SpannableString(etest);
         test.setSpan(new ForegroundColorSpan(Color.CYAN), 0, 1, 0);
         test.setSpan(new ForegroundColorSpan(Color.rgb(93, 204, 115)), 2, 3, 0);
 
 
 
-        myButs[8].setText(colorize("cA"));
+        myButs[8].setText(colorize("nA"));
         myButs[9].setText(test);
         myButs[10].setText(sr);
         reveal(2);
@@ -551,7 +557,7 @@ public class PixelGridView extends View {
         scalarQ.setBackgroundResource(R.drawable.button_light);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         tv.setAllCaps(false);
-        tv.setText("Make a");
+        tv.setText(DataBag.getInstance().getCurrView().getResources().getString(R.string.builder));
         scalarQ.addView(tv);
         LinearLayout buttonRow = new LinearLayout(getContext());
         buttonRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -559,10 +565,10 @@ public class PixelGridView extends View {
         scalar.setTextColor(Color.GRAY);
         scalar.setBackground(null);
         scalar.setAllCaps(false);
-        scalar.setText("Scalar");
+        scalar.setText(DataBag.getInstance().getCurrView().getResources().getString(R.string.scalar));
         Button mat1x1 = new Button(getContext());
-        SpannableString sst = new SpannableString("1x1 matrix");
-        sst.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), 4, 10, 0);
+        SpannableString sst = new SpannableString("1x1 " + DataBag.getInstance().getCurrView().getResources().getString(R.string.matrix));
+        sst.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), 4, sst.length(), 0);
         mat1x1.setBackground(null);
         mat1x1.setAllCaps(false);
         mat1x1.setText(sst);

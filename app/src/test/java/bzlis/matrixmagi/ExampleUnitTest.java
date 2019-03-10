@@ -171,15 +171,29 @@ public class ExampleUnitTest {
 
     @Test
     public void testQR(){
-        Matrix A = new Matrix(2, 2);
-        A.setElement(new ComplexForm(0,3),0,0);
-        A.setElement(new ComplexForm(2,-2),0,1);
-        A.setElement(new ComplexForm(4,7),1,0);
-        A.setElement(new ComplexForm(-1,5),1,1);
-        Matrix[] QR = A.QR();
-        System.out.print(QR[0]);
-        System.out.print(QR[1]);
-        System.out.print(QR[0].mult(QR[1]));
+        int success = 0;
+        int fail = 0;
+        for (int i = 0; i < 100; i ++){
+            int n = 4;
+            Matrix A = new Matrix(n, n);
+            for (int z = 0; z < n; z++){
+                for (int y = 0; y < n; y++)
+                    A.setElement(new ComplexForm(Math.random()*100-50, Math.random()*100-50), z, y);
+            }
+            Matrix[] QR = A.QR();
+            Matrix diff = QR[0].mult(QR[1]).add(A.scalarMult(new ComplexForm(-1)));
+            double biggest = 0;
+            for (int j = 0; j < A.getNumCols(); j++){
+                double mag = diff.getCol(j).mag();
+                if (mag > biggest)
+                    biggest = mag;
+            }
+            if (biggest > 1e-5)
+                fail++;
+            else
+                success++;
+        }
+        System.out.println(success +", " + fail);
     }
 
 
@@ -236,7 +250,6 @@ public class ExampleUnitTest {
                         success++;
                     } else {
                         fail++;
-                        System.out.println(A.add(I).det().magnitude());
                     }
                 }
                 if (eigen.size() != n){

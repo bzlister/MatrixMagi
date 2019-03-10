@@ -128,7 +128,7 @@ public class DataBag {
         board.setVisibility(View.GONE);
         int w = (int)Math.round(getCurrView().getWidth()/4.0);
         int h = (int)Math.round(getCurrView().getHeight()/12.0);
-        String[] text = new String[]{"7","8","9","C","4","5","6","+","1","2","3","-","i","0",".","Next"};
+        String[] text = new String[]{"7","8","9","C","4","5","6","+","1","2","3","-","i","0",".",getCurrView().getResources().getString(R.string.next)};
         DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
         text[14] = Character.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()).toString();
         for (int z = 0; z < 16; z++){
@@ -186,9 +186,9 @@ public class DataBag {
         for (EditGridLayout edit : editList){
             try {
                 ((ViewGroup) edit.getParent()).removeView(edit);
-                //edit.cellLength = currView.cellLength;
+                edit.cellLength = currView.cellLength;
             } catch (NullPointerException e) {}
-            layout.addView(edit);
+           // layout.addView(edit);
         }
     }
 
@@ -198,12 +198,11 @@ public class DataBag {
     }
 
     public void snapToGrid(){
-        for (EditGridLayout edit : editList) {
-            edit.setX(currView.cellLength * Math.round((edit.getX()+currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
-            edit.setY(currView.cellLength * Math.round((edit.getY()+currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
+      for (EditGridLayout edit : editList) {
+        edit.setX(currView.cellLength * Math.round((edit.getX() + currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
+        edit.setY(currView.cellLength * Math.round((edit.getY() + currView.cellLength) / currView.cellLength) - currView.cellLength * edit.thick);
         }
     }
-
     public void showBoard(final MatrixElement m){
         board.setVisibility(View.VISIBLE);
         board.bringToFront();
@@ -212,10 +211,10 @@ public class DataBag {
         if (m.getNext() == null)
             last = true;
         for (int i = 0; i < board.getChildCount(); i++) {
-            if (last && ((Button)board.getChildAt(i)).getText().equals("Next"))
-                ((Button)board.getChildAt(i)).setText("Done");
-            if (!last && ((Button)board.getChildAt(i)).getText().equals("Done"))
-                ((Button)board.getChildAt(i)).setText("Next");
+            if (last && ((Button)board.getChildAt(i)).getText().equals(getCurrView().getResources().getString(R.string.next)))
+                ((Button)board.getChildAt(i)).setText(getCurrView().getResources().getString(R.string.done));
+            if (!last && ((Button)board.getChildAt(i)).getText().equals(getCurrView().getResources().getString(R.string.done)))
+                ((Button)board.getChildAt(i)).setText(getCurrView().getResources().getString(R.string.next));
             board.getChildAt(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -223,11 +222,11 @@ public class DataBag {
                     String text = ((Button)view).getText().toString();
                     if (text.equals("C"))
                         m.setText("");
-                    else if (text.equals("Next")) {
+                    else if (text.equals(getCurrView().getResources().getString(R.string.next))) {
                         DataBag.getInstance().requestSelected(m.getNext());
                         DataBag.getInstance().showBoard(m.getNext());
                     }
-                    else if (text.equals("Done")) {
+                    else if (text.equals(getCurrView().getResources().getString(R.string.done))) {
                         EditGridLayout.hideKeyboard();
                     }
                     else

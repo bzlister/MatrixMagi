@@ -1,5 +1,7 @@
 package bzlis.matrixmagi;
 
+import com.example.bzlis.matrixmagi.R;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -60,7 +62,7 @@ public class ComplexForm {
                 }
             }
         } catch (Exception p){
-            throw new Exception(s + " not a properly formatted number!");
+            throw new Exception(s + DataBag.getInstance().getCurrView().getResources().getString(R.string.cfExcep));
         }
         return cf;
     }

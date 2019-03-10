@@ -53,7 +53,7 @@ public class workbench extends AppCompatActivity {
         adView.setAdSize(AdSize.BANNER);
         adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         adView.setId(View.generateViewId());
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        adView.setAdUnitId("ca-app-pub-2890801541122304/3308955741");
         frame.addView(adView);
         DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
@@ -67,7 +67,7 @@ public class workbench extends AppCompatActivity {
         deleteAll.setBackgroundResource(R.drawable.button_light);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         tv.setAllCaps(false);
-        tv.setText("Delete all?");
+        tv.setText(getResources().getString(R.string.delAll));
         deleteAll.addView(tv);
         LinearLayout buttonRow = new LinearLayout(this);
         buttonRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -75,16 +75,17 @@ public class workbench extends AppCompatActivity {
         yes.setTextColor(Color.rgb(35, 188, 196));
         yes.setBackground(null);
         yes.setAllCaps(false);
-        yes.setText("Yes");
+        yes.setText(getResources().getString(R.string.yes));
         Button no = new Button(this);
         no.setTextColor(Color.rgb(35, 188, 196));
         no.setBackground(null);
         no.setAllCaps(false);
-        no.setText("No");
+        no.setText(getResources().getString(R.string.no));
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DataBag.getInstance().deltut = false;
+
                 Iterator<EditGridLayout> it = DataBag.getInstance().getData().iterator();
                 while (it.hasNext()) {
                     ((ViewGroup) DataBag.getInstance().getCurrView().getParent()).removeView(it.next());

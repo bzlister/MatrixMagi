@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Matrix Magus</string>
+    <string name="magErr">Matrix muss ein Zeile- oder Kolonnvektor sein!</string>
+    <string name="squareErr">Nicht eine quadratische Matrix!</string>
+    <string name="singErr">Singuläre oder fast singuläre!\n</string>
+    <string name="overflowErr">Überlauffehler</string>
+    <string name="eigenvalueMsg">%1$d von %2$d Eigenwerte gefunden</string>
+    <string name="eigenvectorMsg">%1$d von %2$d Eigenvektoren gefunden</string>
+    <string name="dimMsg1">Die Anzahl der Zeilen von A muss gleich der Anzahl der Kolonne von B sein!</string>
+    <string name="dimMsg2">Die Anzahl der Zeilen von A muss gleich der Anzahl der Zeilen von B sein!</string>
+    <string name="dimMsg3">Die Anzahl der Kolonne von A muss gleich der Anzahl der Kolonne von B sein!</string>
+    <string name="delAll">Alles löschen?</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="builder">Mach ein</string>
+    <string name="scalar">Skalar</string>
+    <string name="matrix">Matrix</string>
+    <string name="cfExcep">ist nicht eine richtige formatierte Zahl!</string>
+    <string name="next">Weiter</string>
+    <string name="done">OK</string>
+    <string name="under">System ist unterbestimmt!</string>
+    <string name="over">System ist überbestimmt!\n</string>
+    <string name="ls">Keine exakte Lösung. Least-Squares-Schätzungfehle:</string>
+    <string name="pow">Exponenten müssen Ganzzahlen sein!</string>
+    <string name="shakeshake">Gerät schütteln, um alle zu löschen!</string>
+</resources>

@@ -2,6 +2,8 @@ package bzlis.matrixmagi;
 
 import android.widget.Toast;
 
+import com.example.bzlis.matrixmagi.R;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -79,10 +81,10 @@ public class Matrix {
         if ((this.numCols != B.numCols) || (this.numRows != B.numRows)) {
             String s = "";
             if (this.numRows != B.numRows)
-                s = "Rows(A) =/= Rows(B)\n";
+                s = DataBag.getInstance().getCurrView().getResources().getString(R.string.dimMsg2)+System.lineSeparator();
             if (this.numCols != B.numCols)
-                s +="Cols(A) =/= Cols(B)\n";
-            throw new IllegalArgumentException(s.substring(0,s.length()-1));
+                s += DataBag.getInstance().getCurrView().getResources().getString(R.string.dimMsg3)+System.lineSeparator();
+            throw new IllegalArgumentException(s.substring(0,s.length()-System.lineSeparator().length()));
         }
         ComplexForm[][] retVal = new ComplexForm[this.numRows][this.numCols];
         for (int i = 0; i < this.numRows; i++){
@@ -98,7 +100,7 @@ public class Matrix {
             return B.mult(this);
         }
         if (this.numCols != B.numRows)
-            throw new IllegalArgumentException("Cols(A) =/= Rows(B)");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.dimMsg1));
         ComplexForm[][] retVal = new ComplexForm[this.numRows][B.numCols];
         for (int i = 0; i < this.numRows; i++){
             for (int j = 0; j < B.numCols; j++){
@@ -126,15 +128,15 @@ public class Matrix {
         Matrix T = this.transpose();
         String message = "";
         if (this.getNumRows() != B.getNumRows())
-            throw new IllegalArgumentException("Rows(A) =/= Rows(B)");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.dimMsg2));
         if (this.getNumRows() >= this.getNumCols()) {
             X = T.mult(this).inverse().mult(T).mult(B);
             if (this.getNumRows() != this.getNumCols())
-                message = "System is overdetermined!";
+                message = DataBag.getInstance().getCurrView().getResources().getString(R.string.over);
         }
         else {
             X = T.mult(this.mult(T).inverse()).mult(B);
-            message = "System is underdetermined!";
+            message = DataBag.getInstance().getCurrView().getResources().getString(R.string.under);
         }
         X.error = this.mult(X).sumSquaredErrors(B);
         if (!message.equals(""))
@@ -144,7 +146,7 @@ public class Matrix {
 
     protected Matrix power(int n){
         if (this.getNumRows() != this.getNumCols())
-            throw new IllegalArgumentException("Not a square matrix!");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.squareErr));
         Matrix H = this.duplicate();
         if (n < 0){
             n*=-1;
@@ -167,13 +169,13 @@ public class Matrix {
         Matrix cp = this.duplicate();
         double EPSILON = 1e-10;
         if (this.getNumCols() != this.getNumRows())
-            throw new IllegalArgumentException("Not a square matrix!");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.squareErr));
         int n = this.getNumRows();
         Matrix inv = new Matrix(n, n);
         for (int i = 0; i < n; i++){
             ComplexForm alpha = cp.getElement(i,i);
             if (alpha.magnitude() <= EPSILON)
-                throw new IllegalArgumentException("Singular or nearly singular!");
+                throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.singErr));
             for (int j = 0; j < n; j++){
                 cp.setElement(ComplexForm.div(cp.getElement(i,j), alpha),i,j);
                 inv.setElement(ComplexForm.div(inv.getElement(i,j), alpha),i,j);
@@ -197,10 +199,10 @@ public class Matrix {
         if ((this.getNumCols() != B.getNumCols()) || (this.getNumRows() != B.getNumRows())){
             String s = "";
             if (this.numRows != B.numRows)
-                s = "Rows(A) =/= Rows(B)\n";
+                s = DataBag.getInstance().getCurrView().getResources().getString(R.string.dimMsg2)+System.lineSeparator();
             if (this.numCols != B.numCols)
-                s +="Cols(A) =/= Cols(B)\n";
-            throw new IllegalArgumentException(s.substring(0,s.length()-1));
+                s += DataBag.getInstance().getCurrView().getResources().getString(R.string.dimMsg3)+System.lineSeparator();
+            throw new IllegalArgumentException(s.substring(0,s.length()-System.lineSeparator().length()));
         }
         for (int i = 0; i < this.getNumRows(); i++){
             for (int j = 0; j < this.getNumCols(); j++) {
@@ -213,7 +215,7 @@ public class Matrix {
 
     protected ComplexForm det() throws IllegalArgumentException {
         if (this.getNumRows() != this.getNumCols())
-            throw new IllegalArgumentException("Not a square matrix!");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.squareErr));
         ComplexForm det = new ComplexForm(0);
         if (this.getNumRows() == 2)
             det = ComplexForm.sub(ComplexForm.mult(this.getElement(0,0), this.getElement(1,1)), ComplexForm.mult(this.getElement(0,1), this.getElement(1,0)));
@@ -240,7 +242,7 @@ public class Matrix {
     protected ArrayList<Matrix> eigenVector() throws IllegalArgumentException {
         int fcount = 0;
         if (this.getNumCols() != this.getNumRows())
-            throw new IllegalArgumentException("Not a square matrix!");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.squareErr));
         int n = this.getNumRows();
         ArrayList<Scalar> eigenvalues = this.eigenValue();
         ArrayList<Matrix> eigenvectors = new ArrayList<>();
@@ -327,7 +329,7 @@ public class Matrix {
               fcount++;
         }
       if (eigenvectors.size() != this.numCols)
-            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Found " + (this.numCols-fcount) + " out of " + this.numCols + " eigenvectors", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), DataBag.getInstance().getCurrView().getResources().getString(R.string.eigenvectorMsg, (this.numCols-fcount), this.numCols), Toast.LENGTH_SHORT).show();
         return eigenvectors;
      }
 
@@ -349,7 +351,7 @@ public class Matrix {
 
     public double mag(){
         if (this.getNumRows() != 1 && this.getNumCols() != 1)
-            throw new IllegalArgumentException("Matrix must be a row or column vector");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.magErr));
         double sum = 0.0;
         if (this.getNumRows() == 1){
             for (int j = 0; j < this.getNumCols(); j++)
@@ -364,7 +366,7 @@ public class Matrix {
 
     public ArrayList<Scalar> eigenValue() throws ArithmeticException{
         if (this.getNumCols() != this.getNumRows())
-            throw new IllegalArgumentException("Not a square matrix!");
+            throw new IllegalArgumentException(DataBag.getInstance().getCurrView().getResources().getString(R.string.squareErr));
         int n = this.getNumCols();
         Matrix S = new Matrix(n, n);
         for (int a = 0; a < n; a++){
@@ -403,7 +405,7 @@ public class Matrix {
             ComplexForm det = ComplexForm.sub(ComplexForm.mult(cp.getElement(z, z), cp.getElement(z + 1, z + 1)), ComplexForm.mult(cp.getElement(z, z + 1), cp.getElement(z + 1, z)));
             ComplexForm dscrm = ComplexForm.sqrt(ComplexForm.sub(ComplexForm.mult(Tr, Tr), ComplexForm.mult(new ComplexForm(4), det)));
             if (Double.isNaN(Tr.magnitude()) || Double.isNaN(det.magnitude()) || Double.isNaN(dscrm.magnitude()) || Tr.magnitude().isInfinite() || det.magnitude().isInfinite() || dscrm.magnitude().isInfinite())
-                throw new ArithmeticException("Overflow error");
+                throw new ArithmeticException(DataBag.getInstance().getCurrView().getResources().getString(R.string.overflowErr));
             method1.add(new Scalar(ComplexForm.div(ComplexForm.add(Tr, dscrm), new ComplexForm(2))));
             method1.add(new Scalar(ComplexForm.div(ComplexForm.sub(Tr, dscrm), new ComplexForm(2))));
             z+=2;
@@ -426,14 +428,13 @@ public class Matrix {
         }
         ArrayList<Scalar> retVal = (method1.size() >= method2.size()) ? method1 : method2;
        if (retVal.size() != n)
-           Toast.makeText(DataBag.getInstance().getCurrView().getContext(), ("Found " + retVal.size() + " out of " + n + " eigenvalues."), Toast.LENGTH_SHORT).show();
+           Toast.makeText(DataBag.getInstance().getCurrView().getContext(), DataBag.getInstance().getCurrView().getResources().getString(R.string.eigenvalueMsg, retVal.size(), n), Toast.LENGTH_SHORT).show();
         return retVal;
     }
 
     public Matrix[] QR(){
-        ArrayList<Matrix> U = new ArrayList();
-        ArrayList<Matrix> E = new ArrayList();
-        ArrayList<Matrix> A = new ArrayList();
+        ArrayList<Matrix> U = new ArrayList<>();
+        ArrayList<Matrix> E = new ArrayList<>();
         for (int j = 0; j < this.getNumCols(); j++) {
             Matrix a = this.getCol(j);
             Matrix u = a.duplicate();
@@ -444,11 +445,13 @@ public class Matrix {
             ComplexForm mag = ComplexForm.sqrt((u.transpose().mult(u)).getElement(0,0));
             E.add(u.scalarMult(ComplexForm.div(new ComplexForm(1), mag).correct()));
             int z = 0;
+            /*
             do {
                 a = a.add(E.get(z).scalarMult(innerProd(E.get(z), a)));
                 z++;
             } while (z < j);
             A.add(a);
+            */
         }
         Matrix Q = new Matrix(this.getNumRows(), this.getNumCols());
         for (int j = 0; j < this.getNumCols(); j++){

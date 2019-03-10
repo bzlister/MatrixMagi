@@ -240,7 +240,7 @@ public class EditGridLayout extends RelativeLayout {
                         DataBag.getInstance().removeData(this);
                         DataBag.getInstance().getCurrView().invalidate();
                         if (DataBag.getInstance().deltut && DataBag.getInstance().getData().size() > 2) {
-                            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), "Shake device to delete all!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DataBag.getInstance().getCurrView().getContext(), DataBag.getInstance().getCurrView().getResources().getString(R.string.shakeshake), Toast.LENGTH_SHORT).show();
                             DataBag.getInstance().deltut = false;
                         }
                     }
@@ -379,7 +379,7 @@ public class EditGridLayout extends RelativeLayout {
     protected void switchBorderColor(int color){
         if (color == -1) {
             ((GradientDrawable) border.getBackground()).setStroke(Math.round(cellLength * thick * 0.5f), borderColor);
-            mutated = false;;
+            mutated = false;
         }
         else {
             ((GradientDrawable) border.getBackground()).setStroke(Math.round(cellLength * thick * 0.65f), color);
