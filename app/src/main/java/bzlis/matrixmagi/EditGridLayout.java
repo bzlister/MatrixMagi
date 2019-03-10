@@ -46,7 +46,8 @@ public class EditGridLayout extends RelativeLayout {
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            DataBag.getInstance().deletor.setVisibility(View.GONE);
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
+                DataBag.getInstance().getCurrBoard().hideBoard();
             if (lastAction == MotionEvent.ACTION_DOWN || lastAction == MotionEvent.ACTION_UP) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     startClickTime = Calendar.getInstance().getTimeInMillis();
@@ -59,9 +60,10 @@ public class EditGridLayout extends RelativeLayout {
                                 layout.switchBorderColor(-1);
                             DataBag.getInstance().getCurrView().shouldUpdate = false;
                         }
+                        DataBag.getInstance().setArithOp(false);
                         DataBag.getInstance().getCurrView().hide();
-                        DataBag.getInstance().requestSelected((MatrixElement)view);
-                        DataBag.getInstance().showBoard((MatrixElement)view);
+                        DataBag.getInstance().getCurrBoard().requestSelected((MatrixElement)view);
+                        DataBag.getInstance().getCurrBoard().showBoard((MatrixElement)view);
                         if (((((MatrixElement)view).getText() == null) || ((MatrixElement)view).getText().toString().equals("")) && (((MatrixElement)view).getHint() != null)) {
                             try {
                                 if (!((MatrixElement)view).trueValue.equals(ComplexForm.parse(((MatrixElement)view).trueValue.getPrettyString())))
@@ -132,7 +134,6 @@ public class EditGridLayout extends RelativeLayout {
     }
 
     protected boolean moveIt(MotionEvent me){
-        DataBag.getInstance().deletor.setVisibility(View.GONE);
         if (me.getAction() == MotionEvent.ACTION_MOVE) {
             DataBag.getInstance().getCurrView().mag.setVisibility(VISIBLE);
             DataBag.getInstance().getCurrView().eigen.setVisibility(VISIBLE);
@@ -160,6 +161,7 @@ public class EditGridLayout extends RelativeLayout {
                 layout.switchBorderColor(-1);
             invalidate();
         }
+        DataBag.getInstance().setArithOp(false);
         DataBag.getInstance().getCurrView().hide();
         if (me.getAction() == MotionEvent.ACTION_UP) {
             DataBag.getInstance().getCurrView().makeDim();
@@ -331,7 +333,7 @@ public class EditGridLayout extends RelativeLayout {
     }
 
     protected static void hideKeyboard(){
-        DataBag.getInstance().hideBoard();
+        DataBag.getInstance().getCurrBoard().hideBoard();
     }
 
     private void setPos(int row, int column) {

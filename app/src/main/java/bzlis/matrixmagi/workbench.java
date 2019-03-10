@@ -58,7 +58,7 @@ public class workbench extends AppCompatActivity {
         DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
 
-        LinearLayout deleteAll = new LinearLayout(this);
+        final LinearLayout deleteAll = new LinearLayout(this);
         deleteAll.setOrientation(LinearLayout.VERTICAL);
         RelativeLayout.LayoutParams rlparam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         rlparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -93,20 +93,19 @@ public class workbench extends AppCompatActivity {
                 }
                 DataBag.getInstance().getCurrView().hide();
                 DataBag.getInstance().getCurrView().invalidate();
-                DataBag.getInstance().deletor.setVisibility(View.GONE);
+                deleteAll.setVisibility(View.GONE);
             }
         });
         no.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 DataBag.getInstance().deltut = false;
-                DataBag.getInstance().deletor.setVisibility(View.GONE);
+                deleteAll.setVisibility(View.GONE);
             }
         });
         buttonRow.addView(yes);
         buttonRow.addView(no);
         deleteAll.addView(buttonRow);
-        DataBag.getInstance().deletor = deleteAll;
         deleteAll.setVisibility(View.GONE);
         frame.addView(deleteAll);
 
@@ -128,14 +127,15 @@ public class workbench extends AppCompatActivity {
                 @Override
                 public void onShake(int count) {
                     if ((DataBag.getInstance().getData().size() > 0) && !DataBag.getInstance().tutOut){
-                        DataBag.getInstance().deletor.bringToFront();
+                        deleteAll.bringToFront();
                         DataBag.getInstance().getCurrView().hide();
+                        DataBag.getInstance().getCurrBoard().hideBoard();
                         if (DataBag.getInstance().getCurrView().shouldUpdate) {
                             for (EditGridLayout layout : DataBag.getInstance().getData())
                                 layout.switchBorderColor(-1);
                             DataBag.getInstance().getCurrView().shouldUpdate = false;
                         }
-                        DataBag.getInstance().deletor.setVisibility(View.VISIBLE);
+                        deleteAll.setVisibility(View.VISIBLE);
                     }
                 }
             });

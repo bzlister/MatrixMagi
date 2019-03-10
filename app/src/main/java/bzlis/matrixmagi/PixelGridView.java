@@ -219,15 +219,15 @@ public class PixelGridView extends View {
             @Override
             public void onClick(View view) {
                 DataBag.getInstance().tutOut = true;
-                DataBag.getInstance().hideBoard();
+                DataBag.getInstance().getCurrBoard().hideBoard();
                 DataBag.getInstance().getCurrView().hide();
                 EditGridLayout.hideKeyboard();
+                DataBag.getInstance().setArithOp(false);
                 if (shouldUpdate) {
                     for (EditGridLayout layout : DataBag.getInstance().getData())
                         layout.switchBorderColor(-1);
                     shouldUpdate = false;
                 }
-                DataBag.getInstance().deletor.setVisibility(View.GONE);
                 ImageView tuts = new ImageView(DataBag.getInstance().getCurrView().getContext());
                 tuts.setLayoutParams(DataBag.getInstance().getCurrView().getLayoutParams());
                 tuts.setImageResource(R.mipmap.tuts);
@@ -310,7 +310,16 @@ public class PixelGridView extends View {
             arithButtons(DataBag.getInstance().getA(), DataBag.getInstance().getB());
         DataBag.getInstance().getCurrView().invalidate();
         DataBag.getInstance().snapToGrid();
-        DataBag.getInstance().makeBoard();
+        if (DataBag.getInstance().boardOut){
+            MatrixElement m = DataBag.getInstance().getCurrBoard().getChosen();
+            Trueboard t = new Trueboard(getContext());
+            t.requestSelected(m);
+            t.showBoard(m);
+            DataBag.getInstance().setCurrBoard(t);
+        }
+        else
+            DataBag.getInstance().setCurrBoard(new Trueboard(getContext()));
+        invalidate();
     }
 
     @Override
@@ -340,7 +349,7 @@ public class PixelGridView extends View {
         hide();
         makeDim();
         EditGridLayout.hideKeyboard();
-        DataBag.getInstance().deletor.setVisibility(View.GONE);
+        DataBag.getInstance().setArithOp(false);
         int x = cellLength * Math.round(event.getX() / cellLength);
         int y = cellLength * Math.round(event.getY() / cellLength);
         if (corners[0] == null) {
@@ -425,12 +434,12 @@ public class PixelGridView extends View {
             text.setSpan(new ForegroundColorSpan(Color.rgb(35, 188, 196)), s.indexOf('X'), s.indexOf('X')+1, 0);
         try {
             while (s.indexOf('A', i) != -1) {
-                if (s.equals("AB") || s.equals("AX = B") || s.indexOf('A', i) == s.length()-1 || s.charAt(s.indexOf('A', i) + 1) == ' ')
+                if (s.equals("AB") || s.equals("AX = B") || s.indexOf('A', i) == s.length()-1 || s.charAt(s.indexOf('A', i) + 1) == ' ' || s.charAt(s.indexOf('A', i) + 1) == '!')
                     text.setSpan(new ForegroundColorSpan(Color.CYAN), s.indexOf('A', i), s.indexOf('A', i) + 1, 0);
                 i = s.indexOf('A', i) + 1;
             }
             while (s.indexOf('B', j) != -1) {
-                if (s.equals("AB") || s.equals("AX = B") || s.indexOf('B', j) == s.length()-1 || s.charAt(s.indexOf('B', j) + 1) == ' ')
+                if (s.equals("AB") || s.equals("AX = B") || s.indexOf('B', j) == s.length()-1 || s.charAt(s.indexOf('B', j) + 1) == ' ' || s.charAt(s.indexOf('B', j) + 1) == '!')
                     text.setSpan(new ForegroundColorSpan(Color.MAGENTA), s.indexOf('B', j), s.indexOf('B', j) + 1, 0);
                 j = s.indexOf('B', j) + 1;
             }
@@ -539,7 +548,7 @@ public class PixelGridView extends View {
     }
 
     private void scalarQuestionaire(final Point top){
-        DataBag.getInstance().hideBoard();
+        DataBag.getInstance().getCurrBoard().hideBoard();
         DataBag.getInstance().getCurrView().hide();
         EditGridLayout.hideKeyboard();
         if (shouldUpdate) {
@@ -547,7 +556,6 @@ public class PixelGridView extends View {
                 layout.switchBorderColor(-1);
             shouldUpdate = false;
         }
-        DataBag.getInstance().deletor.setVisibility(View.GONE);
         final LinearLayout scalarQ = new LinearLayout(getContext());
         scalarQ.setOrientation(LinearLayout.VERTICAL);
         RelativeLayout.LayoutParams rlparam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
