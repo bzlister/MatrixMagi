@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">矩阵魔法师</string>
+
+    <string name="magErr">矩阵必须是行或列向量！</string>
+    <string name="squareErr">不是方阵！</string>
+    <string name="singErr">单数或接近单数！</string>
+    <string name="overflowErr">溢出错误</string>
+    <string name="eigenvalueMsg">发现 %1$d 超出 %2$d 特征值</string>
+    <string name="eigenvectorMsg">找到 %1$d 个，共 %2$d 个特征向量</string>
+
+    <string name="dimMsg1">A 的行数必须等于 B 的列数！</string>
+    <string name="dimMsg2">A 的行数必须等于 B 的行数！</string>
+    <string name="dimMsg3">A 的列数必须等于 B 的列数！</string>
+
+    <string name="delAll">全部删除？</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+
+    <string name="scalar">标量</string>
+
+    <string name="cfExcep">矩阵</string>
+
+    <string name="next">下一个</string>
+    <string name="done">完成</string>
+
+    <string name="under">系统欠定</string>
+    <string name="over">系统超定</string>
+
+    <string name="ls">没有确切的解决办法。最小二乘近似误差：</string>
+    <string name="pow">指数必须是整数！</string>
+
+    <string name="shakeshake">摇动设备删除全部！</string>
+    <string name="builder">使</string>
+    <string name="matrix">矩阵</string>
+</resources>
