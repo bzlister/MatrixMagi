@@ -33,4 +33,10 @@
     <string name="shakeshake">Shake device to delete all!</string>
 
     <string name="builder">Make a</string>
+
+    <string name="rating">Would you like to rate Matrix Magus on the Google Play Store?</string>
+    <string name="never">Never</string>
+    <string name="later">Later</string>
+    <string name="playConnectError">Could not connect to the Google Play Store!</string>
+    <string name="thanks">Thanks!</string>
 </resources>

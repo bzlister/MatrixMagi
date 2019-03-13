@@ -39,7 +39,10 @@ public class workbench extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         FragmentManager fm = getFragmentManager();
         mWorkerFragment = (WorkerFragment) fm.findFragmentByTag(TAG_WORKER_FRAGMENT);
-
+        if (mWorkerFragment == null){
+            DataBag.getInstance().read(this);
+            DataBag.getInstance().write(this, (DataBag.getInstance().numUses >= 0) ? DataBag.getInstance().numUses+1 : -1);
+        }
         final RelativeLayout frame = new RelativeLayout(this);
 
         PixelGridView pr = new PixelGridView(this);
@@ -57,6 +60,7 @@ public class workbench extends AppCompatActivity {
         frame.addView(adView);
         DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
+
 
         final LinearLayout deleteAll = new LinearLayout(this);
         deleteAll.setOrientation(LinearLayout.VERTICAL);

@@ -1,11 +1,14 @@
 package bzlis.matrixmagi;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -297,6 +300,8 @@ public class PixelGridView extends View {
             myButs[i].setTextColor(Color.GRAY);
             myButs[i].setText(colorize(text[i]));
             myButs[i].setTextSize(18);
+            myButs[i].setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            myButs[i].setPadding(0, 0, 0, 5);
             if (i < 8)
                 myButs[i].setTranslationX((i%4)*buttonWidth+((i%4)+1)*spacing);
             else
@@ -320,6 +325,77 @@ public class PixelGridView extends View {
         else
             DataBag.getInstance().setCurrBoard(new Trueboard(getContext()));
         invalidate();
+        if (DataBag.getInstance().numUses > 2){
+            final LinearLayout rateMe = new LinearLayout(getContext());
+            rateMe.setOrientation(LinearLayout.VERTICAL);
+            RelativeLayout.LayoutParams rlparam = new RelativeLayout.LayoutParams((int)Math.round(getWidth()/1.5), ViewGroup.LayoutParams.WRAP_CONTENT);
+            rlparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            rateMe.setLayoutParams(rlparam);
+            TextView rateQues = new TextView(getContext());
+            rateQues.setSingleLine(false);
+            rateMe.setBackgroundResource(R.drawable.button_light);
+            rateQues.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            rateQues.setAllCaps(false);
+            rateQues.setText(getResources().getString(R.string.rating));
+            rateMe.addView(rateQues);
+            LinearLayout buttonRow = new LinearLayout(getContext());
+            buttonRow.setOrientation(LinearLayout.HORIZONTAL);
+            buttonRow.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            Button yes = new Button(getContext());
+            yes.setBackground(null);
+            yes.setLayoutParams(new LinearLayout.LayoutParams((int)Math.round(getWidth()/4.5), ViewGroup.LayoutParams.WRAP_CONTENT));
+            yes.setAllCaps(false);
+            yes.setText(getResources().getString(R.string.yes));
+            Button later = new Button(getContext());
+            later.setBackground(null);
+            later.setAllCaps(false);
+            later.setText(getResources().getString(R.string.later));
+            later.setLayoutParams(new LinearLayout.LayoutParams((int)Math.round(getWidth()/4.5), ViewGroup.LayoutParams.WRAP_CONTENT));
+            Button never = new Button(getContext());
+            never.setBackground(null);
+            never.setAllCaps(false);
+            never.setText(getResources().getString(R.string.never));
+            never.setLayoutParams(new LinearLayout.LayoutParams((int)Math.round(getWidth()/4.5), ViewGroup.LayoutParams.WRAP_CONTENT));
+            buttonRow.addView(yes);
+            buttonRow.addView(later);
+            buttonRow.addView(never);
+            rateMe.addView(buttonRow);
+
+            yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri uri = Uri.parse("market://details?id=" + getContext().getPackageName());
+                    Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                    try {
+                        getContext().startActivity(myAppLinkToMarket);
+                        Toast.makeText(getContext(), getContext().getResources().getString(R.string.thanks), Toast.LENGTH_SHORT).show();
+                        DataBag.getInstance().write(getContext(), -1);
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(getContext(), getContext().getResources().getString(R.string.playConnectError), Toast.LENGTH_LONG).show();
+                    }
+                    rateMe.setVisibility(View.GONE);
+                }
+            });
+
+            later.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DataBag.getInstance().write(getContext(), 0);
+                    rateMe.setVisibility(View.GONE);
+                }
+            });
+
+            never.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view){
+                    DataBag.getInstance().write(getContext(), -1);
+                    rateMe.setVisibility(View.GONE);
+                }
+            });
+            ((ViewGroup)getParent()).addView(rateMe);
+            rateMe.bringToFront();
+
+        }
     }
 
     @Override

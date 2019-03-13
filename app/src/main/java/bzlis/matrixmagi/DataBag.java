@@ -1,12 +1,21 @@
 package bzlis.matrixmagi;
 
+import android.content.Context;
 import android.os.Vibrator;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -24,6 +33,7 @@ public class DataBag {
     public Vibrator vibes;
     public boolean tutOut;
     private Trueboard board;
+    public int numUses;
 
     private DataBag(){
         editList = new HashSet<>();
@@ -158,5 +168,32 @@ public class DataBag {
 
     public void setCurrBoard(Trueboard board){
         this.board = board;
+    }
+
+    public void read(Context context){
+        String line;
+        try {
+            InputStream stream = context.openFileInput("MatrixMagusUseCount.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+            line = br.readLine().trim();
+            numUses = Integer.valueOf(line);
+            stream.close();
+        } catch (FileNotFoundException e) {
+            numUses = 0;
+        } catch (IOException i){
+            numUses = 0;
+        }
+    }
+
+    public void write(Context context, int what){
+        numUses = what;
+        try{
+            FileOutputStream fo = context.openFileOutput("MatrixMagusUseCount.txt", AppCompatActivity.MODE_PRIVATE);
+            BufferedWriter bw  = new BufferedWriter(new OutputStreamWriter(fo));
+            bw.write(Integer.toString(what));
+            bw.close();
+            fo.close();
+        } catch (Exception e){
+        }
     }
 }

@@ -20,6 +20,10 @@ public class MatrixElement extends android.support.v7.widget.AppCompatEditText {
         this.setBackground(null);
         this.setTypeface(Typeface.SERIF, Typeface.ITALIC);
         this.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        this.setPadding(0, 0, 0, 5);
+      //  LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //params.setMargins(0, 0, 0, -4);
+       // this.setLayoutParams(params);
     }
 
     public void setNext(MatrixElement next){

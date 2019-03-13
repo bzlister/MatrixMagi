@@ -28,6 +28,7 @@ public class Trueboard extends GridLayout {
                 break;
             }
         }
+        boolean isHorizontal = DataBag.getInstance().getCurrView().getWidth() > DataBag.getInstance().getCurrView().getHeight();
         this.setLayoutParams(new RelativeLayout.LayoutParams(DataBag.getInstance().getCurrView().getWidth(), (int) Math.round(DataBag.getInstance().getCurrView().getHeight() / 3.0)));
         this.setBackgroundResource(R.drawable.button_dark_gradient);
         this.setVisibility(View.GONE);
@@ -36,7 +37,7 @@ public class Trueboard extends GridLayout {
         String[] text = new String[]{"7", "8", "9", "C", "4", "5", "6", "+", "1", "2", "3", "-", "i", "0", ".", DataBag.getInstance().getCurrView().getResources().getString(R.string.next)};
         DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
         text[14] = Character.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()).toString();
-        int textsize = (DataBag.getInstance().getCurrView().getWidth() > DataBag.getInstance().getCurrView().getHeight()) ? 10 : 15;
+        int textsize = isHorizontal ? 10 : 15;
         for (int z = 0; z < 16; z++) {
             Button digit = new Button(context);
             if (z != 15)
@@ -46,6 +47,8 @@ public class Trueboard extends GridLayout {
             digit.setText(text[z]);
             digit.setTextSize(textsize);
             digit.setAllCaps(false);
+            digit.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            digit.setPadding(0, 0, 0, 5);
             digit.setTextColor(Color.DKGRAY);
             if (z == 3)
                 digit.setTextColor(Color.rgb(255, 128, 128));

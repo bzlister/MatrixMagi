@@ -29,6 +29,9 @@ public class ComplexForm {
             return new ComplexForm(0);
         ComplexForm cf = new ComplexForm(0, 0);
         try {
+            char sep = ((DecimalFormat) NumberFormat.getInstance(Locale.getDefault())).getDecimalFormatSymbols().getDecimalSeparator();
+            if (s.indexOf(sep) != s.lastIndexOf(sep))
+                throw new Exception();
             ArrayList<String> nums = new ArrayList<>();
             int start = 0;
             while (start < s.length()){
@@ -62,7 +65,7 @@ public class ComplexForm {
                 }
             }
         } catch (Exception p){
-            throw new Exception(s + DataBag.getInstance().getCurrView().getResources().getString(R.string.cfExcep));
+            throw new Exception(s +" " +  DataBag.getInstance().getCurrView().getResources().getString(R.string.cfExcep));
         }
         return cf;
     }

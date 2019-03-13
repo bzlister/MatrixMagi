@@ -32,4 +32,9 @@
     <string name="shakeshake">摇动设备删除全部！</string>
     <string name="builder">使</string>
     <string name="matrix">矩阵</string>
+    <string name="rating">想要在Google Play 商店中对矩阵魔法师评分？</string>
+    <string name="later">后来</string>
+    <string name="never">决不</string>
+    <string name="playConnectError">无法连接到Google Play商店！</string>
+    <string name="thanks">谢谢！</string>
 </resources>

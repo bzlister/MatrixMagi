@@ -24,4 +24,9 @@
     <string name="ls">Keine exakte Lösung. Least-Squares-Schätzungfehle:</string>
     <string name="pow">Exponenten müssen Ganzzahlen sein!</string>
     <string name="shakeshake">Gerät schütteln, um alle zu löschen!</string>
+    <string name="rating">Möchten Sie Matrix Magus im Google Play Store bewerten?</string>
+    <string name="later">Später</string>
+    <string name="never">Noch nie</string>
+    <string name="playConnectError">Verbindung zum Google Play Store konnte nicht hergestellt werden!</string>
+    <string name="thanks">Danke!</string>
 </resources>
