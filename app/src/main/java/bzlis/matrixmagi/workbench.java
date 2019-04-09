@@ -51,12 +51,12 @@ public class workbench extends AppCompatActivity {
         DataBag.getInstance().setCurrView(pr);
         DataBag.getInstance().setVibrator((Vibrator)this.getSystemService(VIBRATOR_SERVICE));
 
-        MobileAds.initialize(this, "ca-app-pub-2890801541122304~4346705243");
+        MobileAds.initialize(this, "AD_MOB_ID1");
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.BANNER);
         adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         adView.setId(View.generateViewId());
-        adView.setAdUnitId("ca-app-pub-2890801541122304/3308955741");
+        adView.setAdUnitId("AD_MOB_ID2");
         frame.addView(adView);
         DataBag.getInstance().setAdView(adView);
         adView.bringToFront();
